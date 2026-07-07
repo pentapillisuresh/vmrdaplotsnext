@@ -56,7 +56,7 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
     ["borewall", "compound wall"].includes(amenity) &&
     data.propertySubtype !== "Land"
   ) {
-    return false;
+    return false; 
   }
 
   // Show 24/7 water service & power service only for Flat
