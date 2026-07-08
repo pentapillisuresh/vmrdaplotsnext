@@ -152,9 +152,11 @@ function Contact() {
                         Office Address
                       </h3>
                       <p className="font-roboto text-gray-700 leading-relaxed">
-                        123 Beach Road, Visakhapatnam
+                        Door No: SY NO 58/1, near Water Tank
                         <br />
-                        Andhra Pradesh 530001, India
+                        Tallavalasa, Bheemunipatnam
+                        <br />
+                        Andhra Pradesh 531162, India
                       </p>
                     </div>
                   </div>
@@ -222,9 +224,9 @@ function Contact() {
                         Email Address
                       </h3>
                       <p className="font-roboto text-gray-700 leading-relaxed">
-                        info@vmrda plots
+                        info@vmrdaplots.com
                         <br />
-                        sales@vmrda plots
+                        sales@vmrdaplots.com
                       </p>
                     </div>
                   </div>
@@ -371,23 +373,24 @@ function Contact() {
                 Visit Our Office
               </h2>
               <p className="font-roboto text-lg text-gray-700">
-                We welcome you to visit us at our Visakhapatnam office
+                We welcome you to visit us at our Bheemunipatnam office
               </p>
             </div>
 
             <div
-              className="rounded-2xl overflow-hidden shadow-2xl h-96"
+              className="rounded-2xl overflow-hidden shadow-2xl"
               data-aos="zoom-in"
             >
-              <iframe
-                title="Vizag Office Map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.479154835142!2d83.29108871485656!3d17.686816988104716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a395f1f3f9f9f9f%3A0xf00000000000000!2sVisakhapatnam%2C%20Andhra%20Pradesh%2C%20India!5e0!3m2!1sen!2sus!4v1707648000000!5m2!1sen!2sus"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3796.488183929933!2d83.41130097517701!3d17.909370283069602!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a39590c9803e9c5%3A0x8f9285b7b0e95ceb!2sVMRDA%20PLOTS!5e0!3m2!1sen!2sin!4v1783521494291!5m2!1sen!2sin" 
+                width="100%" 
+                height="450" 
+                style={{ border: 0 }} 
+                allowFullScreen="" 
+                loading="lazy" 
+                referrerPolicy="strict-origin-when-cross-origin"
+                title="VMRDA PLOTS Office Location"
+                className="w-full h-[450px]"
               ></iframe>
             </div>
           </div>
