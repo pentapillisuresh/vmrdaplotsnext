@@ -28,7 +28,7 @@ const FeaturedPropertiesContent = () => {
   // Initialize only on client side
   useEffect(() => {
     setMounted(true);
-    
+
     // Initialize AOS
     AOS.init({
       duration: 800,
@@ -213,9 +213,19 @@ const FeaturedPropertiesContent = () => {
               {properties.map((property) => (
                 <SwiperSlide key={property.id} className="h-auto">
                   <article
-                    className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer group hover:shadow-2xl transition-all duration-300 mx-2 my-4 border border-gray-100 hover:border-orange-200 h-full flex flex-col"
-                    onClick={() => handlePropertyClick(property)}
+                    className={`rounded-xl shadow-lg overflow-hidden cursor-pointer group transition-all duration-300 mx-2 my-4 border h-full ${property.isSold
+                      ? "bg-gray-100 opacity-75 border-red-300"
+                      : "bg-white hover:shadow-2xl border-gray-100 hover:border-orange-200"
+                      }`} onClick={() => handleProjectClick(property)}
                   >
+                    <div
+                      className={`absolute top-5 left-3 z-10 px-3 py-1 rounded-full text-xs font-semibold shadow-md text-white ${property.isSold
+                        ? "bg-red-600"
+                        : "bg-green-600"
+                        }`}
+                    >
+                      {property.isSold ? "Sold" : "Available"}
+                    </div>
                     <div className="relative h-56 overflow-hidden flex-shrink-0">
                       <button
                         onClick={(e) => {

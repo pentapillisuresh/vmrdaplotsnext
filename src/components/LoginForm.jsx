@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Phone, Mail, Key, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import ApiService from '../hooks/ApiService';
+import { sendSMS } from './sendSMS';
 
 const LoginFormContent = ({ onClose }) => {
   const router = useRouter();
@@ -75,55 +76,52 @@ const LoginFormContent = ({ onClose }) => {
     }
   };
 
-  // Send OTP
   const sendOTP = async () => {
     if (!phoneNumber || phoneNumber.length < 10) {
       setOtpError('Please enter a valid 10-digit phone number');
       return;
     }
 
-    setOtpLoading(true);
-    setOtpError('');
-    
     try {
-      // Generate a random 6-digit OTP
-      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-      
-      // Send OTP via SMS API
-      const smsResponse = await fetch(
-        `https://pgapi.smartping.ai/fe/api/v1/send?username=vizagland.trans&password=Tmhc6&unicode=true&from=VIZLAN&to=${phoneNumber}&text=Welcome%20to%20VMRDAPlots!%20Use%20${generatedOtp}%20to%20securely%20verify%20your%20user%20login%20and%20access%20trusted%20real%20estate%20properties,%20plots,%20and%20investment%20opportunities%20today.%20VIZAGLANDS&dltContentId=1707177824442347734`
+      setLoading(true);
+      const response = await ApiService.post('/auth/login/phone', { phone: phoneNumber },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      
-      const smsData = await smsResponse.json();
-      
-      // Store OTP in localStorage for verification
-      localStorage.setItem('otp_verification', JSON.stringify({
-        otp: generatedOtp,
-        phone: phoneNumber,
-        timestamp: Date.now()
-      }));
-      
+
+      if (!response.success) {
+        Alert.alert("Error", data.message || "Failed to send OTP");
+        setLoading(false);
+        return;
+      }
+console.log("rrr:::",response)
+      // Store required data
+      // await sendSMS(response.phone, response.otp)
+      await localStorage.setItem("phone", response.phone);
+      await localStorage.setItem("isNewUser", JSON.stringify(response.isNewUser));
+      await localStorage.setItem("otp_expires_at", response.expires_at);
+
+      // ⚠️ OTP should NOT be stored in production (only for testing)
+      await localStorage.setItem("otp_debug", response.otp);
+      setLoading(false);
+
+      // Navigate to OTP verify screen
       setOtpSent(true);
       setTimer(60);
       setOtpError('OTP sent successfully! Check your phone.');
-      
-      // Clear success message after 5 seconds
-      setTimeout(() => {
-        if (otpError === 'OTP sent successfully! Check your phone.') {
-          setOtpError('');
-        }
-      }, 5000);
-      
+
     } catch (error) {
-      console.error('Error sending OTP:', error);
-      setOtpError('Failed to send OTP. Please try again.');
-    } finally {
-      setOtpLoading(false);
+      setLoading(false);
+      setOtpError("Network Error", "Please try again later");
+      console.error("OTP API Error:", error.message);
     }
   };
 
-  // Verify OTP
   const verifyOTP = async () => {
+
     if (!otp || otp.length < 6) {
       setOtpError('Please enter a valid 6-digit OTP');
       return;
@@ -133,51 +131,33 @@ const LoginFormContent = ({ onClose }) => {
     setOtpError('');
 
     try {
-      // Get stored OTP
-      const storedData = localStorage.getItem('otp_verification');
-      if (!storedData) {
-        setOtpError('OTP expired. Please request a new one.');
-        setOtpSent(false);
-        setOtpLoading(false);
-        return;
-      }
 
-      const { otp: storedOtp, timestamp } = JSON.parse(storedData);
-      
-      // Check if OTP is expired (5 minutes)
-      if (Date.now() - timestamp > 5 * 60 * 1000) {
-        localStorage.removeItem('otp_verification');
-        setOtpError('OTP expired. Please request a new one.');
-        setOtpSent(false);
-        setOtpLoading(false);
-        return;
-      }
+      const response = await ApiService.post('/auth/login/phone/verify',{ phone:phoneNumber, otp: otp });
 
-      // Verify OTP
-      if (otp === storedOtp) {
-        setOtpVerified(true);
-        setOtpError('OTP verified successfully!');
-        
-        // Login user with phone number
-        localStorage.setItem('isLogin', 'true');
-        localStorage.setItem('clientData', JSON.stringify({ phoneNumber }));
-        localStorage.setItem('token', 'otp_verified_token');
-        localStorage.removeItem('otp_verification');
-        
-        window.dispatchEvent(new Event('storage'));
-        if (onClose) onClose();
-        
-        setTimeout(() => {
-          router.push('/vendor/dashboard');
-        }, 1000);
-      } else {
-        setOtpError('Invalid OTP. Please try again.');
-      }
+      if (!response?.success) {
+        Alert.alert("Verification Failed", response?.message || "Invalid OTP");
+        return;
+      }else 
+
+      setOtpVerified(true);
+      setOtpError('OTP verified successfully!');
+      const userData=response.user
+      // Login user with phone number
+      localStorage.setItem('isLogin', 'true');
+      localStorage.setItem('clientData', JSON.stringify(userData));
+      localStorage.setItem('token', response.token);
+      window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new CustomEvent('profileUpdate', { detail: userData }));
+
+      setTimeout(() => {
+        router.push('/vendor/dashboard');
+      }, 1000);
+
     } catch (error) {
-      console.error('Error verifying OTP:', error);
-      setOtpError('Failed to verify OTP. Please try again.');
+      console.error("Verify OTP Error:", error);
+      Alert.alert("Error", "Something went wrong. Please try again.");
     } finally {
-      setOtpLoading(false);
+      setLoading(false);
     }
   };
 
@@ -395,7 +375,6 @@ const LoginFormContent = ({ onClose }) => {
                             setOtpSent(false);
                             setOtp('');
                             setOtpError('');
-                            localStorage.removeItem('otp_verification');
                           }}
                           className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
                         >

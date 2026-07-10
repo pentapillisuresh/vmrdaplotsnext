@@ -271,7 +271,8 @@ function ManageListingsContent() {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('selectedProperty', JSON.stringify(listing));
     }
-    router.push(`/property/${listing.id}`);
+    router.push(`/property/${listing.slug}`);
+
   };
 
   const handleAddNewListing = () => {

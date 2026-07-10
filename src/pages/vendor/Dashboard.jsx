@@ -48,7 +48,7 @@ function DashboardContent() {
         });
         localStorage.setItem("clientDetails", JSON.stringify(data.clientDetails));
         setClientDetails(data.clientDetails);
-       
+
         const properties = data.properties || [];
         setRecentListings(properties);
         setFilteredListings(properties);
@@ -98,7 +98,7 @@ function DashboardContent() {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('selectedProperty', JSON.stringify(listing));
     }
-    router.push(`/property/${listing.id}`);
+    router.push(`/property/${listing.slug}`);
   };
 
   const StatCard = ({ icon: Icon, title, value, change, color, onClick, className }) => (
@@ -161,47 +161,47 @@ function DashboardContent() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <StatCard 
-            icon={Home} 
-            title="Total Listings" 
-            value={stats.totalListings} 
-            color="bg-blue-500" 
-            onClick={() => handleFilter("all")} 
+          <StatCard
+            icon={Home}
+            title="Total Listings"
+            value={stats.totalListings}
+            color="bg-blue-500"
+            onClick={() => handleFilter("all")}
             className="cursor-pointer"
           />
-          <StatCard 
-            icon={TrendingUp} 
-            title="Verified Listings" 
-            value={stats.activeListings} 
-            color="bg-green-500" 
-            onClick={() => handleFilter("verified")} 
-            className="cursor-pointer" 
+          <StatCard
+            icon={TrendingUp}
+            title="Verified Listings"
+            value={stats.activeListings}
+            color="bg-green-500"
+            onClick={() => handleFilter("verified")}
+            className="cursor-pointer"
           />
-          <StatCard 
-            icon={Store} 
-            title="Pending Listings" 
-            value={parseInt(stats.totalListings) - parseInt(stats.activeListings)} 
-            color="bg-yellow-500" 
-            onClick={() => handleFilter("pending")} 
-            className="cursor-pointer" 
+          <StatCard
+            icon={Store}
+            title="Pending Listings"
+            value={parseInt(stats.totalListings) - parseInt(stats.activeListings)}
+            color="bg-yellow-500"
+            onClick={() => handleFilter("pending")}
+            className="cursor-pointer"
           />
-          <StatCard 
-            icon={Phone} 
-            title="Inquiries" 
-            value={stats.totalInquiries} 
-            color="bg-purple-500" 
+          <StatCard
+            icon={Phone}
+            title="Inquiries"
+            value={stats.totalInquiries}
+            color="bg-purple-500"
           />
-          <StatCard 
-            icon={Eye} 
-            title="Total Views" 
-            value={stats.totalViews.toLocaleString()} 
-            color="bg-orange-500" 
+          <StatCard
+            icon={Eye}
+            title="Total Views"
+            value={stats.totalViews.toLocaleString()}
+            color="bg-orange-500"
           />
-          <StatCard 
-            icon={TrendingUp} 
-            title="This Month Views" 
-            value={stats.monthlyViews.toLocaleString()} 
-            color="bg-indigo-500" 
+          <StatCard
+            icon={TrendingUp}
+            title="This Month Views"
+            value={stats.monthlyViews.toLocaleString()}
+            color="bg-indigo-500"
           />
         </div>
 
@@ -227,13 +227,24 @@ function DashboardContent() {
                   {filteredListings.map((listing) => (
                     <div
                       key={listing._id || listing.id}
-                      className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-orange-300 transition-colors cursor-pointer"
+                      className={`relative flex items-center gap-4 p-4 border rounded-lg transition-all cursor-pointer ${listing.isSold
+                          ? "bg-gray-100 border-red-200 opacity-80"
+                          : "border-gray-200 hover:border-orange-300"
+                        }`}
                       onClick={() => handlePropertyClick(listing)}
                     >
+                      {/* Sold / Available Badge */}
+                      <span
+                        className={`absolute top-3 left-3 z-10 px-3 py-1 rounded-full text-xs font-semibold text-white shadow-md ${listing.isSold ? "bg-red-600" : "bg-green-600"
+                          }`}
+                      >
+                        {listing.isSold ? "Sold" : "Available"}
+                      </span>
                       <img
                         src={getPhotoSrc(listing.photos)}
                         alt={listing.title || 'Property'}
-                        className="w-24 h-24 object-cover rounded-lg"
+                        className={`w-24 h-24 object-cover rounded-lg ${listing.isSold ? "grayscale" : ""
+                          }`}
                       />
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900">{listing.title || 'Untitled Property'}</h3>
@@ -244,11 +255,10 @@ function DashboardContent() {
                       </div>
                       <div className="text-right">
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                            listing.status === 'active' || listing.status === 'verified'
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${listing.status === 'active' || listing.status === 'verified'
                               ? 'bg-green-100 text-green-700'
                               : 'bg-yellow-100 text-yellow-700'
-                          }`}
+                            }`}
                         >
                           {listing.status || 'pending'}
                         </span>
@@ -285,13 +295,12 @@ function DashboardContent() {
                       className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0"
                     >
                       <div
-                        className={`p-2 rounded-full ${
-                          lead.type === 'inquiry'
+                        className={`p-2 rounded-full ${lead.type === 'inquiry'
                             ? 'bg-orange-100'
                             : lead.type === 'view'
-                            ? 'bg-blue-100'
-                            : 'bg-red-100'
-                        }`}
+                              ? 'bg-blue-100'
+                              : 'bg-red-100'
+                          }`}
                       >
                         {lead.type === 'inquiry' ? (
                           <Phone className="w-4 h-4 text-orange-600" />

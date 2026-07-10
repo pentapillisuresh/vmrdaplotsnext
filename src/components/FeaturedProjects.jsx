@@ -92,10 +92,10 @@ const FeaturedProjects = () => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('selectedProject', JSON.stringify(property));
     }
-    console.log("slug:::",property.slug)
+
     router.push(`/property/${property.slug}`);
   };
-// property/${property.slug
+  // property/${property.slug
   // Swiper configuration
   const swiperConfig = {
     modules: [Navigation, Pagination, Autoplay],
@@ -187,9 +187,19 @@ const FeaturedProjects = () => {
               {properties.map((property) => (
                 <SwiperSlide key={property.id}>
                   <article
-                    className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer group hover:shadow-2xl transition-all duration-300 mx-2 my-4 border border-gray-100 hover:border-orange-200 h-full"
-                    onClick={() => handleProjectClick(property)}
+                    className={`rounded-xl shadow-lg overflow-hidden cursor-pointer group transition-all duration-300 mx-2 my-4 border h-full ${property.isSold
+                      ? "bg-gray-100 opacity-75 border-red-300"
+                      : "bg-white hover:shadow-2xl border-gray-100 hover:border-orange-200"
+                      }`} onClick={() => handleProjectClick(property)}
                   >
+                    <div
+                      className={`absolute top-5 left-3 z-10 px-3 py-1 rounded-full text-xs font-semibold shadow-md text-white ${property.isSold
+                        ? "bg-red-600"
+                        : "bg-green-600"
+                        }`}
+                    >
+                      {property.isSold ? "Sold" : "Available"}
+                    </div>
                     <div className="relative h-56 overflow-hidden">
                       {/* ❤️ Favorite Button */}
                       <button
@@ -210,7 +220,10 @@ const FeaturedProjects = () => {
                       <img
                         src={getPhotoSrc(property.photos)}
                         alt={property.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        className={`w-full h-full object-cover transition-transform duration-300 ${property.isSold
+                            ? "grayscale"
+                            : "group-hover:scale-110"
+                          }`}
                         draggable="false"
                       />
                       {/* Overlay on hover */}
