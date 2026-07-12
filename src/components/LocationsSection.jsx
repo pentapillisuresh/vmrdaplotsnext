@@ -112,14 +112,25 @@ const LocationsSection = ({ cityLocalities }) => {
                 </div>
                 
                 <div className="space-y-3">
-                  <div className="flex flex-wrap gap-1.5 text-gray-700 leading-relaxed">
+                  {/* City label before plots */}
+                  <div className="text-sm text-gray-500 font-medium mb-3 flex items-center gap-2 bg-orange-50 px-3 py-2 rounded-lg border border-orange-100">
+                    <Building2 className="w-4 h-4 text-orange-400" />
+                    <span className="text-gray-700 font-semibold">
+                      PLOTS IN {location.city.toUpperCase()}
+                    </span>
+                    <span className="ml-auto text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded-full">
+                      {areas.length} available
+                    </span>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 text-gray-700 leading-relaxed">
                     {displayAreas.map((area, index) => (
                       <React.Fragment key={index}>
                         <span
-                          className="hover:text-orange-500 cursor-pointer transition-all duration-300 text-sm text-gray-600 px-2.5 py-1 rounded-full hover:bg-orange-50 hover:shadow-sm"
+                          className="hover:text-orange-500 cursor-pointer transition-all duration-300 text-sm font-medium text-gray-700 px-3 py-1.5 rounded-full hover:bg-orange-50 hover:shadow-sm border border-gray-200 hover:border-orange-300"
                           onClick={() => handleAreaClick(location.city, area)}
                         >
-                          {area}
+                          PLOTS IN {area.toUpperCase()}
                         </span>
                         {index < displayAreas.length - 1 && (
                           <span className="text-gray-300 text-xs">•</span>

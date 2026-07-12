@@ -422,6 +422,17 @@ function PropertyDetailContent({ title: propTitle }) {
     }
   };
 
+  // Auto Slide Images & Videos
+useEffect(() => {
+  if (totalMedia <= 1) return;
+
+  const timer = setTimeout(() => {
+    setSelectedImage((prev) => (prev + 1) % totalMedia);
+  }, isVideo(selectedImage) ? 10000 : 3000);
+
+  return () => clearTimeout(timer);
+}, [selectedImage, totalMedia]);
+
   const safeShow = (val) => val !== null && val !== undefined && val !== "" && val !== 0;
 
   const handleBackToListings = () => {
@@ -518,16 +529,16 @@ function PropertyDetailContent({ title: propTitle }) {
                 {totalMedia > 0 ? (
                   <>
                     {isVideo(selectedImage) ? (
-                      <video
-                        ref={videoRef}
-                        src={getMediaUrl(selectedImage)}
-                        className="w-full h-full object-contain"
-                        muted
-                        playsInline
-                        loop
-                        onClick={handleVideoClick}
-                        controls
-                      />
+                   <video
+  ref={videoRef}
+  src={getMediaUrl(selectedImage)}
+  className="w-full h-full object-contain"
+  autoPlay
+  muted
+  playsInline
+  loop
+  controls
+/>
                     ) : (
                       <img
                         src={getMediaUrl(selectedImage)}
