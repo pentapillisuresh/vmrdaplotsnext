@@ -20,7 +20,6 @@ export async function generateMetadata({ params }) {
     const data = await res.json();
     const property = data.property;
 
-    // Photos are stored as a JSON string
     let images = [];
     try {
       images = property.photos ? JSON.parse(property.photos) : [];
@@ -43,6 +42,16 @@ export async function generateMetadata({ params }) {
         "Plots for Sale",
         "Real Estate Visakhapatnam",
       ],
+
+
+        robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
 
       openGraph: {
         title: property.title,
@@ -70,8 +79,6 @@ export async function generateMetadata({ params }) {
       },
     };
   } catch (err) {
-    console.error(err);
-
     return {
       title: "VMRDA Plots",
     };
@@ -81,5 +88,54 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const { title } = await params;
 
-  return <PropertyDetail title={title} />;
+  const res = await fetch(
+    `https://service.vmrdaplots.com/api/properties/getBySlug/${title}`,
+    {
+      cache: "no-store",
+    }
+  );
+
+  const data = await res.json();
+  const property = data.property;
+
+  let images = [];
+
+  try {
+    images = property.photos ? JSON.parse(property.photos) : [];
+  } catch {
+    images = [];
+  }
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    name: property.title,
+    description: property.description,
+    url: `https://vmrdaplots.com/property/${property.slug}`,
+    image: images,
+    offers: {
+      "@type": "Offer",
+      price: property.price,
+      priceCurrency: "INR",
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: property.address?.locality,
+      addressRegion: property.address?.city,
+      addressCountry: "India",
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd),
+        }}
+      />
+
+      <PropertyDetail title={title} />
+    </>
+  );
 }
