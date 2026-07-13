@@ -179,6 +179,59 @@ const PhotosVideos = ({ data = {}, updateData, onNext }) => {
     }
   };
 
+  const uploadimageWithProgress = async (images) => {
+    const adminToken = localStorage.getItem("token");
+  
+    try {
+      const uploadedImages = [];
+  
+      for (let i = 0; i < images.length; i++) {
+        const form = new FormData();
+        form.append("image", images[i]); // single image
+  
+        const res = await ApiService.post("/images/upload", form, {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (event) => {
+            // Progress of current file
+            const currentFileProgress = Math.round(
+              (event.loaded * 100) / event.total
+            );
+  
+            // Overall progress across all files
+            const overallProgress = Math.round(
+              ((i + currentFileProgress / 100) / images.length) * 100
+            );
+  
+            setProgress((prev) => ({
+              ...prev,
+              photos: overallProgress,
+            }));
+          },
+        });
+  
+        if (res?.url) {
+          uploadedImages.push({
+            message: res.message,
+            imagePath: res.imagePath,
+            url: res.url,
+          });
+        }
+      }
+  
+      // Return in the same format as upload-multiple API
+      return {
+        images: uploadedImages,
+      };
+    } catch (err) {
+      console.error("❌ Image upload error:", err);
+      return null;
+    }
+  };
+
+
   // --- Process images with watermark before upload ---
   const processImagesForUpload = async (photoObjects) => {
     const processedFiles = [];
@@ -259,11 +312,11 @@ const PhotosVideos = ({ data = {}, updateData, onNext }) => {
         // Process images with watermark
         const processedFiles = await processImagesForUpload(newPhotos);
 
-        const form = new FormData();
-        processedFiles.forEach((file) => form.append("images", file));
+        const res = await uploadimageWithProgress(processedFiles);
 
-        const res = await uploadWithProgress("/images/upload-multiple", form, "photos");
-        if (res?.images) uploadedPhotoUrls = res.images.map((img) => img.url);
+        if (res?.images) {
+          uploadedPhotoUrls = res.images.map((img) => img.url);
+        }
       }
       const existingPhotos = formData.photos.filter((p) => !p.isNew).map((p) => p.url);
       const finalPhotoUrls = [...existingPhotos, ...uploadedPhotoUrls];
