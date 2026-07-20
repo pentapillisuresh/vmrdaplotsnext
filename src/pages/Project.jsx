@@ -4,10 +4,21 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Home, MapPin, Bath, Bed, Maximize,
-  ChevronLeft, ChevronRight, Monitor,
-  DoorClosed,
-  Presentation,
-  Compass,
+  ChevronLeft, ChevronRight,
+  Filter,
+  Search,
+  X,
+  ChevronDown,
+  Building2,
+  DollarSign,
+  ArrowUpDown,
+  Tag,
+  Award,
+  Clock,
+  TrendingUp,
+  Play,
+  Image as ImageIcon,
+  Video
 } from "lucide-react";
 import ApiService from "../hooks/ApiService";
 
@@ -215,7 +226,7 @@ router.replace(newUrl);
     router.push(`/property/${property.slug}`);
   };
 
-  // UI
+  // UI 
   if (loading)
     return (
       <div className="min-h-screen flex justify-center items-center text-gray-600">
@@ -428,20 +439,70 @@ router.replace(newUrl);
 }
 
 /* PROJECT CARD – Updated to use new API structure */
-function ProjectCard({ property, formatPrice, onProjectClick }) {
+
+function ProjectCard({ property, formatPrice, onPropertyClick }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   
-  // Photos: array of URLs from the response
-  const media = property.photos || [];
+  // Parse photos - handle both array and string
+  let media = [];
+  try {
+    if (Array.isArray(property?.photos)) {
+      media = property.photos;
+    } else if (typeof property?.photos === 'string') {
+      media = JSON.parse(property.photos) || [];
+    } else {
+      media = [];
+    }
+  } catch (e) {
+    media = [];
+  }
+
+  // Parse videos - handle string URL or array
+  let videoUrls = [];
+  try {
+    if (property?.videos) {
+      if (typeof property.videos === 'string') {
+        // Check if it's a JSON array or a single URL
+        if (property.videos.startsWith('[')) {
+          videoUrls = JSON.parse(property.videos) || [];
+        } else {
+          // Single video URL
+          videoUrls = [property.videos];
+        }
+      } else if (Array.isArray(property.videos)) {
+        videoUrls = property.videos;
+      }
+    }
+  } catch (e) {
+    videoUrls = [];
+  }
+
+  // Combine media: photos first, then videos
+  const allMedia = [...media, ...videoUrls];
+  const hasVideo = videoUrls.length > 0;
+  const totalMedia = allMedia.length;
 
   const nextSlide = (e) => {
     e.stopPropagation();
-    setCurrentIndex((i) => (i + 1) % media.length);
+    setCurrentIndex((i) => (i + 1) % totalMedia);
   };
   
   const prevSlide = (e) => {
     e.stopPropagation();
-    setCurrentIndex((i) => (i - 1 + media.length) % media.length);
+    setCurrentIndex((i) => (i - 1 + totalMedia) % totalMedia);
+  };
+
+  const isVideo = (index) => {
+    return index >= media.length && hasVideo;
+  };
+
+  const getMediaUrl = (index) => {
+    if (index < media.length) {
+      return media[index];
+    } else {
+      const videoIndex = index - media.length;
+      return videoUrls[videoIndex];
+    }
   };
 
   // Get address components
@@ -461,96 +522,166 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
 
   return (
     <article
-      className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border cursor-pointer"
-      onClick={() => onProjectClick(property)}
+      className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-orange-200 cursor-pointer overflow-hidden"
+      onClick={() => onPropertyClick(property)}
     >
       <div className="flex flex-col md:flex-row">
-        <div className="relative md:w-96 flex-shrink-0 group">
+        <div className="relative md:w-[280px] lg:w-[320px] flex-shrink-0 group/image">
           <div className="w-full aspect-[4/3] bg-gray-100 relative overflow-hidden">
-            {media.length > 0 ? (
-              <img
-                src={media[currentIndex]}
-                alt={property.title}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+            {totalMedia > 0 ? (
+              <>
+                {isVideo(currentIndex) ? (
+                  <video
+                    src={getMediaUrl(currentIndex)}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    muted
+                    playsInline
+                    loop
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const video = e.target;
+                      if (video.paused) {
+                        video.play();
+                      } else {
+                        video.pause();
+                      }
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={getMediaUrl(currentIndex)}
+                    alt={property.title}
+                    className="absolute inset-0 w-full h-full object-cover group-hover/image:scale-110 transition-transform duration-700"
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
+                    }}
+                  />
+                )}
+              </>
             ) : (
-              <div className="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-400">No Image</span>
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                <ImageIcon className="w-12 h-12 text-gray-400" />
+              </div>
+            )}
+            
+            {/* Badges - No Text */}
+            <div className="absolute top-2 left-2 flex flex-wrap gap-1.5">
+              {property.availableStatus && (
+                <span className="w-2 h-2 bg-green-500 rounded-full shadow-lg"></span>
+              )}
+              {property.approvedBy && (
+                <span className="w-2 h-2 bg-blue-500 rounded-full shadow-lg"></span>
+              )}
+            </div>
+
+            {/* Video Badge */}
+            {hasVideo && (
+              <div className="absolute top-2 right-2">
+                <div className="w-6 h-6 bg-gradient-to-r from-red-500 to-red-600 rounded-full shadow-lg flex items-center justify-center">
+                  <Play className="w-3 h-3 text-white" />
+                </div>
               </div>
             )}
           </div>
-          {media.length > 1 && (
+
+          {totalMedia > 1 && (
             <>
               <button
                 onClick={prevSlide}
-                className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all duration-300 opacity-0 group-hover/image:opacity-100"
               >
-                <ChevronLeft size={20} />
+                <ChevronLeft size={14} />
               </button>
               <button
                 onClick={nextSlide}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all duration-300 opacity-0 group-hover/image:opacity-100"
               >
-                <ChevronRight size={20} />
+                <ChevronRight size={14} />
               </button>
             </>
           )}
+
+          {/* Media Counter */}
+          {totalMedia > 1 && (
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
+              {isVideo(currentIndex) ? (
+                <Video className="w-2.5 h-2.5" />
+              ) : (
+                <ImageIcon className="w-2.5 h-2.5" />
+              )}
+              {currentIndex + 1}/{totalMedia}
+            </div>
+          )}
         </div>
 
-        <div className="flex-1 p-6">
-          <h2 className="text-2xl font-bold text-[#003366] mb-2">
-            {property.title}
-          </h2>
+        <div className="flex-1 p-4 lg:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
+            <h2 className="text-lg font-bold text-gray-900 group-hover:text-orange-500 transition-colors duration-300 line-clamp-1">
+              {property.title}
+            </h2>
+            {property.price ? (
+              <div className="text-lg font-bold text-orange-600 whitespace-nowrap">
+                {priceDisplay}
+              </div>
+            ) : null}
+          </div>
+          
           <div className="flex items-center text-gray-600 mb-2">
-            <MapPin size={16} className="text-orange-500 mr-1" />
-            {fullAddress || 'Address not available'}
+            <MapPin size={14} className="text-orange-500 mr-1 flex-shrink-0" />
+            <span className="text-xs">{fullAddress || 'Address not available'}</span>
           </div>
 
-          {property.price ? (
-            <div className="text-xl font-bold text-orange-600">
-              {priceDisplay}
-            </div>
-          ) : (
+          {!property.price && (
             <button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-5 py-2.5 rounded-lg shadow-md transition-all"
+              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold text-xs px-4 py-1.5 rounded-lg shadow-md shadow-orange-200 transition-all duration-300 transform hover:scale-105"
               onClick={(e) => {
                 e.stopPropagation();
                 alert("Contact us for price!");
               }}
             >
-              Contact Us for Price
+              Contact Us
             </button>
           )}
 
-          {/* Display additional info */}
-          <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-gray-600">
+          {/* Property Details */}
+          <div className="flex flex-wrap items-center gap-1.5 mt-2">
             {categoryName && (
-              <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs">
+              <span className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full text-[10px] font-semibold border border-orange-200">
                 {categoryName}
               </span>
             )}
-            {property.availableStatus && (
-              <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs">
-                {property.availableStatus}
+            {property.bedrooms && (
+              <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 border border-blue-200">
+                <Bed className="w-2.5 h-2.5" />
+                {property.bedrooms}
               </span>
             )}
-            {property.approvedBy && (
-              <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded-full text-xs">
-                {property.approvedBy}
+            {property.bathrooms && (
+              <span className="bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 border border-purple-200">
+                <Bath className="w-2.5 h-2.5" />
+                {property.bathrooms}
+              </span>
+            )}
+            {property.area && (
+              <span className="bg-green-50 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 border border-green-200">
+                <Maximize className="w-2.5 h-2.5" />
+                {property.area}
               </span>
             )}
           </div>
 
           {/* Amenities */}
           {amenities.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4">
+            <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-gray-100">
               {amenities.slice(0, 4).map((item, idx) => (
-                <span key={idx} className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
+                <span key={idx} className="bg-gray-50 text-gray-600 px-2 py-0.5 rounded-full text-[10px] font-medium border border-gray-200">
                   {item}
                 </span>
               ))}
               {amenities.length > 4 && (
-                <span className="text-gray-500 text-xs">+{amenities.length - 4} more</span>
+                <span className="text-gray-400 text-[10px] font-semibold px-1 py-0.5">
+                  +{amenities.length - 4}
+                </span>
               )}
             </div>
           )}
