@@ -70,7 +70,7 @@ const LocationsSection = ({ cityLocalities }) => {
             <span className="text-orange-500 font-semibold text-sm uppercase tracking-wider mx-4">Locations</span>
             <div className="h-1 w-12 bg-orange-500 rounded-full"></div>
           </div>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-gray-900">
+          <h2 className="text-4xl md:text-4xl font-serif font-bold text-gray-900 uppercase">
             Properties by Locality
           </h2>
           <p className="text-gray-600 mt-3 text-lg max-w-2xl mx-auto">

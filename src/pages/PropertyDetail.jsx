@@ -8,12 +8,20 @@ import {
   Building, MapPin, CheckCircle, Phone, Mail, Calendar, ChevronDown, ChevronUp,
   Monitor, DoorClosed, Presentation, Heart, ChevronLeft, ChevronRight,
   Play, Video, Image as ImageIcon, X, User, MessageSquare, Send,
-  ArrowUp, ArrowDown
+  ArrowUp, ArrowDown, Briefcase, UserCheck
 } from "lucide-react";
 import ApiService from "../hooks/ApiService";
 import AOS from "aos";
-import PropertyMap from "../components/PropertyMap";
+import dynamic from "next/dynamic";
+
+const PropertyMap = dynamic(
+  () => import("../components/PropertyMap"),
+  {
+    ssr: false,
+  }
+);
 import getPhotoSrc from "../hooks/getPhotos";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -41,7 +49,6 @@ function PropertyDetailContent({ title: propTitle }) {
   const [loading, setLoading] = useState(true);
   const [property, setProperty] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [showContact, setShowContact] = useState(false);
   const [page, setPage] = useState(1);
   const [similarProperties, setSimilarProperties] = useState([]);
   const [formData, setFormData] = useState({
@@ -54,6 +61,8 @@ function PropertyDetailContent({ title: propTitle }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [fromUser, setFromUser] = useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [clientRole, setClientRole] = useState(null);
+  const [clientDetails, setClientDetails] = useState(null);
 
   // Favorites functionality
   const [favorites, setFavorites] = useState([]);
@@ -255,6 +264,32 @@ function PropertyDetailContent({ title: propTitle }) {
     }
   }, []);
 
+  // Fetch client details by ID
+  const fetchClientDetails = async (clientId) => {
+    if (!clientId) return;
+    try {
+      const token = localStorage.getItem('token');
+      const response = await ApiService.get(`/client/${clientId}`, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json' 
+        }
+      });
+      
+      if (response?.data) {
+        setClientDetails(response.data);
+        setClientRole(response.data.role);
+      }
+    } catch (error) {
+      console.error('Error fetching client details:', error);
+      // Fallback to property's client data if available
+      if (property?.client) {
+        setClientDetails(property.client);
+        setClientRole(property.client.role);
+      }
+    }
+  };
+
   // Fetch property by slug/title
   useEffect(() => {
     if (slug) {
@@ -292,6 +327,17 @@ function PropertyDetailContent({ title: propTitle }) {
       setLoading(false);
     }
   };
+
+  // Fetch client details when property is loaded
+  useEffect(() => {
+    if (property?.clientId) {
+      fetchClientDetails(property.clientId);
+    } else if (property?.client) {
+      // If client data is embedded in property
+      setClientDetails(property.client);
+      setClientRole(property.client.role);
+    }
+  }, [property]);
 
   const getpropertyByCategory = async () => {
     if (!property?.categoryId) return;
@@ -368,7 +414,7 @@ function PropertyDetailContent({ title: propTitle }) {
   const category = property?.category || {};
   const client = property?.client || {};
 
-  // Parse gallery images and videos
+  // Parse gallery images and videos - VIDEOS FIRST
   let galleryImages = [];
   let videoUrls = [];
   
@@ -404,34 +450,43 @@ function PropertyDetailContent({ title: propTitle }) {
     videoUrls = [];
   }
 
-  // Combine all media: photos first, then videos
-  const allMedia = [...galleryImages, ...videoUrls];
+  // Combine all media: VIDEOS FIRST, then photos
+  const allMedia = [...videoUrls, ...galleryImages];
   const hasVideo = videoUrls.length > 0;
   const totalMedia = allMedia.length;
 
   const isVideo = (index) => {
-    return index >= galleryImages.length && hasVideo;
+    return index < videoUrls.length && hasVideo;
   };
 
   const getMediaUrl = (index) => {
-    if (index < galleryImages.length) {
-      return galleryImages[index];
+    if (index < videoUrls.length) {
+      return videoUrls[index];
     } else {
-      const videoIndex = index - galleryImages.length;
-      return videoUrls[videoIndex];
+      const photoIndex = index - videoUrls.length;
+      return galleryImages[photoIndex];
     }
   };
 
   // Auto Slide Images & Videos
-useEffect(() => {
-  if (totalMedia <= 1) return;
+  useEffect(() => {
+    if (totalMedia <= 1) return;
 
-  const timer = setTimeout(() => {
-    setSelectedImage((prev) => (prev + 1) % totalMedia);
-  }, isVideo(selectedImage) ? 10000 : 3000);
+    const timer = setTimeout(() => {
+      setSelectedImage((prev) => (prev + 1) % totalMedia);
+    }, isVideo(selectedImage) ? 10000 : 3000);
 
-  return () => clearTimeout(timer);
-}, [selectedImage, totalMedia]);
+    return () => clearTimeout(timer);
+  }, [selectedImage, totalMedia]);
+
+  // Auto-play video when it becomes the selected media
+  useEffect(() => {
+    if (videoRef.current && isVideo(selectedImage)) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+      setIsVideoPlaying(true);
+    }
+  }, [selectedImage]);
 
   const safeShow = (val) => val !== null && val !== undefined && val !== "" && val !== 0;
 
@@ -457,6 +512,20 @@ useEffect(() => {
         setIsVideoPlaying(false);
       }
     }
+  };
+
+  // Get role display name
+  const getRoleDisplayName = (role) => {
+    if (!role) return "Agent";
+    const roleMap = {
+      'owner': 'Property Owner',
+      'agent': 'Real Estate Agent',
+      'builder': 'Builder',
+      'developer': 'Developer',
+      'broker': 'Broker',
+      'admin': 'Administrator'
+    };
+    return roleMap[role.toLowerCase()] || role.charAt(0).toUpperCase() + role.slice(1);
   };
 
   if (loading) {
@@ -485,6 +554,9 @@ useEffect(() => {
       </div>
     );
   }
+
+  // Get the client data to display (from fetched details or embedded)
+  const displayClient = clientDetails || client;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -529,16 +601,16 @@ useEffect(() => {
                 {totalMedia > 0 ? (
                   <>
                     {isVideo(selectedImage) ? (
-                   <video
-  ref={videoRef}
-  src={getMediaUrl(selectedImage)}
-  className="w-full h-full object-contain"
-  autoPlay
-  muted
-  playsInline
-  loop
-  controls
-/>
+                      <video
+                        ref={videoRef}
+                        src={getMediaUrl(selectedImage)}
+                        className="w-full h-full object-contain"
+                        muted
+                        playsInline
+                        autoPlay
+                        controls
+                        onClick={handleVideoClick}
+                      />
                     ) : (
                       <img
                         src={getMediaUrl(selectedImage)}
@@ -613,7 +685,7 @@ useEffect(() => {
               {totalMedia > 1 && (
                 <div className="p-4 flex gap-3 overflow-x-auto">
                   {allMedia.map((item, idx) => {
-                    const isVideoItem = idx >= galleryImages.length;
+                    const isVideoItem = idx < videoUrls.length;
                     return (
                       <button
                         key={idx}
@@ -947,13 +1019,20 @@ useEffect(() => {
               {/* Map Section */}
               <SectionPremium title="Location on Map">
                 <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-                  <PropertyMap lat={address?.lat} lon={address?.lon} />
+                <PropertyMap
+  lat={address?.lat}
+  lon={address?.lon}
+  slug={property?.slug}
+  title={property?.title}
+  image={getPhotoSrc(property?.photos)}
+  location={address?.locality}
+/>
                 </div>
               </SectionPremium>
             </div>
           </div>
 
-          {/* Right Section - Contact Premium */}
+          {/* Right Section - Contact Premium with Role from Property Client */}
           {fromUser !== 'client' && (
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-xl border border-gray-100 sticky top-8 overflow-hidden">
@@ -961,57 +1040,44 @@ useEffect(() => {
                 <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <Phone size={18} />
-                    Contact Agent
+                    Contact {clientRole ? getRoleDisplayName(clientRole) : 'Agent'}
                   </h3>
                 </div>
                 
                 <div className="p-6">
-                  {/* Contact Details Toggle */}
-                  <button
-                    onClick={() => setShowContact(!showContact)}
-                    className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                      showContact 
-                        ? "bg-red-50 text-red-600 hover:bg-red-100 border-2 border-red-200" 
-                        : "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-200 hover:shadow-xl transform hover:-translate-y-0.5"
-                    }`}
-                  >
-                    {showContact ? (
-                      <>
-                        <X size={18} />
-                        Hide Contact Details
-                      </>
-                    ) : (
-                      <>
-                        <Phone size={18} />
-                        Show Contact Details
-                      </>
-                    )}
-                  </button>
-
-                  {/* Contact Details - Smooth Animation */}
-                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                    showContact ? "max-h-96 opacity-100 mt-4" : "max-h-0 opacity-0"
-                  }`}>
-                    {showContact && (
-                      <div className="bg-gradient-to-br from-orange-50 to-orange-50/50 rounded-xl p-4 border border-orange-100">
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-gradient-to-br from-[#001F3F] to-[#003366] rounded-2xl mx-auto mb-3 flex items-center justify-center shadow-lg">
-                            <Building size={32} className="text-white" />
-                          </div>
-                          <h4 className="text-lg font-bold text-gray-900 mb-3">VMRDA Plots</h4>
-                          {client?.phoneNumber && (
-                            <div className="flex items-center justify-center gap-2 bg-white rounded-lg px-4 py-2 mb-2 shadow-sm">
-                              <Phone size={14} className="text-orange-500" />
-                              <span className="text-sm font-medium text-gray-700">{client.phoneNumber}</span>
-                            </div>
-                          )}
-                          {client?.email && (
-                            <div className="flex items-center justify-center gap-2 bg-white rounded-lg px-4 py-2 shadow-sm">
-                              <Mail size={14} className="text-orange-500" />
-                              <span className="text-sm font-medium text-gray-700">{client.email}</span>
-                            </div>
-                          )}
+                  {/* Contact Details - Always Visible with Role */}
+                  <div className="space-y-3">
+                    {displayClient?.phoneNumber && (
+                      <div className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl">
+                        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                          <Phone size={18} className="text-orange-600" />
                         </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Phone</p>
+                          <p className="font-semibold text-gray-800">
+                            {displayClient.phoneNumber}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {displayClient?.email && (
+                      <div className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl">
+                        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                          <Mail size={18} className="text-orange-600" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Email</p>
+                          <p className="font-semibold text-gray-800 break-all">
+                            {displayClient.email}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {!displayClient?.phoneNumber && !displayClient?.email && (
+                      <div className="text-center py-4">
+                        <p className="text-sm text-gray-500">Contact details not available</p>
                       </div>
                     )}
                   </div>

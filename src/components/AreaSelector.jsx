@@ -43,7 +43,7 @@ const AreaSelector = () => {
             <span className="mx-4 text-[#001F3F] font-semibold text-sm uppercase tracking-wider">Explore Areas</span>
             <div className="w-12 h-1 bg-[#001F3F] rounded-full"></div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-[#001F3F] mb-6 opacity-0 animate-fadeInDown animation-delay-100">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#001F3F] mb-6 opacity-0 animate-fadeInDown animation-delay-100 uppercase">
             Discover Vizag's Prime Locations
           </h1>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed opacity-0 animate-fadeInDown animation-delay-200">

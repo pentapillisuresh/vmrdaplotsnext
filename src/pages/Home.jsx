@@ -61,7 +61,7 @@ function HomeContent() {
       <PropertyCategories categories={categories} />
       <FeaturedProjects />
       <FeaturedProperties />
-      <AboutVMRDA />
+      {/* <AboutVMRDA /> */}
       <ViewedProperties />
       <CommercialAdSection />
       {isLogin && <RecentViewProperties />}

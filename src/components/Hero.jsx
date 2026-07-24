@@ -7,21 +7,21 @@ import { useRouter } from "next/navigation";
 const slides = [
   {
     id: 1,
-    image: "/images/vmrda12.jpg",
-    title: "VMRDA Approved Plots in Vizag – Best Open Plots for Sale Vizag",
-    subtitle: "Trusted VMRDA Plots in Visakhapatnam at Prime Locations.",
+    image: "/images/banner1.png",
+    title: "OWN A PREMIUM PLOT NEAR VIZAG'S ICONIC COASTLINE",
+    subtitle: "Invest in DTCP & VMRDA approved plots close to RK Beach, Kailasagiri, and the rapidly developing Visakhapatnam corridor. Secure your future in one of Andhra Pradesh's most sought-after locations.",
   },
   {
     id: 2,
-    image: "/images/vmrda11.jpg",
-    title: "Residential Plots Near Bhogapuram Airport",
-    subtitle: "Best investment opportunity near upcoming Vizag International Airport",
+    image: "/images/banner2.png",
+    title: "INVEST NEAR BHOGAPURAM INTERNATIONAL AIRPORT",
+    subtitle: "Be part of Vizag's next growth destination. Premium VMRDA-approved plots near the upcoming international airport with excellent connectivity and high appreciation potential.",
   },
   {
     id: 3,
-    image: "/images/vmrda13.jpg",
-    title: "VMRDA Approved Layouts",
-    subtitle: "Clear documentation • Bank-loan friendly • Secure investment",
+    image: "/images/banner3.png",
+    title: "OWN LAND IN VIZAG'S EMERGING TECHNOLOGY CORRIDOR",
+    subtitle: "Position your investment near Vizag's fast-growing IT and infrastructure hub. Benefit from future-ready developments, expanding employment opportunities, and long-term land value growth.",
   },
 ];
 
@@ -41,10 +41,8 @@ const Hero = () => {
 
   // Preload next image and handle current image load state
   useEffect(() => {
-    // Reset current image loaded state when slide changes
     setCurrentImageLoaded(imagesLoaded.includes(current));
 
-    // Preload next image
     const nextIndex = (current + 1) % slides.length;
     if (!imagesLoaded.includes(nextIndex)) {
       const img = new Image();
@@ -65,7 +63,6 @@ const Hero = () => {
     };
   }, []);
 
-  // Handle manual slide change
   const handleSlideChange = (index) => {
     setCurrent(index);
     if (!imagesLoaded.includes(index)) {
@@ -77,53 +74,46 @@ const Hero = () => {
     }
   };
 
-  // Optimize image loading with quality parameters (if using CDN)
-  const getOptimizedImageUrl = (imagePath) => {
-    // If you're using a CDN, you can add quality parameters here
-    // Example: return `${imagePath}?q=80&w=1920`; // 80% quality, 1920px width
-    return imagePath;
-  };
-
   return (
     <div className="relative h-screen overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={slides[current].id}
           className="absolute inset-0 w-full h-full"
-          initial={{ opacity: 0, x: 100 }}
+          initial={{ opacity: 0, scale: 1.1 }}
           animate={{ 
             opacity: 1, 
-            x: 0,
+            scale: 1,
             transition: {
-              duration: 1.2,
-              ease: "easeInOut"
+              duration: 1.5,
+              ease: "easeOut"
             }
           }}
           exit={{ 
             opacity: 0, 
-            x: -100,
+            scale: 1.1,
             transition: {
               duration: 1.2,
-              ease: "easeInOut"
+              ease: "easeIn"
             }
           }}
         >
           {/* Loading placeholder */}
           {!currentImageLoaded && (
             <motion.div 
-              className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 z-10 flex items-center justify-center"
+              className="absolute inset-0 bg-black z-10 flex items-center justify-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <div className="text-gray-600 text-lg">Loading...</div>
+              <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
             </motion.div>
           )}
           
           <img
-            src={getOptimizedImageUrl(slides[current].image)}
+            src={slides[current].image}
             alt={slides[current].title}
-            className={`w-full h-full object-cover transition-opacity duration-500 ${
+            className={`w-full h-full object-cover transition-opacity duration-700 ${
               currentImageLoaded ? 'opacity-100' : 'opacity-0'
             }`}
             onLoad={() => {
@@ -133,7 +123,6 @@ const Hero = () => {
               }
             }}
             onError={() => {
-              // Fallback in case image fails to load
               setCurrentImageLoaded(true);
             }}
             loading="eager"
@@ -141,22 +130,22 @@ const Hero = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/40 z-10" />
+      {/* Dark Overlay - More subtle for premium look */}
+      <div className="absolute inset-0 bg-black/50 z-10" />
 
       {/* Text Content */}
-      <div className="absolute inset-0 z-20 flex items-center justify-center text-center">
+      <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={slides[current].id}
-            initial={{ opacity: 0, y: -50 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ 
               opacity: 1, 
               y: 0,
               transition: {
-                duration: 0.8,
+                duration: 0.9,
                 ease: "easeOut",
-                delay: 0.3
+                delay: 0.2
               }
             }}
             exit={{ 
@@ -167,23 +156,23 @@ const Hero = () => {
                 ease: "easeIn"
               }
             }}
-            className="text-white px-4"
+            className="max-w-5xl"
           >
             <motion.h1 
-              className="text-4xl md:text-4xl font-serif font-bold mb-4 drop-shadow-lg"
-              initial={{ opacity: 0, y: -30 }}
+              className="text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-4 drop-shadow-2xl leading-tight"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ 
                 opacity: 1, 
                 y: 0,
                 transition: {
                   duration: 0.8,
                   ease: "easeOut",
-                  delay: 0.5
+                  delay: 0.4
                 }
               }}
               exit={{ 
                 opacity: 0, 
-                y: -20,
+                y: 20,
                 transition: {
                   duration: 0.5,
                   ease: "easeIn"
@@ -193,76 +182,103 @@ const Hero = () => {
               {slides[current].title}
             </motion.h1>
             
-            <motion.p 
-              className="text-lg md:text-xl font-light text-gray-200 mb-8"
-              initial={{ opacity: 0, y: -20 }}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
               animate={{ 
                 opacity: 1, 
                 y: 0,
                 transition: {
                   duration: 0.8,
                   ease: "easeOut",
-                  delay: 0.7
+                  delay: 0.6
                 }
               }}
               exit={{ 
                 opacity: 0, 
-                y: -15,
+                y: 20,
                 transition: {
                   duration: 0.5,
                   ease: "easeIn"
                 }
               }}
+              className="max-w-3xl mx-auto"
             >
-              {slides[current].subtitle}
-            </motion.p>
+              <motion.p 
+                className="text-sm md:text-lg font-light text-gray-200/90 mb-8 leading-relaxed"
+              >
+                {slides[current].subtitle}
+              </motion.p>
+            </motion.div>
            
-            <motion.button
-              initial={{ opacity: 0, y: -10 }}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
               animate={{ 
                 opacity: 1, 
                 y: 0,
                 transition: {
                   duration: 0.8,
                   ease: "easeOut",
-                  delay: 0.9
+                  delay: 0.8
                 }
               }}
               exit={{ 
                 opacity: 0, 
-                y: -10,
+                y: 20,
                 transition: {
                   duration: 0.5,
                   ease: "easeIn"
                 }
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white text-gray-900 px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-gray-100 transition"
-              onClick={() => router.push("/properties-list")}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
-              Explore Now
-            </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white text-gray-900 px-8 py-4 rounded-full font-semibold shadow-2xl hover:bg-gray-50 transition-all duration-300 text-base md:text-lg tracking-wide"
+                onClick={() => router.push("/properties-list")}
+              >
+                Explore Premium Plots
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="border-2 border-white/60 text-white px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-all duration-300 backdrop-blur-sm text-base md:text-lg tracking-wide"
+                onClick={() => router.push("/contact")}
+              >
+                Contact Us
+              </motion.button>
+            </motion.div>
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Navigation Dots */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-3">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-4">
         {slides.map((_, index) => (
           <motion.button
             key={index}
             onClick={() => handleSlideChange(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-500 ${
+            className={`transition-all duration-500 ${
               current === index
-                ? "bg-white scale-125 shadow-md"
-                : "bg-white/40 hover:bg-white/60"
+                ? "w-12 h-1.5 bg-white shadow-lg"
+                : "w-3 h-1.5 bg-white/40 hover:bg-white/60"
             }`}
-            whileHover={{ scale: 1.2 }}
+            whileHover={{ scaleY: 1.5 }}
             whileTap={{ scale: 0.9 }}
           />
         ))}
       </div>
+
+      {/* Slide Counter - Premium Touch */}
+      <motion.div 
+        className="absolute bottom-8 right-8 z-30 text-white/60 text-sm tracking-widest font-light hidden md:block"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+      >
+        {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+      </motion.div>
     </div>
   );
 };

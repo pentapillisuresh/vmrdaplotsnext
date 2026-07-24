@@ -146,7 +146,7 @@ const FeaturedProjects = () => {
         </div>
 
         <h2
-          className="text-4xl md:text-4xl font-serif font-extrabold text-center mb-2 text-gray-900"
+          className="text-4xl md:text-4xl font-serif font-extrabold text-center mb-2 text-gray-900 uppercase"
           data-aos="fade-up"
           data-aos-delay="100"
         >

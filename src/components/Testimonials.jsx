@@ -1,74 +1,142 @@
 import { FiStar } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 
 const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
+      name: 'Chandrika Kosuri',
+      role: 'Homeowner',
+      image: 'https://i.pravatar.cc/150?img=1',
+      rating: 5,
+      text: 'Excellent service from Praveen, the best vizag realtor.'
+    },
+    {
+      id: 2,
+      name: 'Chinni Rambabu',
+      role: 'Investor',
+      image: 'https://i.pravatar.cc/150?img=2',
+      rating: 5,
+      text: 'Vizaglands is Good investment place its like good looking ventures is there'
+    },
+    {
+      id: 3,
+      name: 'Srujika Varma',
+      role: 'Property Buyer',
+      image: 'https://i.pravatar.cc/150?img=3',
+      rating: 5,
+      text: 'Very good service, quick response, Excellent projects'
+    },
+    {
+      id: 4,
       name: 'Arjun K.',
       role: 'Homeowner',
       image: 'https://i.pravatar.cc/150?img=12',
       rating: 5,
       text: 'Found my dream apartment within weeks! The property selection was excellent and the entire buying process was smooth.'
-    },
-    {
-      id: 2,
-      name: 'Sneha R.',
-      role: 'Investor',
-      image: 'https://img.freepik.com/free-photo/side-view-smiley-woman-wearing-eye-patches_23-2149479355.jpg?t=st=1762748965~exp=1762752565~hmac=bfdf5f81f04a789616b55836ad5835271fbd8cce07a6caec8d7e82c6387e6caf&w=1060',
-      rating: 5,
-      text: 'Outstanding service! They guided me through everything and helped negotiate a fantastic deal on my property.'
-    },
-    {
-      id: 3,
-      name: 'Rajesh M.',
-      role: 'First-time Buyer',
-      image: 'https://i.pravatar.cc/150?img=33',
-      rating: 5,
-      text: 'As a first-time buyer, I was nervous but the team made everything so easy to understand and stress-free.'
-    },
-    {
-      id: 4,
-      name: 'Priya S.',
-      role: 'Property Seller',
-      image: 'https://img.freepik.com/free-photo/young-pretty-model-is-smiling_114579-13323.jpg?t=st=1762748877~exp=1762752477~hmac=7d402ef0260e4644f6dc6261cee138269cc2c358d00a7207eb6637530b75a32b&w=1060',
-      rating: 5,
-      text: 'Sold my property in record time! Professional service and great market insights from the team.'
     }
   ];
 
+  // Container animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-4 animate-fadeIn">
-          <div className="inline-block">
-            <span className="text-orange-500 font-medium text-sm uppercase tracking-wider bg-orange-50 px-4 py-2 rounded-full">
+    <section className="py-20 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-orange-100 rounded-full opacity-20 blur-3xl -translate-y-1/2 -translate-x-1/3"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100 rounded-full opacity-20 blur-3xl translate-y-1/2 translate-x-1/3"></div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header Section */}
+        <div className="text-center mb-4">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <span className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-2.5 rounded-full font-semibold text-sm uppercase tracking-[0.15em] shadow-lg">
               Testimonials
             </span>
-          </div>
+          </motion.div>
         </div>
 
-        <h2 className="text-3xl md:text-4xl font-serif font-bold text-center mb-4 text-gray-800 animate-slideUp">
+        <motion.h2
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={{ once: true }}
+          className="text-4xl md:text-4xl font-serif font-bold text-center mb-4 text-gray-900 uppercase"
+        >
           Client Testimonials
-        </h2>
-        <p className="text-gray-600 text-center mb-16 max-w-2xl mx-auto animate-slideUp">
-          See what our satisfied clients have to say about their experience
-        </p>
+        </motion.h2>
+        
+        <motion.p
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="text-gray-600 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed"
+        >
+          See what our satisfied clients have to say about their experience with VMRDA Plots
+        </motion.p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
           {testimonials.map((testimonial, index) => (
-            <div
+            <motion.div
               key={testimonial.id}
-              className="bg-white rounded-xl p-6 shadow-lg transition-all duration-500 hover:shadow-2xl transform hover:-translate-y-2 animate-fadeInUp"
-              style={{ animationDelay: `${index * 100}ms` }}
+              variants={itemVariants}
+              className="group relative bg-white rounded-2xl p-8 shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 hover:border-orange-200"
             >
+              {/* Premium Corner Accent */}
+              <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 transform rotate-45 translate-x-8 -translate-y-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </div>
+
+              {/* Quote Icon */}
+              <div className="absolute top-4 right-4 text-orange-100 text-4xl font-serif opacity-30">
+                "
+              </div>
+
               <div className="flex items-center mb-4">
-                <img
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  className="w-16 h-16 rounded-full mr-4 border-4 border-orange-100"
-                />
-                <div>
-                  <h4 className="font-bold text-gray-800">{testimonial.name}</h4>
+                <div className="relative">
+                  <img
+                    src={testimonial.image}
+                    alt={testimonial.name}
+                    className="w-16 h-16 rounded-full object-cover border-4 border-orange-100 group-hover:border-orange-300 transition-all duration-300"
+                  />
+                  <div className="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
+                </div>
+                <div className="ml-4">
+                  <h4 className="font-bold text-gray-800 group-hover:text-orange-600 transition-colors duration-300">
+                    {testimonial.name}
+                  </h4>
                   <p className="text-sm text-gray-500">{testimonial.role}</p>
                 </div>
               </div>
@@ -77,17 +145,22 @@ const Testimonials = () => {
                 {[...Array(testimonial.rating)].map((_, i) => (
                   <FiStar
                     key={i}
-                    className="w-5 h-5 text-orange-500 fill-current"
+                    className="w-5 h-5 text-orange-500 fill-current drop-shadow-sm"
                   />
                 ))}
               </div>
 
-              <p className="text-gray-600 text-sm leading-relaxed">
-                {testimonial.text}
+              <p className="text-gray-600 text-sm leading-relaxed relative z-10">
+                "{testimonial.text}"
               </p>
-            </div>
+
+              {/* Bottom Accent Line */}
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-400 to-red-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
+
+      
       </div>
     </section>
   );

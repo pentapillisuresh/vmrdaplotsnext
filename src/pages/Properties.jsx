@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -18,6 +18,7 @@ import {
   Clock,
   TrendingUp,
   Play,
+  Pause,
   Image as ImageIcon,
   Video
 } from "lucide-react";
@@ -42,6 +43,7 @@ function PropertiesContent() {
   const [sortBy, setSortBy] = useState("newest");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   // City & Locality dropdowns
   const [cities, setCities] = useState([]);
@@ -126,7 +128,7 @@ function PropertiesContent() {
     router.replace(newUrl);
   }, [activeFilters, router]);
 
-  // Fetch Properties (core)
+  // Fetch Properties (core) - 10 per page
   useEffect(() => {
     const fetchProperties = async () => {
       try {
@@ -163,7 +165,6 @@ function PropertiesContent() {
 
         // API Call
         const res = await ApiService.get(`/properties/searchProperty/?${params.toString()}`);
-        // New response: { status: true, message: "...", count: 3, data: [...] }
         const data = res?.data || [];
         const total = res?.count || data.length;
 
@@ -184,6 +185,7 @@ function PropertiesContent() {
         }
 
         setFilteredProperties(sorted);
+        setTotalCount(total);
         setTotalPages(Math.ceil(total / 10));
         setCategory({
           name: "All Properties",
@@ -279,7 +281,7 @@ function PropertiesContent() {
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
               <Award className="w-5 h-5 text-orange-400" />
               <span className="text-sm font-medium">
-                {filteredProperties.length} Properties Found
+                {totalCount} Properties Found
               </span>
             </div>
           </div>
@@ -536,9 +538,9 @@ function PropertiesContent() {
             <div>
               <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-orange-500" />
-                {filteredProperties.length} Properties
+                {totalCount} Properties
               </h2>
-              <p className="text-xs text-gray-500">Showing properties matching your criteria</p>
+              <p className="text-xs text-gray-500">Showing {filteredProperties.length} properties on page {page}</p>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <Clock className="w-3.5 h-3.5" />
@@ -597,68 +599,65 @@ function PropertiesContent() {
             </div>
           )}
 
-          {/* Pagination */}
+          {/* Pagination - Like Reference Image */}
           {filteredProperties.length > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 pt-4 border-t border-gray-200">
-              <p className="text-xs text-gray-500">
-                Page {page} of {totalPages}
-              </p>
+            <div className="flex items-center justify-between mt-8 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                disabled={page === 1}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
+                  page === 1
+                    ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                    : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                }`}
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
+
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                  disabled={page === 1}
-                  className={`px-4 py-1.5 rounded-lg border transition-all duration-300 flex items-center gap-1.5 text-xs font-medium ${
-                    page === 1
-                      ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                      : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                  }`}
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                  Prev
-                </button>
-                <div className="flex items-center gap-1.5">
-                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (page <= 3) {
-                      pageNum = i + 1;
-                    } else if (page >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = page - 2 + i;
-                    }
-                    if (pageNum > 0 && pageNum <= totalPages) {
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => setPage(pageNum)}
-                          className={`w-8 h-8 rounded-lg font-semibold text-xs transition-all duration-300 ${
-                            page === pageNum
-                              ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
-                              : "text-gray-600 hover:bg-gray-100 hover:text-orange-500"
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    }
-                    return null;
-                  })}
-                </div>
-                <button
-                  onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                  disabled={page === totalPages}
-                  className={`px-4 py-1.5 rounded-lg border transition-all duration-300 flex items-center gap-1.5 text-xs font-medium ${
-                    page === totalPages
-                      ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                      : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                  }`}
-                >
-                  Next
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
+                {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (page <= 3) {
+                    pageNum = i + 1;
+                  } else if (page >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = page - 2 + i;
+                  }
+                  if (pageNum > 0 && pageNum <= totalPages) {
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setPage(pageNum)}
+                        className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${
+                          page === pageNum
+                            ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
+                            : "text-gray-600 hover:bg-gray-100 hover:text-orange-500"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  }
+                  return null;
+                })}
               </div>
+
+              <button
+                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                disabled={page === totalPages}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
+                  page === totalPages
+                    ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                    : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                }`}
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
           )}
         </main>
@@ -667,10 +666,13 @@ function PropertiesContent() {
   );
 }
 
-/* PROPERTY CARD – Premium Design with Video Support */
+/* PROPERTY CARD – Videos First, then Images */
 function PropertyCard({ property, formatPrice, onPropertyClick }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef(null);
+
   // Parse photos - handle both array and string
   let media = [];
   try {
@@ -690,11 +692,9 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
   try {
     if (property?.videos) {
       if (typeof property.videos === 'string') {
-        // Check if it's a JSON array or a single URL
         if (property.videos.startsWith('[')) {
           videoUrls = JSON.parse(property.videos) || [];
         } else {
-          // Single video URL
           videoUrls = [property.videos];
         }
       } else if (Array.isArray(property.videos)) {
@@ -705,10 +705,47 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
     videoUrls = [];
   }
 
-  // Combine media: photos first, then videos
-  const allMedia = [...media, ...videoUrls];
+  // Combine media: VIDEOS FIRST, then photos
+  const allMedia = [...videoUrls, ...media];
   const hasVideo = videoUrls.length > 0;
   const totalMedia = allMedia.length;
+
+  // Auto-slide carousel - 3 seconds interval
+  useEffect(() => {
+    if (totalMedia <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % totalMedia);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [totalMedia]);
+
+  // Handle video playback when current index changes
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isVideo(currentIndex) && isPlaying) {
+        videoRef.current.muted = true;
+        videoRef.current.play().catch(() => {});
+      } else if (videoRef.current) {
+        videoRef.current.pause();
+      }
+    }
+  }, [currentIndex, isPlaying]);
+
+  // Move to next slide when video ends
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      const handleEnded = () => {
+        if (totalMedia > 1) {
+          setCurrentIndex((prev) => (prev + 1) % totalMedia);
+        }
+      };
+      video.addEventListener('ended', handleEnded);
+      return () => video.removeEventListener('ended', handleEnded);
+    }
+  }, [totalMedia]);
 
   const nextSlide = (e) => {
     e.stopPropagation();
@@ -721,15 +758,15 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
   };
 
   const isVideo = (index) => {
-    return index >= media.length && hasVideo;
+    return index < videoUrls.length && hasVideo;
   };
 
   const getMediaUrl = (index) => {
-    if (index < media.length) {
-      return media[index];
+    if (index < videoUrls.length) {
+      return videoUrls[index];
     } else {
-      const videoIndex = index - media.length;
-      return videoUrls[videoIndex];
+      const photoIndex = index - videoUrls.length;
+      return media[photoIndex];
     }
   };
 
@@ -748,6 +785,29 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
   // Price display
   const priceDisplay = property.price ? formatPrice(property.price) : 'Contact Us';
 
+  // Toggle play/pause for videos
+  const togglePlay = (e) => {
+    e.stopPropagation();
+    setIsPlaying(!isPlaying);
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.muted = true;
+        videoRef.current.play().catch(() => {});
+      }
+    }
+  };
+
+  // Toggle mute
+  const toggleMute = (e) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
+
   return (
     <article
       className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-orange-200 cursor-pointer overflow-hidden"
@@ -760,19 +820,16 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
               <>
                 {isVideo(currentIndex) ? (
                   <video
+                    ref={videoRef}
                     src={getMediaUrl(currentIndex)}
                     className="absolute inset-0 w-full h-full object-cover"
-                    muted
+                    muted={true}
                     playsInline
-                    loop
+                    loop={false}
+                    autoPlay
                     onClick={(e) => {
                       e.stopPropagation();
-                      const video = e.target;
-                      if (video.paused) {
-                        video.play();
-                      } else {
-                        video.pause();
-                      }
+                      togglePlay(e);
                     }}
                   />
                 ) : (
@@ -792,7 +849,42 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
               </div>
             )}
             
-            {/* Badges - No Text */}
+            {/* Play/Pause Overlay for Videos */}
+            {isVideo(currentIndex) && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    togglePlay(e);
+                  }}
+                  className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-all duration-300 group-hover:opacity-100 opacity-0"
+                >
+                  <div className="w-12 h-12 rounded-full bg-white/90 shadow-xl flex items-center justify-center hover:scale-110 transition-transform">
+                    {isPlaying ? (
+                      <Pause className="w-6 h-6 text-gray-800" />
+                    ) : (
+                      <Play className="w-6 h-6 text-gray-800 ml-1" />
+                    )}
+                  </div>
+                </button>
+                {/* Mute/Unmute Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleMute(e);
+                  }}
+                  className="absolute bottom-12 left-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all duration-300"
+                >
+                  {isMuted ? (
+                    <Video className="w-3 h-3" />
+                  ) : (
+                    <Video className="w-3 h-3" />
+                  )}
+                </button>
+              </>
+            )}
+            
+            {/* Badges */}
             <div className="absolute top-2 left-2 flex flex-wrap gap-1.5">
               {property.availableStatus && (
                 <span className="w-2 h-2 bg-green-500 rounded-full shadow-lg"></span>
@@ -806,38 +898,66 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
             {hasVideo && (
               <div className="absolute top-2 right-2">
                 <div className="w-6 h-6 bg-gradient-to-r from-red-500 to-red-600 rounded-full shadow-lg flex items-center justify-center">
-                  <Play className="w-3 h-3 text-white" />
+                  {isVideo(currentIndex) ? (
+                    isPlaying ? (
+                      <Pause className="w-3 h-3 text-white" />
+                    ) : (
+                      <Play className="w-3 h-3 text-white" />
+                    )
+                  ) : (
+                    <Play className="w-3 h-3 text-white" />
+                  )}
                 </div>
               </div>
             )}
+
+            {/* Media Type Indicator */}
+            <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[8px] px-1.5 py-0.5 rounded-full flex items-center gap-1">
+              {isVideo(currentIndex) ? (
+                <>
+                  <Video className="w-2.5 h-2.5" />
+                  <span>Video</span>
+                </>
+              ) : (
+                <>
+                  <ImageIcon className="w-2.5 h-2.5" />
+                  <span>Photo</span>
+                </>
+              )}
+            </div>
           </div>
 
           {totalMedia > 1 && (
             <>
               <button
                 onClick={prevSlide}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all duration-300 opacity-0 group-hover/image:opacity-100"
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 transition-all duration-300 opacity-0 group-hover/image:opacity-100 z-10"
               >
-                <ChevronLeft size={14} />
+                <ChevronLeft size={16} />
               </button>
               <button
                 onClick={nextSlide}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all duration-300 opacity-0 group-hover/image:opacity-100"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 transition-all duration-300 opacity-0 group-hover/image:opacity-100 z-10"
               >
-                <ChevronRight size={14} />
+                <ChevronRight size={16} />
               </button>
             </>
           )}
 
           {/* Media Counter */}
           {totalMedia > 1 && (
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
-              {isVideo(currentIndex) ? (
-                <Video className="w-2.5 h-2.5" />
-              ) : (
-                <ImageIcon className="w-2.5 h-2.5" />
-              )}
-              {currentIndex + 1}/{totalMedia}
+            <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span>{currentIndex + 1}/{totalMedia}</span>
+            </div>
+          )}
+
+          {/* Progress Bar for Carousel */}
+          {totalMedia > 1 && (
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
+              <div 
+                className="h-full bg-orange-500 transition-all duration-300"
+                style={{ width: `${((currentIndex + 1) / totalMedia) * 100}%` }}
+              ></div>
             </div>
           )}
         </div>

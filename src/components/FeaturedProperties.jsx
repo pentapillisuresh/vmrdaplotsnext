@@ -173,7 +173,7 @@ const FeaturedPropertiesContent = () => {
         </div>
 
         <h2
-          className="text-4xl md:text-4xl font-serif font-extrabold text-center mb-2 text-white"
+          className="text-4xl md:text-4xl font-serif font-extrabold text-center mb-2 text-white uppercase"
           data-aos="fade-up"
           data-aos-delay="100"
         >

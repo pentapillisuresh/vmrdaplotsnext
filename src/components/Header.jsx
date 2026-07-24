@@ -13,11 +13,43 @@ const Header = () => {
   const [profileData, setProfileData] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [searchKey, setSearchKey] = useState(0);
+  const [isSticky, setIsSticky] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(80);
 
   const searchRef = useRef(null);
   const vendorMenuRef = useRef(null);
+  const headerRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
+
+  // Handle scroll for sticky header - SINGLE EFFECT
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsSticky(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Get header height for spacing
+  useEffect(() => {
+    if (headerRef.current) {
+      setHeaderHeight(headerRef.current.offsetHeight);
+    }
+  }, []);
+
+  // Update header height on resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -102,6 +134,8 @@ const Header = () => {
     localStorage.removeItem('clientData');
     localStorage.removeItem('clientDetails');
     localStorage.removeItem('token');
+    localStorage.removeItem('userRegistered');
+    localStorage.removeItem('userRole');
     setIsLogin(false);
     setProfileData(null);
     setIsVendorMenuOpen(false);
@@ -166,7 +200,12 @@ const Header = () => {
 
   return (
     <div ref={searchRef} className="w-full">
-      <header className="bg-white shadow-md border-b border-gray-200 relative z-50 w-full">
+      <header 
+        ref={headerRef}
+        className={`bg-white shadow-md border-b border-gray-200 z-50 w-full transition-all duration-300 ${
+          isSticky ? 'fixed top-0 left-0 shadow-lg' : 'relative'
+        }`}
+      >
         <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8">
           {/* Main Header Container */}
           <div className="flex items-center justify-between h-16 sm:h-18 md:h-20 w-full">
@@ -423,7 +462,16 @@ const Header = () => {
 
       {/* Search Bar Section */}
       {isSearchOpen && (
-        <div className="bg-white border-b border-gray-200 shadow-md w-full transform transition-all duration-500 ease-in-out">
+        <div 
+          className="bg-white border-b border-gray-200 shadow-md w-full transform transition-all duration-500 ease-in-out"
+          style={{ 
+            marginTop: isSticky ? `${headerHeight}px` : '0px',
+            position: isSticky ? 'fixed' : 'relative',
+            top: 0,
+            left: 0,
+            zIndex: 49
+          }}
+        >
           <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8">
             <div className="py-4">
               <SearchBar setResults={setSearchResults} />
