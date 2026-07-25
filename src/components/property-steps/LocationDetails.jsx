@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -82,7 +81,7 @@ const LocationDetails = ({ data, updateData, onNext, isEditMode }) => {
           );
   
           if (defaultCity) {
-            setCity(defaultCity.city);          // store city name
+            setCity(defaultCity.city);
             setLocalities(defaultCity.locality);
           }
         }
@@ -106,15 +105,13 @@ const LocationDetails = ({ data, updateData, onNext, isEditMode }) => {
       if (selectedCity) {
         setLocalities(selectedCity.locality);
   
-        // ⭐ If locality is empty, DO NOT reset it — just leave it empty.
-        // ⭐ Only clear locality if it was previously selected and now invalid.
+        // ⭐ Only clear locality if it was previously selected and now invalid
         if (locality && !selectedCity.locality.includes(locality)) {
           setLocality("");
         }
       }
     }
   }, [city, cities]);
-  
 
   // ✅ Prefill data in edit mode (once cities are loaded)
   useEffect(() => {
@@ -130,7 +127,7 @@ const LocationDetails = ({ data, updateData, onNext, isEditMode }) => {
       setAdvantages(
         data.address.near_by?.length
           ? data.address.near_by
-          : [{ info: "", distance: "250 meters" }]
+          : [{ info: "", distance: "250 m" }]
       );
 
       const selectedCity = cities.find(
@@ -279,7 +276,7 @@ const LocationDetails = ({ data, updateData, onNext, isEditMode }) => {
             value={propertyName}
             onChange={handlePropertyNameChange}
             placeholder="e.g., D-201, property name"
-            className={`w-full px-4 text-gray-600  text-gray-600 py-3 border rounded-lg
+            className={`w-full px-4 text-gray-600 py-3 border rounded-lg
                  focus:ring-2 focus:ring-orange-500 focus:border-transparent
                  outline-none font-roboto ${
                    errors.propertyName ? 'border-red-500' : 'border-gray-300'
@@ -346,7 +343,7 @@ const LocationDetails = ({ data, updateData, onNext, isEditMode }) => {
           <option value="">
             {city ? "Select a Locality" : "Select a City first"}
           </option>
-          {localities?.map((loc, index) => (
+          {Array.isArray(localities) && localities.map((loc, index) => (
             <option key={index} value={loc}>
               {loc}
             </option>
@@ -480,14 +477,14 @@ const LocationDetails = ({ data, updateData, onNext, isEditMode }) => {
               onChange={(e) => handleAdvantageChange(index, "distance", e.target.value)}
               className="px-3 py-3 border border-gray-300 rounded-lg text-gray-600 
                          focus:ring-2 focus:ring-orange-500 focus:border-transparent
-                         outline-none font-roboto"
+                         outline-none font-roboto bg-white"
             >
               <option value="250 m">250 meters</option>
               <option value="500 m">500 meters</option>
               <option value="1 km">1 km</option>
               <option value="2 km">2 km</option>
-              <option value="2 km">3 km</option>
-              <option value="2 km">4 km</option>
+              <option value="3 km">3 km</option>
+              <option value="4 km">4 km</option>
               <option value="5 km">5 km</option>
             </select>
             {advantages.length > 1 && (

@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import ApiService from "../hooks/ApiService";
 import DOMPurify from "dompurify";
+import blogBanner from "../../public/images/blogbanner.jpeg";
 
 function BlogContent() {
   const [blogs, setBlogs] = useState([]);
@@ -58,14 +59,14 @@ function BlogContent() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
+      {/* Hero Section - Height 400px */}
       <section
-        className="relative bg-cover bg-center bg-no-repeat text-white h-[500px]"
-        style={{
-          backgroundImage: `url('/images/blog.jpeg')`,
-        }}
+        className="relative bg-cover bg-center bg-no-repeat text-white h-[400px]"
+      style={{
+  backgroundImage: `url(${blogBanner.src})`,
+}}
       >
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        
 
         <div className="relative z-10 flex items-center justify-center h-full px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl text-center">

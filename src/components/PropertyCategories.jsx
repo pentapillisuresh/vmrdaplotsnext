@@ -50,21 +50,21 @@ const PropertyCategories = ({ categories }) => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
-      {/* Decorative Background Elements */}
+    <section className="py-12 bg-gray-50 relative overflow-hidden">
+      {/* Decorative Background Elements - Solid colors */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-orange-100 rounded-full opacity-20 blur-3xl -translate-y-1/2 translate-x-1/3"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-100 rounded-full opacity-20 blur-3xl translate-y-1/2 -translate-x-1/3"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Header Section */}
-        <div className="text-center mb-16">
+        {/* Header Section - Reduced padding */}
+        <div className="text-center mb-10">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <span className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-2.5 rounded-full font-semibold text-sm uppercase tracking-[0.15em] shadow-lg">
+            <span className="inline-block bg-orange-500 text-white px-6 py-2 rounded-full font-semibold text-xs uppercase tracking-[0.15em] shadow-lg">
               Services
             </span>
           </motion.div>
@@ -75,7 +75,7 @@ const PropertyCategories = ({ categories }) => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
           viewport={{ once: true }}
-          className="text-4xl md:text-4xl font-serif font-bold text-center mb-4 text-gray-900 uppercase"
+          className="text-3xl md:text-4xl font-serif font-bold text-center mb-3 text-gray-900 uppercase"
         >
           Property Categories
         </motion.h2>
@@ -85,15 +85,15 @@ const PropertyCategories = ({ categories }) => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          className="text-gray-600 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed"
+          className="text-gray-600 text-center mb-12 max-w-3xl mx-auto text-base leading-relaxed"
         >
           vmrdaplots.com is a trusted real estate platform offering premium properties in Vizag's most sought-after locations
         </motion.p>
 
-        {/* Residential Section */}
-        <div className="mb-20">
+        {/* Residential Section - Reduced bottom margin */}
+        <div className="mb-12">
           <motion.div 
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5"
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -123,15 +123,15 @@ const PropertyCategories = ({ categories }) => {
                   className="group cursor-pointer flex flex-col h-full"
                   onClick={() => handleCategoryClick(cat.id)}
                 >
-                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl flex flex-col h-full border border-gray-100 hover:border-orange-200 relative">
-                    {/* Premium Corner Accent */}
-                    <div className="absolute top-0 right-0 w-20 h-20 overflow-hidden z-10">
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 transform rotate-45 translate-x-10 -translate-y-10"></div>
+                  <div className="bg-white rounded-xl shadow-md hover:shadow-xl overflow-hidden transform transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl flex flex-col h-full border border-gray-200 hover:border-orange-300 relative">
+                    {/* Premium Corner Accent - Solid color */}
+                    <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden z-10">
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-orange-500 transform rotate-45 translate-x-8 -translate-y-8"></div>
                     </div>
                     
-                    {/* Image Container */}
-                    <div className="relative w-full h-48 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    {/* Image Container - Reduced height */}
+                    <div className="relative w-full h-40 flex items-center justify-center bg-gray-100 overflow-hidden">
+                      <div className="absolute inset-0 bg-black/5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                       <img
                         src={cat.photo}
@@ -140,19 +140,19 @@ const PropertyCategories = ({ categories }) => {
                         loading="lazy"
                       />
 
-                      {/* Hover Overlay Glow */}
+                      {/* Hover Overlay - Solid color */}
                       <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500 z-20"></div>
                       
                       {/* Shine Effect */}
-                      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/0 to-white/0 group-hover:via-white/10 group-hover:to-white/20 transition-all duration-700"></div>
+                      <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-700"></div>
                     </div>
 
-                    {/* Content */}
-                    <div className="px-5 py-5 text-center flex flex-col flex-grow justify-center border-t border-gray-50">
+                    {/* Content - Reduced padding */}
+                    <div className="px-4 py-4 text-center flex flex-col flex-grow justify-center border-t border-gray-100">
                       <h3 className="text-sm font-serif font-bold text-gray-900 group-hover:text-orange-600 transition-colors duration-300 tracking-wide">
                         {cat.name}
                       </h3>
-                      <div className="mt-2 h-0.5 w-8 mx-auto bg-orange-400/0 group-hover:bg-orange-400 transition-all duration-300"></div>
+                      <div className="mt-1.5 h-0.5 w-6 mx-auto bg-orange-400/0 group-hover:bg-orange-400 transition-all duration-300"></div>
                     </div>
                   </div>
                 </motion.article>
@@ -164,15 +164,15 @@ const PropertyCategories = ({ categories }) => {
               className="group cursor-pointer flex flex-col h-full"
               onClick={handleCommercialClick}
             >
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl flex flex-col h-full border border-gray-100 hover:border-orange-200 relative">
-                {/* Premium Corner Accent */}
-                <div className="absolute top-0 right-0 w-20 h-20 overflow-hidden z-10">
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 transform rotate-45 translate-x-10 -translate-y-10"></div>
+              <div className="bg-white rounded-xl shadow-md hover:shadow-xl overflow-hidden transform transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl flex flex-col h-full border border-gray-200 hover:border-orange-300 relative">
+                {/* Premium Corner Accent - Solid color */}
+                <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden z-10">
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-orange-500 transform rotate-45 translate-x-8 -translate-y-8"></div>
                 </div>
                 
-                {/* Image Container */}
-                <div className="relative w-full h-48 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                {/* Image Container - Reduced height */}
+                <div className="relative w-full h-40 flex items-center justify-center bg-gray-100 overflow-hidden">
+                  <div className="absolute inset-0 bg-black/5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                   <img
                     src="https://backendservice.vmrdaplots.in/uploads/category/commercial.png"
@@ -182,22 +182,22 @@ const PropertyCategories = ({ categories }) => {
                   />
 
                   <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500 z-20"></div>
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/0 to-white/0 group-hover:via-white/10 group-hover:to-white/20 transition-all duration-700"></div>
+                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-700"></div>
                 </div>
 
-                <div className="px-5 py-5 text-center flex flex-col flex-grow justify-center border-t border-gray-50">
+                <div className="px-4 py-4 text-center flex flex-col flex-grow justify-center border-t border-gray-100">
                   <h3 className="text-sm font-serif font-bold text-gray-900 group-hover:text-orange-600 transition-colors duration-300 tracking-wide">
                     Commercial
                   </h3>
-                  <div className="mt-2 h-0.5 w-8 mx-auto bg-orange-400/0 group-hover:bg-orange-400 transition-all duration-300"></div>
+                  <div className="mt-1.5 h-0.5 w-6 mx-auto bg-orange-400/0 group-hover:bg-orange-400 transition-all duration-300"></div>
                 </div>
               </div>
             </motion.article>
           </motion.div>
         </div>
 
-        {/* Footer Section */}
-        <div className="text-center mt-16">
+        {/* Footer Section - Minimal */}
+        <div className="text-center mt-8">
           {/* Footer content - commented out */}
         </div>
       </div>

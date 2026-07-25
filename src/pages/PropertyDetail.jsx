@@ -469,15 +469,18 @@ function PropertyDetailContent({ title: propTitle }) {
   };
 
   // Auto Slide Images & Videos
-  useEffect(() => {
-    if (totalMedia <= 1) return;
+ useEffect(() => {
+  if (totalMedia <= 1) return;
 
-    const timer = setTimeout(() => {
-      setSelectedImage((prev) => (prev + 1) % totalMedia);
-    }, isVideo(selectedImage) ? 10000 : 3000);
+  // Don't auto slide while video is playing
+  if (isVideo(selectedImage)) return;
 
-    return () => clearTimeout(timer);
-  }, [selectedImage, totalMedia]);
+  const timer = setTimeout(() => {
+    setSelectedImage((prev) => (prev + 1) % totalMedia);
+  }, 3000);
+
+  return () => clearTimeout(timer);
+}, [selectedImage, totalMedia]);
 
   // Auto-play video when it becomes the selected media
   useEffect(() => {
@@ -601,16 +604,21 @@ function PropertyDetailContent({ title: propTitle }) {
                 {totalMedia > 0 ? (
                   <>
                     {isVideo(selectedImage) ? (
-                      <video
-                        ref={videoRef}
-                        src={getMediaUrl(selectedImage)}
-                        className="w-full h-full object-contain"
-                        muted
-                        playsInline
-                        autoPlay
-                        controls
-                        onClick={handleVideoClick}
-                      />
+                    <video
+  ref={videoRef}
+  src={getMediaUrl(selectedImage)}
+  className="w-full h-full object-contain"
+  muted
+  playsInline
+  autoPlay
+  controls
+  onLoadedMetadata={() => {
+    videoRef.current.currentTime = 0;
+  }}
+  onEnded={() => {
+    setSelectedImage((prev) => (prev + 1) % totalMedia);
+  }}
+/>
                     ) : (
                       <img
                         src={getMediaUrl(selectedImage)}

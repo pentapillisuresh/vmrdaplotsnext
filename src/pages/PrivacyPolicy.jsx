@@ -71,7 +71,7 @@ const PrivacyPolicy = () => {
             </p>
 
             <p className="text-gray-700">
-              Phone: +91 9876543210
+              Phone: +91 7989834055
             </p>
           </div>
         </div>

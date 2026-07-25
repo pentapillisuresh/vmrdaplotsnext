@@ -2,6 +2,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Providers from "@/providers/Providers";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import "leaflet/dist/leaflet.css";
 
 export default function RootLayout({ children }) {
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
           <Header />
           {children}
           <Footer />
+             <WhatsAppButton />
         </Providers>
       </body>
     </html>

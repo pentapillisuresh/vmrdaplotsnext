@@ -1,14 +1,16 @@
 'use client';
 
-
 import { useState } from "react";
-import { FiMail, FiPhone, FiMapPin, FiFacebook, FiTwitter, FiInstagram, FiLinkedin, } from "react-icons/fi";
+import { FiMail, FiPhone, FiMapPin, FiFacebook, FiTwitter, FiInstagram, FiLinkedin } from "react-icons/fi";
 import BuyFormModal from "./BuyFormModal";
 import DevelopmentFormModal from "./DevelopmentFormModal";
 
 const Footer = () => {
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
   const [isDevelopmentModalOpen, setIsDevelopmentModalOpen] = useState(false);
+  
+  // ✅ Dynamic year
+  const currentYear = new Date().getFullYear();
 
   // ✅ Updated Quick Links to include Investors & Development
   const quickLinks = [
@@ -16,12 +18,12 @@ const Footer = () => {
     { name: "Contact Us", href: "#" },
     // { name: "Careers", href: "#" },
     { name: "Blog", href: "#" },
-    { name: "Investors", modal: "buy" }, // opens BuyFormModal
+    { name: "NRI Investors", modal: "buy" }, // opens BuyFormModal
     { name: "Development", modal: "development" }, // opens DevelopmentFormModal
   ];
 
   const getInTouch = [
-    { name: "Feedback", href: "#" },
+    // { name: "Feedback", href: "#" },
     { name: "Support", href: "#" },
     { name: "Help Center", href: "#" },
     { name: "Advertise", href: "#" },
@@ -174,7 +176,7 @@ const Footer = () => {
           {/* --- Footer Bottom --- */}
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">
-              © 2025 vmrdaplots. All rights reserved.
+              © {currentYear} vmrdaplots. All rights reserved.
             </p>
             <div className="flex space-x-6">
               <a

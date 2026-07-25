@@ -44,6 +44,9 @@ function PropertiesContent() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [itemsPerPage] = useState(10);
+  const [allProperties, setAllProperties] = useState([]); // Store all properties
+  const [isLoadingAll, setIsLoadingAll] = useState(false);
 
   // City & Locality dropdowns
   const [cities, setCities] = useState([]);
@@ -128,77 +131,166 @@ function PropertiesContent() {
     router.replace(newUrl);
   }, [activeFilters, router]);
 
-  // Fetch Properties (core) - 10 per page
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  // Fetch ALL properties to get total count
+  const fetchAllPropertiesCount = async () => {
+    try {
+      setIsLoadingAll(true);
+      const params = new URLSearchParams();
+      params.append("page", 1);
+      params.append("limit", 1000); // Fetch a large number to get all
 
-        const params = new URLSearchParams();
-        params.append("page", page);
-        params.append("limit", 10);
+      const {
+        categoryId,
+        marketType,
+        status,
+        city,
+        locality,
+        clientId,
+        priceRange,
+      } = activeFilters;
 
-        const {
-          categoryId,
-          marketType,
-          status,
-          city,
-          locality,
-          clientId,
-          priceRange,
-        } = activeFilters;
+      if (categoryId) params.append("categoryId", categoryId);
+      params.append("marketType", marketType || "sale");
+      if (status) params.append("status", status);
+      if (city) params.append("city", city);
+      if (locality) params.append("locality", locality);
+      if (clientId) params.append("clientId", clientId);
 
-        if (categoryId) params.append("categoryId", categoryId);
-        params.append("marketType", marketType || "sale");
-        if (status) params.append("status", status);
-        if (city) params.append("city", city);
-        if (locality) params.append("locality", locality);
-        if (clientId) params.append("clientId", clientId);
-
-        // Price Range
-        if (priceRange !== "all") {
-          const [min, max] = priceRange.split("-").map(Number);
-          if (!isNaN(min)) params.append("minPrice", min);
-          if (!isNaN(max)) params.append("maxPrice", max);
-        }
-
-        // API Call
-        const res = await ApiService.get(`/properties/searchProperty/?${params.toString()}`);
-        const data = res?.data || [];
-        const total = res?.count || data.length;
-
-        let sorted = [...data];
-        switch (sortBy) {
-          case "price-low":
-            sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-            break;
-          case "price-high":
-            sorted.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-            break;
-          case "newest":
-          default:
-            sorted.sort(
-              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-            );
-            break;
-        }
-
-        setFilteredProperties(sorted);
-        setTotalCount(total);
-        setTotalPages(Math.ceil(total / 10));
-        setCategory({
-          name: "All Properties",
-          description: "Explore our property listings",
-        });
-      } catch (err) {
-        console.error("Fetch Error:", err);
-        setError("Failed to load properties. Please try again later.");
-      } finally {
-        setLoading(false);
+      if (priceRange !== "all") {
+        const [min, max] = priceRange.split("-").map(Number);
+        if (!isNaN(min)) params.append("minPrice", min);
+        if (!isNaN(max)) params.append("maxPrice", max);
       }
-    };
 
+      const response = await ApiService.get(`/properties/searchProperty/?${params.toString()}`);
+      let properties = [];
+      
+      if (response) {
+        if (response.data && Array.isArray(response.data)) {
+          properties = response.data;
+        } else if (Array.isArray(response)) {
+          properties = response;
+        } else if (response.properties && Array.isArray(response.properties)) {
+          properties = response.properties;
+        } else if (response.results && Array.isArray(response.results)) {
+          properties = response.results;
+        }
+      }
+
+      console.log(`📊 Total properties fetched: ${properties.length}`);
+      setAllProperties(properties);
+      setTotalCount(properties.length);
+      
+      const calculatedTotalPages = Math.ceil(properties.length / itemsPerPage);
+      setTotalPages(Math.max(1, calculatedTotalPages));
+      
+      return properties;
+    } catch (error) {
+      console.error("Error fetching all properties:", error);
+      return [];
+    } finally {
+      setIsLoadingAll(false);
+    }
+  };
+
+  // Fetch Properties with proper pagination
+  const fetchProperties = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // First, fetch all properties to get total count
+      const allProps = await fetchAllPropertiesCount();
+      
+      // Then get the current page data
+      const params = new URLSearchParams();
+      params.append("page", page);
+      params.append("limit", itemsPerPage);
+
+      const {
+        categoryId,
+        marketType,
+        status,
+        city,
+        locality,
+        clientId,
+        priceRange,
+      } = activeFilters;
+
+      if (categoryId) params.append("categoryId", categoryId);
+      params.append("marketType", marketType || "sale");
+      if (status) params.append("status", status);
+      if (city) params.append("city", city);
+      if (locality) params.append("locality", locality);
+      if (clientId) params.append("clientId", clientId);
+
+      if (priceRange !== "all") {
+        const [min, max] = priceRange.split("-").map(Number);
+        if (!isNaN(min)) params.append("minPrice", min);
+        if (!isNaN(max)) params.append("maxPrice", max);
+      }
+
+      console.log(`📡 Fetching page ${page} with params:`, params.toString());
+
+      const response = await ApiService.get(`/properties/searchProperty/?${params.toString()}`);
+      console.log("📦 Full API Response:", response);
+      
+      let properties = [];
+      
+      if (response) {
+        if (response.data && Array.isArray(response.data)) {
+          properties = response.data;
+        } else if (Array.isArray(response)) {
+          properties = response;
+        } else if (response.properties && Array.isArray(response.properties)) {
+          properties = response.properties;
+        } else if (response.results && Array.isArray(response.results)) {
+          properties = response.results;
+        }
+      }
+
+      console.log(`✅ Found ${properties.length} properties on page ${page}`);
+
+      // Sort properties
+      let sorted = [...properties];
+      switch (sortBy) {
+        case "price-low":
+          sorted.sort((a, b) => parseFloat(a.price || 0) - parseFloat(b.price || 0));
+          break;
+        case "price-high":
+          sorted.sort((a, b) => parseFloat(b.price || 0) - parseFloat(a.price || 0));
+          break;
+        case "newest":
+        default:
+          sorted.sort(
+            (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+          );
+          break;
+      }
+
+      setFilteredProperties(sorted);
+      
+      // Use total count from all properties fetch
+      if (allProps.length > 0) {
+        setTotalCount(allProps.length);
+        const calculatedTotalPages = Math.ceil(allProps.length / itemsPerPage);
+        setTotalPages(Math.max(1, calculatedTotalPages));
+      }
+      
+      setCategory({
+        name: "All Properties",
+        description: "Explore our property listings",
+      });
+    } catch (err) {
+      console.error("❌ Fetch Error:", err);
+      setError("Failed to load properties. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch when dependencies change
+  useEffect(() => {
     fetchProperties();
   }, [activeFilters, sortBy, page]);
 
@@ -211,6 +303,14 @@ function PropertiesContent() {
   const applyFilters = () => {
     setPage(1);
     setActiveFilters(filters);
+  };
+
+  const handlePageChange = (newPage) => {
+    console.log(`🔄 Changing to page ${newPage}`);
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const formatPrice = (price) => {
@@ -227,12 +327,13 @@ function PropertiesContent() {
   };
 
   // UI
-  if (loading)
+  if (loading || isLoadingAll)
     return (
       <div className="min-h-screen flex justify-center items-center bg-gray-50">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading properties...</p>
+          <p className="text-sm text-gray-400 mt-2">Page {page} of {totalPages}</p>
         </div>
       </div>
     );
@@ -246,7 +347,7 @@ function PropertiesContent() {
           </div>
           <p className="text-red-600 font-medium">{error}</p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => fetchProperties()}
             className="mt-4 text-orange-500 hover:text-orange-600 font-semibold"
           >
             Try Again
@@ -290,7 +391,7 @@ function PropertiesContent() {
 
       {/* Body */}
       <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
-        {/* Sidebar Filters - Compact Premium Design */}
+        {/* Sidebar Filters */}
         <aside className="lg:w-72 flex-shrink-0">
           <div className="bg-white rounded-2xl shadow-xl p-4 sticky top-6 border border-gray-100/80 max-h-[calc(100vh-3rem)] overflow-y-auto">
             {/* Filter Header */}
@@ -540,7 +641,9 @@ function PropertiesContent() {
                 <TrendingUp className="w-5 h-5 text-orange-500" />
                 {totalCount} Properties
               </h2>
-              <p className="text-xs text-gray-500">Showing {filteredProperties.length} properties on page {page}</p>
+              <p className="text-xs text-gray-500">
+                Showing {filteredProperties.length} properties on page {page} of {totalPages}
+              </p>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <Clock className="w-3.5 h-3.5" />
@@ -578,6 +681,7 @@ function PropertiesContent() {
                       clientId: "",
                       priceRange: "all",
                     });
+                    setPage(1);
                   }}
                   className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold text-sm transition-colors"
                 >
@@ -599,67 +703,116 @@ function PropertiesContent() {
             </div>
           )}
 
-          {/* Pagination - Like Reference Image */}
-          {filteredProperties.length > 0 && (
-            <div className="flex items-center justify-between mt-8 pt-4 border-t border-gray-200">
-              <button
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                disabled={page === 1}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
-                  page === 1
-                    ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                    : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Previous
-              </button>
+          {/* Enhanced Pagination - Always show if totalPages > 1 */}
+          {totalPages > 1 && (
+            <div className="mt-8 pt-4 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handlePageChange(1)}
+                    disabled={page === 1}
+                    className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
+                      page === 1
+                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                    }`}
+                  >
+                    First
+                  </button>
+                  <button
+                    onClick={() => handlePageChange(page - 1)}
+                    disabled={page === 1}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
+                      page === 1
+                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                    }`}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+                </div>
 
-              <div className="flex items-center gap-2">
-                {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (page <= 3) {
-                    pageNum = i + 1;
-                  } else if (page >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = page - 2 + i;
-                  }
-                  if (pageNum > 0 && pageNum <= totalPages) {
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => setPage(pageNum)}
-                        className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${
-                          page === pageNum
-                            ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
-                            : "text-gray-600 hover:bg-gray-100 hover:text-orange-500"
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  }
-                  return null;
-                })}
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (page <= 3) {
+                      pageNum = i + 1;
+                    } else if (page >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = page - 2 + i;
+                    }
+                    
+                    if (pageNum > 0 && pageNum <= totalPages) {
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => handlePageChange(pageNum)}
+                          className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${
+                            page === pageNum
+                              ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
+                              : "text-gray-600 hover:bg-gray-100 hover:text-orange-500"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handlePageChange(page + 1)}
+                    disabled={page === totalPages}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
+                      page === totalPages
+                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                    }`}
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handlePageChange(totalPages)}
+                    disabled={page === totalPages}
+                    className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
+                      page === totalPages
+                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                    }`}
+                  >
+                    Last
+                  </button>
+                </div>
               </div>
-
-              <button
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                disabled={page === totalPages}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
-                  page === totalPages
-                    ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                    : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                }`}
-              >
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              
+              {/* Page info */}
+              <div className="text-center mt-3 text-sm text-gray-500">
+                Page {page} of {totalPages} | Showing {filteredProperties.length} of {totalCount} properties
+              </div>
             </div>
           )}
+
+          {/* Debug Info */}
+          {/* <div className="mt-4 p-3 bg-gray-100 rounded-lg text-xs">
+            <p><strong>Debug Info:</strong></p>
+            <p>Total Count: {totalCount}</p>
+            <p>Total Pages: {totalPages}</p>
+            <p>Current Page: {page}</p>
+            <p>Items Per Page: {itemsPerPage}</p>
+            <p>Properties on this page: {filteredProperties.length}</p>
+            <p>Show Pagination: {totalPages > 1 ? 'Yes ✅' : 'No ❌'}</p>
+            <p className="mt-1 text-orange-600">
+              <strong>Note:</strong> The API is not returning total count. 
+              We're fetching all properties to calculate pagination.
+            </p>
+          </div> */}
         </main>
       </div>
     </div>
