@@ -270,12 +270,12 @@ function PropertyDetailContent({ title: propTitle }) {
     try {
       const token = localStorage.getItem('token');
       const response = await ApiService.get(`/client/${clientId}`, {
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json' 
+          'Content-Type': 'application/json'
         }
       });
-      
+
       if (response?.data) {
         setClientDetails(response.data);
         setClientRole(response.data.role);
@@ -310,16 +310,16 @@ function PropertyDetailContent({ title: propTitle }) {
     try {
       setLoading(true);
       const decodedTitle = slugToTitle(slug);
-      
+
       const response = await ApiService.get(`/properties/getBySlug/${slug}`);
-      
+
       if (response?.property) {
-          setProperty(response?.property);
-          window.scrollTo(0, 0);
-        } else {
-          console.error("Property not found with slug:", slug);
-          router.push('/properties-list');
-        }
+        setProperty(response?.property);
+        window.scrollTo(0, 0);
+      } else {
+        console.error("Property not found with slug:", slug);
+        router.push('/properties-list');
+      }
     } catch (error) {
       console.error('Error fetching property by slug:', error);
       router.push('/properties-list');
@@ -417,7 +417,7 @@ function PropertyDetailContent({ title: propTitle }) {
   // Parse gallery images and videos - VIDEOS FIRST
   let galleryImages = [];
   let videoUrls = [];
-  
+
   try {
     if (Array.isArray(property?.photos)) {
       galleryImages = property.photos;
@@ -469,24 +469,24 @@ function PropertyDetailContent({ title: propTitle }) {
   };
 
   // Auto Slide Images & Videos
- useEffect(() => {
-  if (totalMedia <= 1) return;
+  useEffect(() => {
+    if (totalMedia <= 1) return;
 
-  // Don't auto slide while video is playing
-  if (isVideo(selectedImage)) return;
+    // Don't auto slide while video is playing
+    if (isVideo(selectedImage)) return;
 
-  const timer = setTimeout(() => {
-    setSelectedImage((prev) => (prev + 1) % totalMedia);
-  }, 3000);
+    const timer = setTimeout(() => {
+      setSelectedImage((prev) => (prev + 1) % totalMedia);
+    }, 3000);
 
-  return () => clearTimeout(timer);
-}, [selectedImage, totalMedia]);
+    return () => clearTimeout(timer);
+  }, [selectedImage, totalMedia]);
 
   // Auto-play video when it becomes the selected media
   useEffect(() => {
     if (videoRef.current && isVideo(selectedImage)) {
       videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch(() => { });
       setIsVideoPlaying(true);
     }
   }, [selectedImage]);
@@ -604,21 +604,21 @@ function PropertyDetailContent({ title: propTitle }) {
                 {totalMedia > 0 ? (
                   <>
                     {isVideo(selectedImage) ? (
-                    <video
-  ref={videoRef}
-  src={getMediaUrl(selectedImage)}
-  className="w-full h-full object-contain"
-  muted
-  playsInline
-  autoPlay
-  controls
-  onLoadedMetadata={() => {
-    videoRef.current.currentTime = 0;
-  }}
-  onEnded={() => {
-    setSelectedImage((prev) => (prev + 1) % totalMedia);
-  }}
-/>
+                      <video
+                        ref={videoRef}
+                        src={getMediaUrl(selectedImage)}
+                        className="w-full h-full object-contain"
+                        muted
+                        playsInline
+                        autoPlay
+                        controls
+                        onLoadedMetadata={() => {
+                          videoRef.current.currentTime = 0;
+                        }}
+                        onEnded={() => {
+                          setSelectedImage((prev) => (prev + 1) % totalMedia);
+                        }}
+                      />
                     ) : (
                       <img
                         src={getMediaUrl(selectedImage)}
@@ -635,7 +635,7 @@ function PropertyDetailContent({ title: propTitle }) {
                     <ImageIcon className="w-20 h-20 text-gray-400" />
                   </div>
                 )}
-                
+
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -647,7 +647,7 @@ function PropertyDetailContent({ title: propTitle }) {
                     className={`w-6 h-6 transition ${isFavorite(property?.id)
                       ? "text-red-600 fill-red-600"
                       : "text-gray-600 hover:text-red-400"
-                    }`}
+                      }`}
                   />
                 </button>
 
@@ -698,20 +698,19 @@ function PropertyDetailContent({ title: propTitle }) {
                       <button
                         key={idx}
                         onClick={() => setSelectedImage(idx)}
-                        className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 relative ${
-                          selectedImage === idx
-                            ? "border-orange-500 ring-2 ring-orange-200 shadow-lg scale-105"
-                            : "border-gray-200 hover:border-orange-300 hover:scale-105"
-                        }`}
+                        className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 relative ${selectedImage === idx
+                          ? "border-orange-500 ring-2 ring-orange-200 shadow-lg scale-105"
+                          : "border-gray-200 hover:border-orange-300 hover:scale-105"
+                          }`}
                       >
                         {isVideoItem ? (
                           <div className="w-full h-full bg-gray-800 flex items-center justify-center">
                             <Play className="w-6 h-6 text-white" />
                           </div>
                         ) : (
-                          <img 
-                            src={item} 
-                            alt={`View ${idx + 1}`} 
+                          <img
+                            src={item}
+                            alt={`View ${idx + 1}`}
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               e.target.src = "https://via.placeholder.com/100x100?text=No+Image";
@@ -797,31 +796,57 @@ function PropertyDetailContent({ title: propTitle }) {
 
               {/* Key Features */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6">
-                {category.name === "Plot" || category.name === "Land" ? (
+                {category.name === "Plot" || category.name === "Land" || category.name === "Commercial Land" ? (
                   <>
-                    {category.name !== "Land" ? (
+                    {category.name === "Plot" && (
                       safeShow(profile?.plotArea) && (
+                        <>
                         <FeatureCardPremium
                           icon={<Maximize size={22} />}
                           label="Plot Area"
                           value={`${profile?.plotArea} ${profile?.areaUnit || "sqft"}`}
                         />
-                      )
-                    ) : (
-                      safeShow(profile?.landArea) && (
                         <FeatureCardPremium
-                          icon={<Maximize size={22} />}
-                          label="Land Area"
-                          value={`${profile?.landArea} ${profile?.areaUnit || "sqft"}`}
-                        />
+                            icon={<Maximize size={22} />}
+                            label={`Per ${profile?.areaUnit || "sqft"} `}
+                            value={
+                              profile?.landArea
+                                ? Math.round(
+                                    parseFloat(property?.price || 0) / parseFloat(profile?.plotArea)
+                                  )
+                                : 0
+                            }                          />
+                        </>
                       )
                     )}
-                    {safeShow(profile?.facing) && (
-                      <FeatureCardPremium
-                        icon={<Compass size={22} />}
-                        label="Facing"
-                        value={profile?.facing}
-                      />
+                    {category.name === "Land" || category.name === "Commercial Land" && (
+                      safeShow(profile?.landArea) && (
+                        <>
+                          <FeatureCardPremium
+                            icon={<Maximize size={22} />}
+                            label="Land Area"
+                            value={`${profile?.landArea} ${profile?.areaUnit || "sqft"}`}
+                          />
+                          <FeatureCardPremium
+                            icon={<Maximize size={22} />}
+                            label={`Per ${profile?.areaUnit || "sqft"} `}
+                            value={
+                              profile?.landArea
+                                ? Math.round(
+                                    parseFloat(property?.price || 0) / parseFloat(profile?.landArea)
+                                  )
+                                : 0
+                            }                          />
+                        </>
+                      )
+                    )}
+                    {category.name === "Plot" && (
+                      safeShow(profile?.facing) && (
+                        <FeatureCardPremium
+                          icon={<Compass size={22} />}
+                          label="Facing"
+                          value={profile?.facing}
+                        />)
                     )}
                   </>
                 ) : (
@@ -917,17 +942,17 @@ function PropertyDetailContent({ title: propTitle }) {
               {property?.approvedBy && (
                 <SectionPremium title="Approved By">
                   <div className="flex flex-wrap gap-2">
-                    {typeof property.approvedBy === 'string' 
+                    {typeof property.approvedBy === 'string'
                       ? property.approvedBy.split(',').map((item, idx) => (
-                          <span key={idx} className="bg-gradient-to-r from-green-50 to-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200 shadow-sm">
-                            {item.trim()}
-                          </span>
-                        ))
+                        <span key={idx} className="bg-gradient-to-r from-green-50 to-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200 shadow-sm">
+                          {item.trim()}
+                        </span>
+                      ))
                       : Array.isArray(property.approvedBy) && property.approvedBy.map((item, idx) => (
-                          <span key={idx} className="bg-gradient-to-r from-green-50 to-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200 shadow-sm">
-                            {item}
-                          </span>
-                        ))
+                        <span key={idx} className="bg-gradient-to-r from-green-50 to-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200 shadow-sm">
+                          {item}
+                        </span>
+                      ))
                     }
                   </div>
                 </SectionPremium>
@@ -941,7 +966,7 @@ function PropertyDetailContent({ title: propTitle }) {
                       {(() => {
                         const description = property?.description || '';
                         const maxLength = 300;
-                        
+
                         if (description.length <= maxLength) {
                           // Show full description if short
                           return description.split('\n').map((line, index) => {
@@ -961,7 +986,7 @@ function PropertyDetailContent({ title: propTitle }) {
                           // Show truncated or full based on state
                           const displayText = showFullDescription ? description : description.substring(0, maxLength);
                           const lines = displayText.split('\n');
-                          
+
                           // If not showing full and we're truncating mid-line
                           let displayLines = [];
                           if (!showFullDescription) {
@@ -983,7 +1008,7 @@ function PropertyDetailContent({ title: propTitle }) {
                           } else {
                             displayLines = lines;
                           }
-                          
+
                           return displayLines.map((line, index) => {
                             const trimmedLine = line.trim();
                             if (!trimmedLine) return null;
@@ -1000,11 +1025,11 @@ function PropertyDetailContent({ title: propTitle }) {
                         }
                       })()}
                     </div>
-                    
+
                     {/* Read More / Show Less Button */}
                     {property?.description && property.description.length > 300 && (
-                      <button 
-                        onClick={toggleDescription} 
+                      <button
+                        onClick={toggleDescription}
                         className="mt-4 inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium transition-all duration-300 hover:gap-3 group"
                       >
                         {showFullDescription ? (
@@ -1027,14 +1052,14 @@ function PropertyDetailContent({ title: propTitle }) {
               {/* Map Section */}
               <SectionPremium title="Location on Map">
                 <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-                <PropertyMap
-  lat={address?.lat}
-  lon={address?.lon}
-  slug={property?.slug}
-  title={property?.title}
-  image={getPhotoSrc(property?.photos)}
-  location={address?.locality}
-/>
+                  <PropertyMap
+                    lat={address?.lat}
+                    lon={address?.lon}
+                    slug={property?.slug}
+                    title={property?.title}
+                    image={getPhotoSrc(property?.photos)}
+                    location={address?.locality}
+                  />
                 </div>
               </SectionPremium>
             </div>
@@ -1051,7 +1076,7 @@ function PropertyDetailContent({ title: propTitle }) {
                     Contact {clientRole ? getRoleDisplayName(clientRole) : 'Agent'}
                   </h3>
                 </div>
-                
+
                 <div className="p-6">
                   {/* Contact Details - Always Visible with Role */}
                   <div className="space-y-3">
@@ -1099,54 +1124,54 @@ function PropertyDetailContent({ title: propTitle }) {
                     <form className="space-y-4" onSubmit={handleSubmit}>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input 
-                          type="text" 
-                          name="name" 
-                          value={formData.name} 
-                          placeholder="Your Name" 
-                          onChange={handleChange} 
-                          required 
+                        <input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          placeholder="Your Name"
+                          onChange={handleChange}
+                          required
                           className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 bg-gray-50 focus:bg-white"
                         />
                       </div>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input 
-                          type="email" 
-                          name="email" 
-                          value={formData.email} 
-                          placeholder="Your Email" 
-                          onChange={handleChange} 
-                          required 
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          placeholder="Your Email"
+                          onChange={handleChange}
+                          required
                           className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 bg-gray-50 focus:bg-white"
                         />
                       </div>
                       <div className="relative">
                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input 
-                          type="tel" 
-                          name="phoneNumber" 
-                          placeholder="Your Phone" 
-                          value={formData.phoneNumber} 
-                          onChange={handleChange} 
-                          required 
+                        <input
+                          type="tel"
+                          name="phoneNumber"
+                          placeholder="Your Phone"
+                          value={formData.phoneNumber}
+                          onChange={handleChange}
+                          required
                           className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 bg-gray-50 focus:bg-white"
                         />
                       </div>
                       <div className="relative">
                         <MessageSquare className="absolute left-3 top-4 w-4 h-4 text-gray-400" />
-                        <textarea 
-                          name="message" 
-                          placeholder="Message (Optional)" 
-                          rows="3" 
-                          value={formData.message} 
-                          onChange={handleChange} 
+                        <textarea
+                          name="message"
+                          placeholder="Message (Optional)"
+                          rows="3"
+                          value={formData.message}
+                          onChange={handleChange}
                           className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 bg-gray-50 focus:bg-white resize-none"
                         ></textarea>
                       </div>
-                      <button 
-                        type="submit" 
-                        disabled={loading} 
+                      <button
+                        type="submit"
+                        disabled={loading}
                         className={`w-full bg-gradient-to-r from-[#001F3F] to-[#003366] hover:from-[#002D5C] hover:to-[#004d99] text-white py-3.5 rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-blue-200 hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2 ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
                       >
                         {loading ? (
@@ -1182,14 +1207,14 @@ function PropertyDetailContent({ title: propTitle }) {
                 Properties You Might Like
               </h2>
               <div className="relative group">
-                <button 
-                  onClick={() => swiperRef.current?.slidePrev()} 
+                <button
+                  onClick={() => swiperRef.current?.slidePrev()}
                   className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white border-2 border-gray-200 hover:border-orange-500 text-gray-600 hover:text-orange-600 w-12 h-12 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center group-hover:translate-x-0 opacity-0 group-hover:opacity-100"
                 >
                   <ChevronLeft size={24} className="stroke-2" />
                 </button>
-                <button 
-                  onClick={() => swiperRef.current?.slideNext()} 
+                <button
+                  onClick={() => swiperRef.current?.slideNext()}
                   className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white border-2 border-gray-200 hover:border-orange-500 text-gray-600 hover:text-orange-600 w-12 h-12 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center group-hover:translate-x-0 opacity-0 group-hover:opacity-100"
                 >
                   <ChevronRight size={24} className="stroke-2" />
@@ -1197,21 +1222,21 @@ function PropertyDetailContent({ title: propTitle }) {
                 <Swiper {...swiperConfig} className="similar-properties-swiper">
                   {similarProperties.map((property, idx) => (
                     <SwiperSlide key={property?.id}>
-                      <article 
+                      <article
                         className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-500 mx-2 my-4 border border-gray-100 hover:border-orange-200 transform hover:-translate-y-2"
                         onClick={() => handleSimilarPropertyClick(property)}
                       >
                         <div className="h-64 overflow-hidden relative">
-                          <img 
-                            src={getPhotoSrc(property?.photos)} 
-                            alt={property?.title} 
+                          <img
+                            src={getPhotoSrc(property?.photos)}
+                            alt={property?.title}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                             onError={(e) => {
                               e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
                             }}
                           />
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); toggleFavorite(property); }} 
+                          <button
+                            onClick={(e) => { e.stopPropagation(); toggleFavorite(property); }}
                             className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
                           >
                             <Heart className={`w-5 h-5 transition ${isFavorite(property?.id) ? "text-red-600 fill-red-600" : "text-gray-600 hover:text-red-400"}`} />
@@ -1257,8 +1282,8 @@ function PropertyDetailContent({ title: propTitle }) {
                               {property?.price ? (
                                 <div className="text-xl font-bold text-orange-600">{formatPrice(property?.price)}</div>
                               ) : (
-                                <button 
-                                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold text-xs px-4 py-2 rounded-xl shadow-lg shadow-orange-200 transition-all duration-300 transform hover:scale-105" 
+                                <button
+                                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold text-xs px-4 py-2 rounded-xl shadow-lg shadow-orange-200 transition-all duration-300 transform hover:scale-105"
                                   onClick={(e) => { e.stopPropagation(); alert("Contact us for price!"); }}
                                 >
                                   Contact Us
@@ -1277,16 +1302,16 @@ function PropertyDetailContent({ title: propTitle }) {
                 <div className="flex justify-center mt-8">
                   <div className="bg-white rounded-full px-6 py-3 shadow-xl border border-gray-200">
                     <div className="flex items-center gap-6">
-                      <button 
-                        onClick={() => swiperRef.current?.slidePrev()} 
+                      <button
+                        onClick={() => swiperRef.current?.slidePrev()}
                         className="flex items-center gap-2 text-gray-600 hover:text-orange-600 transition-colors group"
                       >
                         <div className="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-orange-500 group-hover:bg-orange-50 transition-all"><ChevronLeft size={16} /></div>
                         <span className="text-sm font-medium">Prev</span>
                       </button>
                       <div className="h-6 w-px bg-gray-300"></div>
-                      <button 
-                        onClick={() => swiperRef.current?.slideNext()} 
+                      <button
+                        onClick={() => swiperRef.current?.slideNext()}
                         className="flex items-center gap-2 text-gray-600 hover:text-orange-600 transition-colors group"
                       >
                         <span className="text-sm font-medium">Next</span>
@@ -1353,7 +1378,7 @@ export default function PropertyDetail({ title }) {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading property details...</p>
         </div>
-      </div> 
+      </div>
     }>
       <PropertyDetailContent title={title} />
     </Suspense>

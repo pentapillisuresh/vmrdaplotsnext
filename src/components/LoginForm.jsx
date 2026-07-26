@@ -68,8 +68,8 @@ const LoginFormContent = ({ onClose }) => {
         setError('Something went wrong. Please try again.');
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Unexpected error occurred');
+      console.log("rrr:::",err.data.message);
+      setError(err.data.message);
     } finally {
       setLoading(false);
     }
@@ -92,7 +92,8 @@ const LoginFormContent = ({ onClose }) => {
       );
 
       if (!response.success) {
-        Alert.alert("Error", data.message || "Failed to send OTP");
+        Alert.alert("Error", response.message || "Failed to send OTP");
+        setOtpError(response.message)
         setLoading(false);
         return;
       }
@@ -109,8 +110,7 @@ const LoginFormContent = ({ onClose }) => {
 
     } catch (error) {
       setLoading(false);
-      setOtpError("Network Error", "Please try again later");
-      console.error("OTP API Error:", error.message);
+      setOtpError(error.data.message);
     }
   };
 
@@ -147,7 +147,6 @@ const LoginFormContent = ({ onClose }) => {
       }, 1000);
 
     } catch (error) {
-      console.error("Verify OTP Error:", error);
       Alert.alert("Error", "Something went wrong. Please try again.");
     } finally {
       setLoading(false);

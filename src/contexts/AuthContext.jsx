@@ -26,9 +26,7 @@ export const AuthProvider = ({ children }) => {
       const response = await ApiService.post(`/auth/register`,{ fullName, phoneNumber, email, password, role },
         { headers: { 'Content-Type': 'application/json' } }
       );
-  
-      console.log("Registration response:", response);
-  
+    
       if (response?.token && response?.client) {
         // Save client/token to state/localStorage
         setUser(response.client);
@@ -66,10 +64,10 @@ export const AuthProvider = ({ children }) => {
         return { data: null, error: { message: 'Invalid response from server' } };
       }
     } catch (err) {
-      console.error('Login failed:', err);
+      console.error('Login failed:', err.data.error);
   
       const message =
-        err.response?.data?.message || 'Login failed. Please try again.';
+      err.data.error || 'Login failed. Please try again.';
   
       return { data: null, error: { message } };
     }

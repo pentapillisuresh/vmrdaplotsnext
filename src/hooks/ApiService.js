@@ -33,7 +33,7 @@ const axiosInstance = axios.create({
   axiosInstance.interceptors.response.use(
     (response) => response.data,
     (error) => {
-      console.error(
+      console.log(
         'API error:',
         error.response ? error.response.data : error.message
       );
