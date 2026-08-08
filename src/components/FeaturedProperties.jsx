@@ -16,6 +16,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import ApiService from "../hooks/ApiService";
 import getPhotoSrc from "../hooks/getPhotos";
+import { motion } from "framer-motion";
 
 const FeaturedPropertiesContent = () => {
   const router = useRouter();
@@ -136,7 +137,7 @@ const FeaturedPropertiesContent = () => {
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
-      <section className="py-20" style={{ backgroundColor: '#2C3E50' }}>
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-600 rounded w-1/4 mx-auto mb-4"></div>
@@ -161,31 +162,22 @@ const FeaturedPropertiesContent = () => {
   }
 
   return (
-    <section className="py-20 relative" style={{ backgroundColor: '#2C3E50' }}>
+    <section className="py-20 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          data-aos="fade-up"
-          className="text-center mb-4"
-        >
-          <span className="inline-block bg-orange-500 text-white px-4 py-2 rounded-full font-medium text-sm uppercase tracking-wide shadow-sm">
-            Featured
-          </span>
-        </div>
+          <div className="text-center mb-10">
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
+                >
+                  <span className="inline-block bg-orange-500 text-white px-6 py-2 rounded-full font-semibold text-xs uppercase tracking-[0.15em] shadow-lg">
+                    PROPERTIES
+                  </span>
+                </motion.div>
+              </div>
 
-        <h2
-          className="text-4xl md:text-4xl font-serif font-extrabold text-center mb-2 text-white uppercase"
-          data-aos="fade-up"
-          data-aos-delay="100"
-        >
-          Featured Properties
-        </h2>
-        <p
-          className="text-gray-300 text-center mb-12 max-w-2xl mx-auto"
-          data-aos="fade-up"
-          data-aos-delay="200"
-        >
-          VMRDA approved plots in Vizag at prime and fast-developing locations.
-        </p>
+    
 
         {properties.length === 0 ? (
           <div className="text-center py-10 text-gray-300 bg-white bg-opacity-10 rounded-xl shadow-lg backdrop-blur-sm">

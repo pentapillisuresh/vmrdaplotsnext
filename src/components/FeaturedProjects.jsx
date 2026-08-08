@@ -17,6 +17,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import ApiService from "../hooks/ApiService";
 import getPhotoSrc from "../hooks/getPhotos";
+import { motion } from "framer-motion";
 
 const FeaturedProjects = () => {
   const router = useRouter();
@@ -137,28 +138,23 @@ const FeaturedProjects = () => {
   }
 
   return (
-    <section className="py-20 bg-white relative">
+    <section className="  bg-gray-50 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-4" data-aos="fade-up">
-          <span className="inline-block bg-orange-50 text-orange-600 px-4 py-2 rounded-full font-medium text-sm uppercase tracking-wide">
-            Projects
-          </span>
+          <div className="text-center mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <span className="inline-block bg-orange-500 text-white px-6 py-2 rounded-full font-semibold text-xs uppercase tracking-[0.15em] shadow-lg">
+              PROJECTS
+            </span>
+          </motion.div>
         </div>
 
-        <h2
-          className="text-4xl md:text-4xl font-serif font-extrabold text-center mb-2 text-gray-900 uppercase"
-          data-aos="fade-up"
-          data-aos-delay="100"
-        >
-          Featured Projects
-        </h2>
-        <p
-          className="text-gray-600 text-center mb-12 max-w-2xl mx-auto"
-          data-aos="fade-up"
-          data-aos-delay="200"
-        >
-          Handpicked projects that offer exceptional value
-        </p>
+     
+      
 
         {properties.length === 0 ? (
           <div className="text-center py-10 text-gray-500">
@@ -187,7 +183,7 @@ const FeaturedProjects = () => {
               {properties.map((property) => (
                 <SwiperSlide key={property.id}>
                   <article
-                    className={`rounded-xl shadow-lg overflow-hidden cursor-pointer group transition-all duration-300 mx-2 my-4 border h-full ${property.isSold
+                    className={`rounded-xl shadow-lg overflow-hidden cursor-pointer group transition-all duration-300 mx-2 my-4 border h-full flex flex-col ${property.isSold
                       ? "bg-gray-100 opacity-75 border-red-300"
                       : "bg-white hover:shadow-2xl border-gray-100 hover:border-orange-200"
                       }`} onClick={() => handleProjectClick(property)}
@@ -230,7 +226,7 @@ const FeaturedProjects = () => {
                       <div className="absolute inset-0  bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300" />
                     </div>
 
-                    <div className="p-6">
+                   <div className="p-6 flex flex-col flex-1">
                       <div className="flex items-start justify-between mb-3">
                         <h3 className="text-xl font-bold text-[#003366] group-hover:text-orange-600 transition-colors line-clamp-2">
                           {property.title}
@@ -309,7 +305,7 @@ const FeaturedProjects = () => {
                         </div>
                       )}
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
                         <div className="text-right">
                           {property?.price ? (
                             <div className="text-2xl font-bold text-orange-600">
@@ -337,34 +333,7 @@ const FeaturedProjects = () => {
               ))}
             </Swiper>
 
-            {/* Bottom Navigation Dots - Enhanced */}
-            <div className="flex justify-center mt-8">
-              <div className="bg-white rounded-full px-4 py-2 shadow-lg border border-gray-200">
-                <div className="flex items-center gap-6">
-                  <button
-                    onClick={() => swiperRef.current?.slidePrev()}
-                    className="flex items-center gap-2 text-gray-600 hover:text-orange-600 transition-colors group"
-                  >
-                    <div className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center group-hover:border-orange-500 group-hover:bg-orange-50 transition-all">
-                      <ChevronLeft size={16} />
-                    </div>
-                    <span className="text-sm font-medium">Prev</span>
-                  </button>
-
-                  <div className="h-4 w-px bg-gray-300"></div>
-
-                  <button
-                    onClick={() => swiperRef.current?.slideNext()}
-                    className="flex items-center gap-2 text-gray-600 hover:text-orange-600 transition-colors group"
-                  >
-                    <span className="text-sm font-medium">Next</span>
-                    <div className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center group-hover:border-orange-500 group-hover:bg-orange-50 transition-all">
-                      <ChevronRight size={16} />
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
+          
           </div>
         )}
       </div>

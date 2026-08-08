@@ -56,7 +56,7 @@ function HomeContent() {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <Hero />
       <PropertyCategories categories={categories} />
       <FeaturedProjects />
@@ -65,7 +65,7 @@ function HomeContent() {
       <ViewedProperties />
       <CommercialAdSection />
       {isLogin && <RecentViewProperties />}
-      <Testimonials />
+      {/* <Testimonials /> */}
       <LocationsSection cityLocalities={cityLocalities} />
       <AreaSelector />
     </div>

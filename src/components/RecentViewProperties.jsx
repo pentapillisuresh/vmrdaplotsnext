@@ -16,6 +16,7 @@ import {
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { motion } from "framer-motion";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -142,15 +143,20 @@ const RecentViewProperties = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div className="text-center mb-4">
-          <span className="inline-block bg-orange-50 text-orange-600 px-4 py-2 rounded-full font-medium text-sm uppercase tracking-wide">
-            Recently Viewed
-          </span>
-        </div>
+          <div className="text-center mb-10">
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
+                >
+                  <span className="inline-block bg-orange-500 text-white px-6 py-2 rounded-full font-semibold text-xs uppercase tracking-[0.15em] shadow-lg">
+                    RECENTLY VIEWED
+                  </span>
+                </motion.div>
+              </div>
 
-        <h2 className="text-4xl md:text-4xl font-serif font-extrabold text-center mb-12 text-gray-900">
-          Recently Viewed Properties
-        </h2>
+      
 
         {loading ? (
           <div className="text-center py-10">

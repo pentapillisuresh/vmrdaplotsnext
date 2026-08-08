@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import areaData from '../data/areaData';
+import { motion } from "framer-motion";
 
 const AreaSelector = () => {
   const cardRefs = useRef([]);
@@ -39,16 +40,22 @@ const AreaSelector = () => {
         {/* Header with animation */}
         <div className="text-center mb-12 overflow-hidden">
           <div className="inline-flex items-center justify-center mb-4 opacity-0 animate-fadeInDown">
-            <div className="w-12 h-1 bg-[#001F3F] rounded-full"></div>
-            <span className="mx-4 text-[#001F3F] font-semibold text-sm uppercase tracking-wider">Explore Areas</span>
-            <div className="w-12 h-1 bg-[#001F3F] rounded-full"></div>
+              <div className="flex items-center justify-center mb-4">
+            <div className="text-center mb-6 sm:mb-10">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+              >
+                <span className="inline-block bg-orange-500 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-semibold text-xs uppercase tracking-[0.15em] shadow-lg">
+                vizag prime  LOCATIONS
+                </span>
+              </motion.div>
+            </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-[#001F3F] mb-6 opacity-0 animate-fadeInDown animation-delay-100 uppercase">
-            Discover Vizag's Prime Locations
-          </h1>
-          <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed opacity-0 animate-fadeInDown animation-delay-200">
-            Select an area to explore available plots, current market prices, and investment potential
-          </p>
+          </div>
+       
         </div>
 
         {/* Navigation Breadcrumb */}
