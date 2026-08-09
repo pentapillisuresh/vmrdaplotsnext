@@ -171,7 +171,7 @@ const RegisterFormContent = () => {
                     value={formData.fullName}
                     onChange={handleChange}
                     required
-                    className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm bg-white"
+                    className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm text-[#333333] bg-white"
                     placeholder="Enter your full name"
                   />
                 </div>
@@ -190,7 +190,7 @@ const RegisterFormContent = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm bg-white"
+                    className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm text-[#333333] bg-white"
                     placeholder="Enter your email"
                   />
                 </div>
@@ -209,7 +209,7 @@ const RegisterFormContent = () => {
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     required
-                    className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm bg-white"
+                    className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm text-[#333333] bg-white"
                     placeholder="Enter 10-digit phone number"
                     maxLength={10}
                   />

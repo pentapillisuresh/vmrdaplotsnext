@@ -455,7 +455,7 @@ function ProjectsContent() {
                   value={filters.categoryId}
                   onChange={handleChange}
                   name="categoryId"
-                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
+                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
                   <option value="">All Categories</option>
                   {categories.map((cat) => (
@@ -479,7 +479,7 @@ function ProjectsContent() {
                   name="city"
                   value={filters.city}
                   onChange={handleChange}
-                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
+                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
                   <option value="">All Cities</option>
                   {cities?.map((c) => (
@@ -504,7 +504,7 @@ function ProjectsContent() {
                   value={filters.locality}
                   onChange={handleChange}
                   disabled={!filters.city}
-                  className={`w-full px-3 py-1.5 border rounded-lg text-xs focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8 ${
+                  className={`w-full px-3 py-1.5 border rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8 ${
                     !filters.city 
                       ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed" 
                       : "bg-gray-50 border-gray-200"
@@ -536,7 +536,7 @@ function ProjectsContent() {
                   name="priceRange"
                   value={filters.priceRange}
                   onChange={handleChange}
-                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
+                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
                   <option value="all">All Prices</option>
                   <option value="0-5000000">Under ₹50 Lac</option>
@@ -558,7 +558,7 @@ function ProjectsContent() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
+                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
                   <option value="newest">Newest First</option>
                   <option value="price-low">Price: Low to High</option>

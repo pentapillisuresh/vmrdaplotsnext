@@ -6,8 +6,15 @@ import { ArrowLeft, ArrowRight, Home, Bed, Bath, Maximize, Building, MapPin, Che
 import { propertiesData } from "../data/propertiesData";
 import ApiService from "../hooks/ApiService";
 import AOS from "aos";
-import PropertyMap from "../components/PropertyMap";
-// import getPhotoSrc from "../hooks/getPhotos"; // unused – removed
+import dynamic from "next/dynamic";
+
+const PropertyMap = dynamic(
+  () => import("../components/PropertyMap"),
+  {
+    ssr: false,
+  }
+);
+
 
 function ClientPropertyDetail() {
   const router = useRouter();

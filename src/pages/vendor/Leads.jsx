@@ -245,7 +245,7 @@ const Leads = () => {
                 placeholder="Search by name, email, phone, or property..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[#333333] outline-none"
               />
             </div>
             <div className="flex items-center gap-2">

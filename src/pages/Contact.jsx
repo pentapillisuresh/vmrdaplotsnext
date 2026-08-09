@@ -326,7 +326,7 @@ function Contact() {
                           value={formData.name}
                           onChange={handleChange}
                           required
-                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                          className="w-full px-4 py-3 text-[#333333] border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all duration-300"
                           placeholder="Enter your full name"
                         />
                       </div>
@@ -345,7 +345,7 @@ function Contact() {
                           value={formData.email}
                           onChange={handleChange}
                           required
-                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                          className="w-full px-4 py-3 text-[#333333] border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all duration-300"
                           placeholder="Enter your email address"
                         />
                       </div>
@@ -364,7 +364,7 @@ function Contact() {
                           value={formData.phone}
                           onChange={handleChange}
                           required
-                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                          className="w-full px-4 py-3 text-[#333333] border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all duration-300"
                           placeholder="Enter your phone number"
                         />
                       </div>
@@ -383,7 +383,7 @@ function Contact() {
                           onChange={handleChange}
                           required
                           rows={5}
-                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all duration-300 resize-none"
+                          className="w-full px-4 py-3 border-2  text-[#333333] border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition-all duration-300 resize-none"
                           placeholder="Tell us about your requirements..."
                         ></textarea>
                       </div>

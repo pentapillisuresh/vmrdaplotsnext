@@ -127,26 +127,26 @@ export default function PropertyForm({ initialData = null, onSubmit, onCancel, a
             placeholder="Property Name"
             value={formData.propertyName}
             onChange={(e) => handleChange("propertyName", e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm w-full"
+            className="border rounded-lg px-3 py-2 text-sm text-[#333333] w-full"
           />
           <input
             type="text"
             placeholder="Title"
             value={formData.title}
             onChange={(e) => handleChange("title", e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm w-full"
+            className="border rounded-lg px-3 py-2 text-sm text-[#333333] w-full"
           />
           <input
             type="number"
             placeholder="Price (₹)"
             value={formData.price}
             onChange={(e) => handleChange("price", e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm w-full"
+            className="border rounded-lg px-3 py-2 text-sm text-[#333333] w-full"
           />
           <select
             value={formData.marketType}
             onChange={(e) => handleChange("marketType", e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm w-full"
+            className="border rounded-lg px-3 py-2 text-sm  text-[#333333] w-full"
           >
             <option value="sale">For Sale</option>
             <option value="rent">For Rent</option>
@@ -155,7 +155,7 @@ export default function PropertyForm({ initialData = null, onSubmit, onCancel, a
           <select
             value={formData.catType}
             onChange={(e) => handleChange("propertyKind", e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm w-full"
+            className="border rounded-lg px-3 py-2 text-sm text-[#333333] w-full"
           >
             <option value="residential">Residential</option>
             <option value="commercial">Commercial</option>
@@ -179,7 +179,7 @@ export default function PropertyForm({ initialData = null, onSubmit, onCancel, a
           placeholder="Description"
           value={formData.description}
           onChange={(e) => handleChange("description", e.target.value)}
-          className="border rounded-lg px-3 py-2 text-sm w-full mt-3"
+          className="border rounded-lg px-3 py-2 text-sm  text-[#333333] w-full mt-3"
           rows={3}
         />
       </div>
@@ -199,7 +199,7 @@ export default function PropertyForm({ initialData = null, onSubmit, onCancel, a
                 placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
                 value={formData.address[key]}
                 onChange={(e) => handleChange(key, e.target.value, "address")}
-                className="border rounded-lg px-3 py-2 text-sm w-full capitalize"
+                className="border rounded-lg px-3 py-2 text-sm text-[#333333] w-full capitalize"
               />
             ))}
 
@@ -343,7 +343,7 @@ export default function PropertyForm({ initialData = null, onSubmit, onCancel, a
             placeholder="YouTube URL"
             value={formData.youtubeUrl}
             onChange={(e) => handleChange("youtubeUrl", e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm md:col-span-2"
+            className="border rounded-lg px-3 py-2 text-sm text-[#333333] md:col-span-2"
           />
         </div>
       </div>
