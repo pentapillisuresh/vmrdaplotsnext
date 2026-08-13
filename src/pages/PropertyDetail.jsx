@@ -20,9 +20,8 @@ const PropertyMap = dynamic(
     ssr: false,
   }
 );
-import getPhotoSrc from "../hooks/getPhotos";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
+import getPhotoSrc from "../hooks/getPhotos";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -1120,7 +1119,7 @@ useEffect(() => {
                           placeholder="Your Name"
                           onChange={handleChange}
                           required
-                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 bg-gray-50 focus:bg-white"
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 bg-gray-50 text-[#333333] focus:bg-white"
                         />
                       </div>
                       <div className="relative">

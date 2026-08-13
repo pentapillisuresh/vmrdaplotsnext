@@ -62,14 +62,14 @@ export default function PropertyMap({
       />
 
       <Marker position={position} icon={icon}>
-       <Tooltip
-  permanent
-  direction="bottom"
-  offset={[0, 15]}
-  interactive
-  opacity={1}
-  className="property-tooltip"
->
+        <Tooltip
+          permanent
+          direction="bottom"
+          offset={[0, 15]}
+          interactive
+          opacity={1}
+          className="property-tooltip"
+        >
           <div
             onClick={() => router.push(`/property/${slug}`)}
             className="cursor-pointer w-[260px] bg-white rounded-xl overflow-hidden shadow-xl"
@@ -85,7 +85,7 @@ export default function PropertyMap({
                 {title}
               </h3>
 
-             
+
 
               <p className="text-sm text-gray-500 mt-2">
                 📍 {location}

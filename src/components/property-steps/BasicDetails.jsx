@@ -244,7 +244,7 @@ const BasicDetails = ({ data, updateData, onNext, isEditMode }) => {
             placeholder={`Enter ${listingType.toLowerCase() === "sale" ? "Property Title" : "Apartment Name"} (${propertySubtype || 'Property'} for ${listingType.toLowerCase()})`}
             value={title}
             onChange={handleTitleChange}
-            className="w-full px-4 text-gray-600 py-2 border border-gray-300 rounded-lg font-roboto focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full px-4 text-gray-600 py-2 text-[#333333] border border-gray-300 rounded-lg font-roboto focus:outline-none focus:ring-2 focus:ring-orange-400"
             maxLength={70}
           />
           <div className="flex justify-between mt-1">

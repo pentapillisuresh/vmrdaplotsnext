@@ -258,7 +258,7 @@ const LoginFormContent = ({ onClose }) => {
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
                         disabled={otpSent}
-                        className={`w-full pl-8 sm:pl-9 pr-3 py-2 sm:py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-xs sm:text-sm ${
+                        className={`w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm text-[#333333] ${
                           otpSent ? 'bg-gray-100' : 'bg-white'
                         }`}
                         placeholder="Enter phone number"
@@ -303,7 +303,7 @@ const LoginFormContent = ({ onClose }) => {
                             type="text"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                            className="w-full pl-8 sm:pl-9 pr-3 py-2 sm:py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-xs sm:text-sm bg-white"
+                            className="w-full pl-9 pr-3 py-2.5 text-[#333333] border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm bg-white"
                             placeholder="Enter 6-digit OTP"
                             maxLength={6}
                           />
@@ -354,7 +354,7 @@ const LoginFormContent = ({ onClose }) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full px-4 py-2 sm:py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-xs sm:text-sm bg-white"
+                    className="w-full px-4 py-2.5 border text-[#333333] border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm bg-white"
                     placeholder="Enter your email"
                   />
                 </div>
@@ -369,7 +369,7 @@ const LoginFormContent = ({ onClose }) => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="w-full px-4 py-2 sm:py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none pr-8 sm:pr-10 transition-all duration-300 text-xs sm:text-sm bg-white"
+                      className="w-full px-4 py-2.5 border text-[#333333] border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none pr-10 transition-all duration-300 text-sm bg-white"
                       placeholder="Enter your password"
                     />
                     <button

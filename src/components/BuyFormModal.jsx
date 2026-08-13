@@ -163,7 +163,7 @@ const BuyFormModal = ({ isOpen, onClose, property }) => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
+                className="w-full border text-[#333333] border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
                 placeholder="Enter your full name"
               />
             </div>
@@ -179,7 +179,7 @@ const BuyFormModal = ({ isOpen, onClose, property }) => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
+                className="w-full border text-[#333333] border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
                 placeholder="Enter your email"
               />
             </div>
@@ -195,7 +195,7 @@ const BuyFormModal = ({ isOpen, onClose, property }) => {
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
+                className="w-full border text-[#333333] border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
                 placeholder="Enter your phone number"
               />
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 const PropertyCategories = ({ categories }) => {
@@ -20,7 +20,7 @@ const PropertyCategories = ({ categories }) => {
       const commercial = categories.filter(
         (cat) => cat.catType === "Commercial"
       );
-      
+
       // Sort residential categories
       const customOrder = [
         "Plot",
@@ -29,13 +29,13 @@ const PropertyCategories = ({ categories }) => {
         "Land",
         "FarmHouse"
       ];
-      
+
       const sortedResidential = residential.sort((a, b) => {
         const indexA = customOrder.indexOf(a.name);
         const indexB = customOrder.indexOf(b.name);
         return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
       });
-      
+
       setResidentialCategories(sortedResidential);
       setCommercialCategories(commercial);
     }
@@ -46,7 +46,7 @@ const PropertyCategories = ({ categories }) => {
     const queryString = new URLSearchParams({ categoryId }).toString();
     router.push(`/properties-list?${queryString}`);
   };
-  
+
   const handleCommercialClick = () => {
     router.push("/properties-list");
   };
@@ -119,11 +119,11 @@ const PropertyCategories = ({ categories }) => {
           </motion.div>
         </div>
 
-       
+
 
         {/* Residential Section */}
         <div className="mb-12">
-          <motion.div 
+          <motion.div
             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5"
             variants={containerVariants}
             initial="hidden"
@@ -142,21 +142,21 @@ const PropertyCategories = ({ categories }) => {
                   <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden z-10">
                     <div className="absolute top-0 right-0 w-16 h-16 bg-orange-500 transform rotate-45 translate-x-8 -translate-y-8"></div>
                   </div>
-                  
+
                   {/* Image Container */}
                   <div className="relative w-full h-40 flex items-center justify-center bg-gray-100 overflow-hidden">
                     <div className="absolute inset-0 bg-black/5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                     <img
-                      src={cat.photo || '/api/placeholder/200/200'}
+                      src={cat.photo || '/images/logo.jpg'}
                       alt={cat.name}
                       className="max-w-full max-h-full object-contain transform transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
                       loading="lazy"
                       onError={(e) => {
-                        e.target.src = '/api/placeholder/200/200';
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/images/logo.jpg';
                       }}
                     />
-
                     <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500 z-20"></div>
                     <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-700"></div>
                   </div>
@@ -184,7 +184,7 @@ const PropertyCategories = ({ categories }) => {
                   <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden z-10">
                     <div className="absolute top-0 right-0 w-16 h-16 bg-orange-500 transform rotate-45 translate-x-8 -translate-y-8"></div>
                   </div>
-                  
+
                   <div className="relative w-full h-40 flex items-center justify-center bg-gray-100 overflow-hidden">
                     <div className="absolute inset-0 bg-black/5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -194,7 +194,7 @@ const PropertyCategories = ({ categories }) => {
                       className="max-w-full max-h-full object-contain transform transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
                       loading="lazy"
                       onError={(e) => {
-                        e.target.src = '/api/placeholder/200/200';
+                        e.target.src = '/images/logo.jpg';
                       }}
                     />
 

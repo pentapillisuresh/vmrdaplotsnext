@@ -18,7 +18,7 @@ function ManageListingsContent() {
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingProperty, setEditingProperty] = useState(null);
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -48,7 +48,7 @@ function ManageListingsContent() {
   const fetchListings = async () => {
     try {
       const clientToken = localStorage.getItem("token");
-      
+
       // Fetch dashboard data to get client's properties
       const response = await ApiService.get('/dashboard/client', {
         headers: {
@@ -62,12 +62,14 @@ function ManageListingsContent() {
       // Access nested response.data.data safely
       if (response?.data) {
         const data = response.data;
-        const properties = data.properties || [];
-        
+        const properties = (data.properties || []).filter(
+          (property) => property.status !== "inactive"
+        );
+
         // Store client details
         localStorage.setItem("clientDetails", JSON.stringify(data.clientDetails));
         setClientDetails(data.clientDetails);
-        
+
         setListings(properties);
         setFilteredListings(properties);
         setTotalItems(properties.length);
@@ -86,7 +88,7 @@ function ManageListingsContent() {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchListings();
   }, []);
@@ -149,18 +151,18 @@ function ManageListingsContent() {
     const pageNumbers = [];
     const maxPagesToShow = 5;
     const halfMaxPages = Math.floor(maxPagesToShow / 2);
-    
+
     let startPage = Math.max(1, currentPage - halfMaxPages);
     let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-    
+
     if (endPage - startPage + 1 < maxPagesToShow) {
       startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(i);
     }
-    
+
     return pageNumbers;
   };
 
@@ -192,14 +194,14 @@ function ManageListingsContent() {
       setFilteredListings(prev => prev.filter((l) => l.id !== selectedListing?.id));
       setShowDeleteModal(false);
       setSelectedListing(null);
-      
+
       // Adjust current page if needed
       const newTotalItems = updatedListings.length;
       const newTotalPages = Math.ceil(newTotalItems / itemsPerPage);
       if (currentPage > newTotalPages && newTotalPages > 0) {
         setCurrentPage(newTotalPages);
       }
-      
+
       alert("Property deleted successfully!");
     } catch (error) {
       console.error('Error deleting listing:', error);
@@ -318,7 +320,7 @@ function ManageListingsContent() {
                 placeholder="Search by title or location..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                className="w-full pl-10 pr-4  text-[#333333] py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -393,7 +395,7 @@ function ManageListingsContent() {
                         />
                       </SoldOutOverlay>
                     </div>
-                   
+
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-3">
                         <div>
@@ -411,8 +413,7 @@ function ManageListingsContent() {
                           </p>
                         </div>
                         <span
-                          className={`px-4 py-1 rounded-full text-sm font-medium ${
-                            listing?.isSold
+                          className={`px-4 py-1 rounded-full text-sm font-medium ${listing?.isSold
                               ? 'bg-red-100 text-red-700'
                               : listing?.status === 'verified'
                                 ? 'bg-green-100 text-green-700'
@@ -421,7 +422,7 @@ function ManageListingsContent() {
                                   : listing?.status === 'pending'
                                     ? 'bg-yellow-100 text-yellow-700'
                                     : 'bg-gray-100 text-gray-700'
-                          }`}
+                            }`}
                         >
                           {listing?.isSold ? 'Sold' : listing?.status?.charAt(0).toUpperCase() + listing?.status?.slice(1) || 'Unknown'}
                         </span>
@@ -503,7 +504,7 @@ function ManageListingsContent() {
                           Delete
                         </button>
 
-                        <button 
+                        <button
                           className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
                           onClick={() => handleViewDetails(listing)}
                         >
@@ -546,45 +547,42 @@ function ManageListingsContent() {
                   <div className="text-sm text-gray-600">
                     Showing {startItem} to {endItem} of {totalItems} listings
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     {/* Previous Button */}
                     <button
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className={`p-2 rounded-lg border transition-colors ${
-                        currentPage === 1
+                      className={`p-2 rounded-lg border transition-colors ${currentPage === 1
                           ? 'border-gray-200 text-gray-400 cursor-not-allowed'
                           : 'border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
-                      }`}
+                        }`}
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    
+
                     {/* Page Numbers */}
                     {getPageNumbers().map((pageNum) => (
                       <button
                         key={pageNum}
                         onClick={() => handlePageChange(pageNum)}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                          currentPage === pageNum
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === pageNum
                             ? 'bg-orange-500 text-white'
                             : 'border border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
-                        }`}
+                          }`}
                       >
                         {pageNum}
                       </button>
                     ))}
-                    
+
                     {/* Next Button */}
                     <button
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className={`p-2 rounded-lg border transition-colors ${
-                        currentPage === totalPages
+                      className={`p-2 rounded-lg border transition-colors ${currentPage === totalPages
                           ? 'border-gray-200 text-gray-400 cursor-not-allowed'
                           : 'border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
-                      }`}
+                        }`}
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>

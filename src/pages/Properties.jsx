@@ -3,25 +3,7 @@
 import React, { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import {
-  Home, MapPin, Bath, Bed, Maximize,
-  ChevronLeft, ChevronRight,
-  Filter,
-  Search,
-  X,
-  ChevronDown,
-  Building2,
-  DollarSign,
-  ArrowUpDown,
-  Tag,
-  Award,
-  Clock,
-  TrendingUp,
-  Play,
-  Pause,
-  Image as ImageIcon,
-  Video
-} from "lucide-react";
+import {Home, MapPin, Bath, Bed, Maximize,ChevronLeft, ChevronRight,Filter,Search,X,ChevronDown,Building2,DollarSign,ArrowUpDown,Tag,Award,Clock,TrendingUp,Play,Pause,Image as ImageIcon,Video} from "lucide-react";
 import ApiService from "../hooks/ApiService";
 
 function PropertiesContent() {
@@ -34,9 +16,10 @@ function PropertiesContent() {
   const localityFromUrl = searchParams.get('locality');
   const priceRangeFromUrl = searchParams.get('priceRange');
   
+  console.log("categoryIdFromUrl:::",categoryIdFromUrl);
   const [categories, setCategories] = useState([])
   // States
-  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]); 
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -452,8 +435,7 @@ function PropertiesContent() {
                   value={filters.categoryId}
                   onChange={handleChange}
                   name="categoryId"
-                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
-                >
+                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"                >
                   <option value="">All Categories</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
@@ -476,7 +458,7 @@ function PropertiesContent() {
                   name="city"
                   value={filters.city}
                   onChange={handleChange}
-                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
+                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
                   <option value="">All Cities</option>
                   {cities?.map((c) => (
@@ -501,7 +483,7 @@ function PropertiesContent() {
                   value={filters.locality}
                   onChange={handleChange}
                   disabled={!filters.city}
-                  className={`w-full px-3 py-1.5 border rounded-lg text-xs focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8 ${
+                  className={`w-full px-3 py-1.5 border rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8 ${
                     !filters.city 
                       ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed" 
                       : "bg-gray-50 border-gray-200"
@@ -535,7 +517,7 @@ function PropertiesContent() {
                   name="priceRange"
                   value={filters.priceRange}
                   onChange={handleChange}
-                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
+                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
                   <option value="all">All Prices</option>
                   <option value="0-5000000">Under ₹50 Lac</option>
@@ -557,7 +539,7 @@ function PropertiesContent() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
+                  className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
                   <option value="newest">Newest First</option>
                   <option value="price-low">Price: Low to High</option>
