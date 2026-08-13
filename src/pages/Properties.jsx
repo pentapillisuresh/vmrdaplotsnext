@@ -524,10 +524,12 @@ function PropertiesContent() {
 
             {/* Price Range */}
             <div className="mb-3">
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                <DollarSign className="w-3.5 h-3.5 text-orange-500" />
-                Price Range
-              </label>
+           
+<label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+  <span className="text-orange-500 font-bold text-sm">₹</span>
+  Price Range
+</label>
+
               <div className="relative">
                 <select
                   name="priceRange"

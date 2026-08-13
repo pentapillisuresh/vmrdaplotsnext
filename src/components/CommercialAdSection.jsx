@@ -11,7 +11,7 @@ const CommercialAdSection = () => {
   const [commercialAds, setCommercialAds] = useState("");
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
+ const [isMuted, setIsMuted] = useState(true);
   const [videoRef, setVideoRef] = useState(null);
 
   // Initialize AOS animations
@@ -80,7 +80,7 @@ const CommercialAdSection = () => {
           key={commercialAds || "fallback"}
           autoPlay
           loop
-          muted={false}
+        muted={true}
           playsInline
           className="w-full h-full object-cover"
         >

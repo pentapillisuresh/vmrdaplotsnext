@@ -38,9 +38,9 @@ const AreaSelector = () => {
     <div className="py-12 px-4 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto">
         {/* Header with animation */}
-        <div className="text-center mb-12 overflow-hidden">
-          <div className="inline-flex items-center justify-center mb-4 opacity-0 animate-fadeInDown">
-              <div className="flex items-center justify-center mb-4">
+        <div className="text-center overflow-hidden">
+          <div className="inline-flex items-center justify-center  opacity-0 animate-fadeInDown">
+              <div className="flex items-center justify-center ">
             <div className="text-center mb-6 sm:mb-10">
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
@@ -58,20 +58,7 @@ const AreaSelector = () => {
        
         </div>
 
-        {/* Navigation Breadcrumb */}
-        <div className="mb-8 px-2 opacity-0 animate-fadeIn animation-delay-300">
-          <nav className="flex items-center text-sm text-gray-500">
-            <Link href="/" className="hover:text-[#001F3F] transition-colors duration-200">Home</Link>
-            <svg className="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            <Link href="/areas" className="hover:text-[#001F3F] transition-colors duration-200">Areas</Link>
-            <svg className="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            <span className="text-[#001F3F] font-medium">Vizag Areas</span>
-          </nav>
-        </div>
+       
 
         {/* Areas Grid - 5 columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

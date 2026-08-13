@@ -40,14 +40,14 @@ const SocialIcons = {
   share: "https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/share-2.svg"
 };
 
-function PropertyDetailContent({ title: propTitle }) {
+function PropertyDetailContent({ propTitle, initialProperty }) {
   const slug = propTitle;
   const router = useRouter();
   const swiperRef = useRef(null);
   const videoRef = useRef(null);
 
-  const [loading, setLoading] = useState(true);
-  const [property, setProperty] = useState(null);
+  const [loading, setLoading] = useState(false);
+const [property, setProperty] = useState(initialProperty);
   const [selectedImage, setSelectedImage] = useState(0);
   const [page, setPage] = useState(1);
   const [similarProperties, setSimilarProperties] = useState([]);
@@ -291,42 +291,34 @@ function PropertyDetailContent({ title: propTitle }) {
   };
 
   // Fetch property by slug/title
-  useEffect(() => {
-    if (slug) {
-      const storedProp = sessionStorage.getItem('selectedProperty');
-      if (storedProp) {
-        const parsedProp = JSON.parse(storedProp);
-        setProperty(parsedProp);
-        sessionStorage.removeItem('selectedProperty');
-        setLoading(false);
-        window.scrollTo(0, 0);
-      } else {
-        fetchPropertyBySlug();
-      }
-    }
-  }, [slug]);
+useEffect(() => {
+  if (initialProperty) {
+    setProperty(initialProperty);
+    window.scrollTo(0, 0);
+  }
+}, [initialProperty]);
 
-  const fetchPropertyBySlug = async () => {
-    try {
-      setLoading(true);
-      const decodedTitle = slugToTitle(slug);
+  // const fetchPropertyBySlug = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const decodedTitle = slugToTitle(slug);
 
-      const response = await ApiService.get(`/properties/getBySlug/${slug}`);
+  //     const response = await ApiService.get(`/properties/getBySlug/${slug}`);
 
-      if (response?.property) {
-        setProperty(response?.property);
-        window.scrollTo(0, 0);
-      } else {
-        console.error("Property not found with slug:", slug);
-        router.push('/properties-list');
-      }
-    } catch (error) {
-      console.error('Error fetching property by slug:', error);
-      router.push('/properties-list');
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (response?.property) {
+  //       setProperty(response?.property);
+  //       window.scrollTo(0, 0);
+  //     } else {
+  //       console.error("Property not found with slug:", slug);
+  //       router.push('/properties-list');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching property by slug:', error);
+  //     router.push('/properties-list');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Fetch client details when property is loaded
   useEffect(() => {
@@ -621,13 +613,10 @@ function PropertyDetailContent({ title: propTitle }) {
                       />
                     ) : (
                       <img
-                        src={getMediaUrl(selectedImage)}
-                        alt={property?.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/800x600?text=No+Image";
-                        }}
-                      />
+  src={getMediaUrl(selectedImage)}
+  alt={`${property?.title} - ${address?.locality || ""}, ${address?.city || ""}`}
+  className="w-full h-full object-cover"
+/>
                     )}
                   </>
                 ) : (
@@ -710,7 +699,7 @@ function PropertyDetailContent({ title: propTitle }) {
                         ) : (
                           <img
                             src={item}
-                            alt={`View ${idx + 1}`}
+                            alt={`${property?.title} - ${address?.locality || ""} - image ${idx + 1}`}
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               e.target.src = "https://via.placeholder.com/100x100?text=No+Image";
@@ -1079,7 +1068,7 @@ function PropertyDetailContent({ title: propTitle }) {
 
                 <div className="p-6">
                   {/* Contact Details - Always Visible with Role */}
-                  <div className="space-y-3">
+                  {/* <div className="space-y-3">
                     {displayClient?.phoneNumber && (
                       <div className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl">
                         <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
@@ -1113,10 +1102,10 @@ function PropertyDetailContent({ title: propTitle }) {
                         <p className="text-sm text-gray-500">Contact details not available</p>
                       </div>
                     )}
-                  </div>
+                  </div> */}
 
                   {/* Schedule a Visit Form */}
-                  <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="">
                     <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                       <Calendar size={18} className="text-orange-500" />
                       Schedule a Visit
@@ -1370,7 +1359,7 @@ const Sparkles = ({ className }) => (
 );
 
 // PropertyDetail.js - Update the main export
-export default function PropertyDetail({ title }) {
+export default function PropertyDetail({ title, initialProperty }) {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -1380,7 +1369,10 @@ export default function PropertyDetail({ title }) {
         </div>
       </div>
     }>
-      <PropertyDetailContent title={title} />
+      <PropertyDetailContent
+  propTitle={title}
+  initialProperty={initialProperty}
+/>
     </Suspense>
   );
 }

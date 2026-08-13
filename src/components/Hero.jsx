@@ -75,7 +75,7 @@ const Hero = () => {
   };
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="relative h-[70vh] sm:h-[80vh] md:h-[85vh] lg:h-screen overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={slides[current].id}
@@ -106,7 +106,7 @@ const Hero = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
             </motion.div>
           )}
           
@@ -134,7 +134,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-black/50 z-10" />
 
       {/* Text Content */}
-      <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-4">
+      <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-4 sm:px-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={slides[current].id}
@@ -156,10 +156,10 @@ const Hero = () => {
                 ease: "easeIn"
               }
             }}
-            className="max-w-5xl"
+            className="max-w-5xl px-2 sm:px-4"
           >
             <motion.h1 
-              className="text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-4 drop-shadow-2xl leading-tight"
+              className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-2 sm:mb-3 md:mb-4 drop-shadow-2xl leading-tight"
               initial={{ opacity: 0, y: 20 }}
               animate={{ 
                 opacity: 1, 
@@ -201,10 +201,10 @@ const Hero = () => {
                   ease: "easeIn"
                 }
               }}
-              className="max-w-3xl mx-auto"
+              className="max-w-3xl mx-auto px-2"
             >
               <motion.p 
-                className="text-sm md:text-lg font-light text-gray-200/90 mb-8 leading-relaxed"
+                className="text-xs sm:text-sm md:text-base lg:text-lg font-light text-gray-200/90 mb-4 sm:mb-6 md:mb-8 leading-relaxed line-clamp-3 sm:line-clamp-none"
               >
                 {slides[current].subtitle}
               </motion.p>
@@ -229,12 +229,12 @@ const Hero = () => {
                   ease: "easeIn"
                 }
               }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 md:gap-4 px-2"
             >
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white text-gray-900 px-8 py-4 rounded-full font-semibold shadow-2xl hover:bg-gray-50 transition-all duration-300 text-base md:text-lg tracking-wide"
+                className="bg-white text-gray-900 px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 rounded-full font-semibold shadow-2xl hover:bg-gray-50 transition-all duration-300 text-xs sm:text-sm md:text-base lg:text-lg tracking-wide w-full sm:w-auto"
                 onClick={() => router.push("/properties-list")}
               >
                 Explore Premium Plots
@@ -243,7 +243,7 @@ const Hero = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="border-2 border-white/60 text-white px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-all duration-300 backdrop-blur-sm text-base md:text-lg tracking-wide"
+                className="border-2 border-white/60 text-white px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 rounded-full font-semibold hover:bg-white/10 transition-all duration-300 backdrop-blur-sm text-xs sm:text-sm md:text-base lg:text-lg tracking-wide w-full sm:w-auto"
                 onClick={() => router.push("/contact")}
               >
                 Contact Us
@@ -254,15 +254,15 @@ const Hero = () => {
       </div>
 
       {/* Navigation Dots */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-4">
+      <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-3 sm:space-x-4">
         {slides.map((_, index) => (
           <motion.button
             key={index}
             onClick={() => handleSlideChange(index)}
             className={`transition-all duration-500 ${
               current === index
-                ? "w-12 h-1.5 bg-white shadow-lg"
-                : "w-3 h-1.5 bg-white/40 hover:bg-white/60"
+                ? "w-8 sm:w-10 md:w-12 h-1.5 bg-white shadow-lg"
+                : "w-2 sm:w-2.5 md:w-3 h-1.5 bg-white/40 hover:bg-white/60"
             }`}
             whileHover={{ scaleY: 1.5 }}
             whileTap={{ scale: 0.9 }}
@@ -272,7 +272,7 @@ const Hero = () => {
 
       {/* Slide Counter - Premium Touch */}
       <motion.div 
-        className="absolute bottom-8 right-8 z-30 text-white/60 text-sm tracking-widest font-light hidden md:block"
+        className="absolute bottom-4 sm:bottom-6 md:bottom-8 right-4 sm:right-6 md:right-8 z-30 text-white/60 text-xs sm:text-sm tracking-widest font-light hidden sm:block"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}

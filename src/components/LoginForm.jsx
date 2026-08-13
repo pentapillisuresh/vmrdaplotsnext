@@ -160,8 +160,8 @@ const LoginFormContent = ({ onClose }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[520px]">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4">
+      <div className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[480px] sm:min-h-[520px]">
         {/* Left Side - Only Image, No Text, No Overlay */}
         <div 
           className="hidden md:block md:w-1/2 bg-cover bg-center bg-no-repeat"
@@ -171,15 +171,15 @@ const LoginFormContent = ({ onClose }) => {
         />
 
         {/* Right Side - Login Form with Fixed Min Height */}
-        <div className="w-full md:w-1/2 p-8 md:p-10 flex items-center">
-          <div className="w-full max-w-sm mx-auto space-y-5 min-h-[400px] flex flex-col justify-center">
+        <div className="w-full md:w-1/2 p-5 sm:p-6 md:p-8 lg:p-10 flex items-center">
+          <div className="w-full max-w-sm mx-auto space-y-4 sm:space-y-5 min-h-[350px] sm:min-h-[400px] flex flex-col justify-center">
             <div>
-              <h3 className="text-2xl font-bold text-gray-900">Welcome Back!</h3>
-              <p className="text-sm text-gray-500 mt-1">Login to your account to continue</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Welcome Back!</h3>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1">Login to your account to continue</p>
             </div>
 
             {/* Login Method Tabs - Rounded Full */}
-            <div className="flex gap-2 bg-gray-100 p-1 rounded-full">
+            <div className="flex gap-1.5 sm:gap-2 bg-gray-100 p-1 rounded-full">
               <button
                 onClick={() => {
                   setLoginMethod('phone');
@@ -188,14 +188,15 @@ const LoginFormContent = ({ onClose }) => {
                   setOtpSent(false);
                   setOtp('');
                 }}
-                className={`flex-1 py-2.5 px-4 rounded-full text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
+                className={`flex-1 py-2 sm:py-2.5 px-2 sm:px-4 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2 ${
                   loginMethod === 'phone'
                     ? 'bg-white text-gray-900 shadow-md'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                <Phone className="w-4 h-4" />
-                Login with Phone
+                <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">Login with Phone</span>
+                <span className="xs:hidden">Phone</span>
               </button>
               <button
                 onClick={() => {
@@ -205,61 +206,62 @@ const LoginFormContent = ({ onClose }) => {
                   setOtpSent(false);
                   setOtp('');
                 }}
-                className={`flex-1 py-2.5 px-4 rounded-full text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
+                className={`flex-1 py-2 sm:py-2.5 px-2 sm:px-4 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2 ${
                   loginMethod === 'email'
                     ? 'bg-white text-gray-900 shadow-md'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                <Mail className="w-4 h-4" />
-                Login with Email
+                <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">Login with Email</span>
+                <span className="xs:hidden">Email</span>
               </button>
             </div>
 
             {/* Error Display - Fixed Height Container */}
-            <div className="min-h-[52px]">
+            <div className="min-h-[44px] sm:min-h-[52px]">
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-full text-sm flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  {error}
+                <div className="bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm flex items-center gap-2">
+                  <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">{error}</span>
                 </div>
               )}
 
               {otpError && (
-                <div className={`border px-4 py-2.5 rounded-full text-sm flex items-center gap-2 ${
+                <div className={`border px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm flex items-center gap-2 ${
                   otpError.includes('successfully') 
                     ? 'bg-green-50 border-green-200 text-green-700'
                     : 'bg-red-50 border-red-200 text-red-700'
                 }`}>
                   {otpError.includes('successfully') ? (
-                    <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                    <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                   ) : (
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                   )}
-                  {otpError}
+                  <span className="truncate">{otpError}</span>
                 </div>
               )}
             </div>
 
             {/* Phone Login - Fixed Height Container */}
             {loginMethod === 'phone' && (
-              <div className="space-y-3 min-h-[180px]">
+              <div className="space-y-3 min-h-[160px] sm:min-h-[180px]">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
                     Phone Number
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col xs:flex-row gap-2">
                     <div className="flex-1 relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
                       <input
                         type="tel"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
                         disabled={otpSent}
-                        className={`w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm ${
+                        className={`w-full pl-8 sm:pl-9 pr-3 py-2 sm:py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-xs sm:text-sm ${
                           otpSent ? 'bg-gray-100' : 'bg-white'
                         }`}
-                        placeholder="Enter your phone number"
+                        placeholder="Enter phone number"
                         maxLength={10}
                       />
                     </div>
@@ -268,7 +270,7 @@ const LoginFormContent = ({ onClose }) => {
                         type="button"
                         onClick={sendOTP}
                         disabled={otpLoading || phoneNumber.length < 10}
-                        className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap text-sm"
+                        className="px-4 sm:px-6 py-2 sm:py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap text-xs sm:text-sm w-full xs:w-auto"
                       >
                         {otpLoading ? 'Sending...' : 'Send OTP'}
                       </button>
@@ -280,7 +282,7 @@ const LoginFormContent = ({ onClose }) => {
                           setOtp('');
                           setOtpError('');
                         }}
-                        className="px-6 py-2.5 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg text-sm"
+                        className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg text-xs sm:text-sm w-full xs:w-auto"
                       >
                         Change
                       </button>
@@ -291,17 +293,17 @@ const LoginFormContent = ({ onClose }) => {
                 {otpSent && (
                   <div className="space-y-2 animate-fadeIn">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
                         Enter OTP
                       </label>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col xs:flex-row gap-2">
                         <div className="flex-1 relative">
-                          <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
                           <input
                             type="text"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                            className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm bg-white"
+                            className="w-full pl-8 sm:pl-9 pr-3 py-2 sm:py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-xs sm:text-sm bg-white"
                             placeholder="Enter 6-digit OTP"
                             maxLength={6}
                           />
@@ -310,12 +312,12 @@ const LoginFormContent = ({ onClose }) => {
                           type="button"
                           onClick={verifyOTP}
                           disabled={otpLoading || otp.length < 6}
-                          className="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center gap-2 text-sm"
+                          className="px-4 sm:px-6 py-2 sm:py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-full xs:w-auto"
                         >
                           {otpLoading ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                            <div className="animate-spin rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 border-2 border-white border-t-transparent"></div>
                           ) : (
-                            <><Send className="w-4 h-4" /> Verify</>
+                            <><Send className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Verify</>
                           )}
                         </button>
                       </div>
@@ -326,7 +328,7 @@ const LoginFormContent = ({ onClose }) => {
                         type="button"
                         onClick={resendOTP}
                         disabled={timer > 0}
-                        className={`text-sm font-medium transition-colors ${
+                        className={`text-xs sm:text-sm font-medium transition-colors ${
                           timer > 0 
                             ? 'text-gray-400 cursor-not-allowed' 
                             : 'text-orange-500 hover:text-orange-600'
@@ -342,9 +344,9 @@ const LoginFormContent = ({ onClose }) => {
 
             {/* Email Login - Fixed Height Container */}
             {loginMethod === 'email' && (
-              <form onSubmit={handleEmailSubmit} className="space-y-3 min-h-[230px]">
+              <form onSubmit={handleEmailSubmit} className="space-y-3 min-h-[200px] sm:min-h-[230px]">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
                     Email Address
                   </label>
                   <input
@@ -352,13 +354,13 @@ const LoginFormContent = ({ onClose }) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm bg-white"
+                    className="w-full px-4 py-2 sm:py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-xs sm:text-sm bg-white"
                     placeholder="Enter your email"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
                     Password
                   </label>
                   <div className="relative">
@@ -367,7 +369,7 @@ const LoginFormContent = ({ onClose }) => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none pr-10 transition-all duration-300 text-sm bg-white"
+                      className="w-full px-4 py-2 sm:py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none pr-8 sm:pr-10 transition-all duration-300 text-xs sm:text-sm bg-white"
                       placeholder="Enter your password"
                     />
                     <button
@@ -377,23 +379,23 @@ const LoginFormContent = ({ onClose }) => {
                       tabIndex={-1}
                     >
                       {showPassword ? (
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       ) : (
-                        <EyeOff className="h-4 w-4" />
+                        <EyeOff className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       )}
                     </button>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-sm">
+                <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 text-xs sm:text-sm">
                   <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
                     />
-                    <span className="ml-2 text-gray-500">Remember me</span>
+                    <span className="ml-1.5 sm:ml-2 text-gray-500">Remember me</span>
                   </label>
-                  <a href="#" className="text-orange-500 hover:text-orange-600 font-medium transition-colors">
+                  <a href="#" className="text-orange-500 hover:text-orange-600 font-medium transition-colors text-xs sm:text-sm">
                     Forgot Password?
                   </a>
                 </div>
@@ -401,11 +403,11 @@ const LoginFormContent = ({ onClose }) => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2.5 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 sm:py-2.5 rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center gap-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      <div className="animate-spin rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 border-2 border-white border-t-transparent"></div>
                       Signing in...
                     </div>
                   ) : (
@@ -427,16 +429,16 @@ const LoginFormContent = ({ onClose }) => {
 
             {/* Register Button - Rounded Full */}
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2">
                 Don't have an account?
               </p>
               <button
                 onClick={() => router.push('/select-user-type')}
-                className="inline-flex items-center justify-center gap-2 w-full px-6 py-2.5 border-2 border-orange-500 hover:bg-orange-500 text-orange-500 hover:text-white font-semibold rounded-full transition-all duration-300 group text-sm"
+                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 w-full px-4 sm:px-6 py-2 sm:py-2.5 border-2 border-orange-500 hover:bg-orange-500 text-orange-500 hover:text-white font-semibold rounded-full transition-all duration-300 group text-xs sm:text-sm"
               >
-                <UserPlus className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:rotate-12 transition-transform" />
                 Register Now
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
             </div>
           </div>

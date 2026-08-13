@@ -82,9 +82,9 @@ const LocationsSection = ({ cityLocalities }) => {
           </div>
         </div>
 
-        {/* Locations Grid */}
+        {/* Locations Grid - 3 columns */}
         <div
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
           data-aos="fade-up"
           data-aos-delay="200"
         >
@@ -92,8 +92,8 @@ const LocationsSection = ({ cityLocalities }) => {
             const areas = location.localities || [];
             const displayAreas = expandedCards[location.city] 
               ? areas 
-              : areas.slice(0, 10);
-            const hasMoreAreas = areas.length > 10;
+              : areas.slice(0, 4); // Changed from 10 to 4
+            const hasMoreAreas = areas.length > 4; // Changed from 10 to 4
 
             return (
               <div 
@@ -126,19 +126,16 @@ const LocationsSection = ({ cityLocalities }) => {
                     </span>
                   </div>
                   
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2 text-gray-700 leading-relaxed">
+                  {/* Areas in a row with reduced font size */}
+                  <div className="flex flex-wrap gap-1 sm:gap-1.5 text-gray-700 leading-relaxed">
                     {displayAreas.map((area, index) => (
-                      <React.Fragment key={index}>
-                        <span
-                          className="hover:text-orange-500 cursor-pointer transition-all duration-300 text-xs sm:text-sm font-medium text-gray-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full hover:bg-orange-50 hover:shadow-sm border border-gray-200 hover:border-orange-300"
-                          onClick={() => handleAreaClick(location.city, area)}
-                        >
-                          PLOTS IN {area.toUpperCase()}
-                        </span>
-                        {index < displayAreas.length - 1 && (
-                          <span className="text-gray-300 text-[10px] sm:text-xs hidden sm:inline">•</span>
-                        )}
-                      </React.Fragment>
+                      <span
+                        key={index}
+                        className="hover:text-orange-500 cursor-pointer transition-all duration-300 text-[10px] sm:text-xs font-medium text-gray-700 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full hover:bg-orange-50 hover:shadow-sm border border-gray-200 hover:border-orange-300"
+                        onClick={() => handleAreaClick(location.city, area)}
+                      >
+                        {area.toUpperCase()}
+                      </span>
                     ))}
                   </div>
 
@@ -156,7 +153,7 @@ const LocationsSection = ({ cityLocalities }) => {
                           </>
                         ) : (
                           <>
-                            <span>View More ({areas.length - 10} more)</span>
+                            <span>View More ({areas.length - 4} more)</span>
                             <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
                           </>
                         )}
@@ -213,7 +210,7 @@ const LocationsSection = ({ cityLocalities }) => {
           </button>
         </div>
 
-        {/* Stats Section */}
+        {/* Stats Section - 3 Cards in a Row */}
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-12 sm:mt-16 md:mt-20"
           data-aos="fade-up"
@@ -248,7 +245,7 @@ const LocationsSection = ({ cityLocalities }) => {
           </div>
 
           {/* Card 3 */}
-          <div className="bg-white rounded-2xl shadow-md text-center p-6 sm:p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group sm:col-span-2 lg:col-span-1">
+          <div className="bg-white rounded-2xl shadow-md text-center p-6 sm:p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
             <div
               className="flex justify-center items-center mx-auto w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-orange-100 group-hover:bg-orange-500 transition-colors duration-300 mb-3 sm:mb-4"
               data-aos="zoom-in"
