@@ -8,20 +8,20 @@ const slides = [
   {
     id: 1,
     image: "/images/banner1.png",
-    title: "OWN A PREMIUM PLOT NEAR VIZAG'S ICONIC COASTLINE",
-    subtitle: "Invest in DTCP & VMRDA approved plots close to RK Beach, Kailasagiri, and the rapidly developing Visakhapatnam corridor. Secure your future in one of Andhra Pradesh's most sought-after locations.",
+    title: "Vizag's Trusted Free Property Listing Portal",
+    subtitle: "Connect with Owners • Builders • Real Estate Agents. Investors",
   },
   {
     id: 2,
     image: "/images/banner2.png",
-    title: "INVEST NEAR BHOGAPURAM INTERNATIONAL AIRPORT",
-    subtitle: "Be part of Vizag's next growth destination. Premium VMRDA-approved plots near the upcoming international airport with excellent connectivity and high appreciation potential.",
+    title: "INVEST IN VIZAG",
+    subtitle: "The Best Property Platform for Investors & NRIs 100% Verified Property Listings",
   },
   {
     id: 3,
     image: "/images/banner3.png",
-    title: "OWN LAND IN VIZAG'S EMERGING TECHNOLOGY CORRIDOR",
-    subtitle: "Position your investment near Vizag's fast-growing IT and infrastructure hub. Benefit from future-ready developments, expanding employment opportunities, and long-term land value growth.",
+    title: "Buy & Sell Properties in Visakhapatnam",
+    subtitle: "Plots • Flats • Houses • Villas • Commercial Properties Find • List • Buy • Sell Properties Across Vizag",
   },
 ];
 

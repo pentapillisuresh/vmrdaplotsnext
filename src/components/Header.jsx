@@ -474,7 +474,11 @@ const Header = () => {
         >
           <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8">
             <div className="py-4">
-              <SearchBar setResults={setSearchResults} />
+              <SearchBar 
+                key={searchKey}
+                setResults={setSearchResults} 
+                onClose={handleSearchClose}
+              />
             </div>
           </div>
         </div>

@@ -134,7 +134,7 @@ const LocationsSection = ({ cityLocalities }) => {
                         className="hover:text-orange-500 cursor-pointer transition-all duration-300 text-[10px] sm:text-xs font-medium text-gray-700 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full hover:bg-orange-50 hover:shadow-sm border border-gray-200 hover:border-orange-300"
                         onClick={() => handleAreaClick(location.city, area)}
                       >
-                        {area.toUpperCase()}
+                       PLOTS IN {area.toUpperCase()}
                       </span>
                     ))}
                   </div>

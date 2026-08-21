@@ -217,11 +217,11 @@ function Properties() {
                 onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg"
               >
-                <option value="all">All Prices</option>
-                <option value="0-5000000">Under ₹50 Lac</option>
-                <option value="5000000-10000000">₹50 Lac - ₹1 Cr</option>
-                <option value="10000000-20000000">₹1 Cr - ₹2 Cr</option>
-                <option value="20000000-99999999">Above ₹2 Cr</option>
+               <option value="">Any Price</option>
+<option value="0-2500000">Below ₹25L</option>
+<option value="2500000-5000000">₹25L - ₹50L</option>
+<option value="5000000-10000000">₹50L - ₹1Cr</option>
+<option value="10000000-99999999">Above ₹1Cr</option>
               </select>
             </div>
 

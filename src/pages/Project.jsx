@@ -541,11 +541,11 @@ function ProjectsContent() {
                   onChange={handleChange}
                   className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
-                  <option value="all">All Prices</option>
-                  <option value="0-5000000">Under ₹50 Lac</option>
-                  <option value="5000000-10000000">₹50 Lac - ₹1 Cr</option>
-                  <option value="10000000-20000000">₹1 Cr - ₹2 Cr</option>
-                  <option value="20000000-99999999">Above ₹2 Cr</option>
+                <option value="">Any Price</option>
+<option value="0-2500000">Below ₹25L</option>
+<option value="2500000-5000000">₹25L - ₹50L</option>
+<option value="5000000-10000000">₹50L - ₹1Cr</option>
+<option value="10000000-99999999">Above ₹1Cr</option>
                 </select>
                 <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
               </div>

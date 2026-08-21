@@ -189,7 +189,7 @@ const PropertyCategories = ({ categories }) => {
                     <div className="absolute inset-0 bg-black/5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                     <img
-                      src="https://service.vmrdaplots.com/api/uploads/category/commercial.png"
+                      src="./images/commercial.png"
                       alt="Commercial"
                       className="max-w-full max-h-full object-contain transform transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
                       loading="lazy"

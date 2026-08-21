@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import {Home, MapPin, Bath, Bed, Maximize,ChevronLeft, ChevronRight,Filter,Search,X,ChevronDown,Building2,DollarSign,ArrowUpDown,Tag,Award,Clock,TrendingUp,Play,Pause,Image as ImageIcon,Video} from "lucide-react";
+import {Home, MapPin, Bath, Bed, Maximize,ChevronLeft, ChevronRight,Filter,Search,X,ChevronDown,Building2,DollarSign,ArrowUpDown,Tag,Award,Clock,TrendingUp,Play,Pause,Image as ImageIcon,Video, Compass, CheckCircle} from "lucide-react";
 import ApiService from "../hooks/ApiService";
 
 function PropertiesContent() {
@@ -519,11 +519,12 @@ function PropertiesContent() {
                   onChange={handleChange}
                   className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
-                  <option value="all">All Prices</option>
-                  <option value="0-5000000">Under ₹50 Lac</option>
-                  <option value="5000000-10000000">₹50 Lac - ₹1 Cr</option>
-                  <option value="10000000-20000000">₹1 Cr - ₹2 Cr</option>
-                  <option value="20000000-99999999">Above ₹2 Cr</option>
+                
+                <option value="">Any Price</option>
+<option value="0-2500000">Below ₹25L</option>
+<option value="2500000-5000000">₹25L - ₹50L</option>
+<option value="5000000-10000000">₹50L - ₹1Cr</option>
+<option value="10000000-99999999">Above ₹1Cr</option>
                 </select>
                 <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
               </div>
@@ -782,33 +783,52 @@ function PropertiesContent() {
               </div>
             </div>
           )}
-
-          {/* Debug Info */}
-          {/* <div className="mt-4 p-3 bg-gray-100 rounded-lg text-xs">
-            <p><strong>Debug Info:</strong></p>
-            <p>Total Count: {totalCount}</p>
-            <p>Total Pages: {totalPages}</p>
-            <p>Current Page: {page}</p>
-            <p>Items Per Page: {itemsPerPage}</p>
-            <p>Properties on this page: {filteredProperties.length}</p>
-            <p>Show Pagination: {totalPages > 1 ? 'Yes ✅' : 'No ❌'}</p>
-            <p className="mt-1 text-orange-600">
-              <strong>Note:</strong> The API is not returning total count. 
-              We're fetching all properties to calculate pagination.
-            </p>
-          </div> */}
         </main>
       </div>
     </div>
   );
 }
 
-/* PROPERTY CARD – Videos First, then Images */
+/* PROPERTY CARD – with Key Features (Plot Area, Per Sq Yard, Facing) and Approved By */
 function PropertyCard({ property, formatPrice, onPropertyClick }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef(null);
+
+  // Get category and profile info - Check multiple locations
+  const categoryName = property?.category?.name || '';
+  const profile = property?.profile || {};
+  
+  // Check if it's a Plot/Land category
+  const isPlot = categoryName.toLowerCase() === "plot" || 
+                 categoryName.toLowerCase() === "land" || 
+                 categoryName.toLowerCase() === "commercial land";
+
+  // Try to get values from multiple possible locations
+  const plotArea = profile?.plotArea || property?.plotArea || property?.area || null;
+  const areaUnit = profile?.areaUnit || property?.areaUnit || "sqft";
+  const facing = profile?.facing || property?.facing || null;
+  const approvedBy = property?.approvedBy || profile?.approvedBy || null;
+
+  // Calculate price per sq yard (convert sqft to sq yards)
+  const pricePerSqYard = plotArea && property?.price
+    ? Math.round(parseFloat(property.price) / (parseFloat(plotArea) / 9))
+    : null;
+
+  // Debug log to check what data is available
+  console.log("🔍 Property Data Debug:", {
+    title: property?.title,
+    category: categoryName,
+    isPlot: isPlot,
+    plotArea: plotArea,
+    areaUnit: areaUnit,
+    facing: facing,
+    approvedBy: approvedBy,
+    pricePerSqYard: pricePerSqYard,
+    profile: profile,
+    property: property
+  });
 
   // Parse photos - handle both array and string
   let media = [];
@@ -912,9 +932,6 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
   const city = address.city || '';
   const locality = address.locality || '';
   const fullAddress = [locality, city].filter(Boolean).join(', ');
-
-  // Get category name
-  const categoryName = property.category?.name || '';
 
   // Get amenities
   const amenities = property.amenities || [];
@@ -1026,7 +1043,7 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
               {property.availableStatus && (
                 <span className="w-2 h-2 bg-green-500 rounded-full shadow-lg"></span>
               )}
-              {property.approvedBy && (
+              {approvedBy && (
                 <span className="w-2 h-2 bg-blue-500 rounded-full shadow-lg"></span>
               )}
             </div>
@@ -1115,6 +1132,56 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
             <MapPin size={14} className="text-orange-500 mr-1 flex-shrink-0" />
             <span className="text-xs">{fullAddress || 'Address not available'}</span>
           </div>
+
+          {/* KEY FEATURES - Plot Area, Per Sq Yard, Facing (Only for Plot/Land) */}
+          {isPlot && (
+            <div className="grid grid-cols-3 gap-2 mt-3">
+              {/* Plot Area */}
+              {plotArea && (
+                <div className="bg-orange-50 rounded-lg p-2 border border-orange-100 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-0.5">
+                    <Maximize className="w-3 h-3 text-orange-500" />
+                    <span className="text-[8px] text-gray-500 uppercase font-semibold">Area</span>
+                  </div>
+                  <p className="text-sm font-bold text-gray-900">{plotArea}</p>
+                  <p className="text-[8px] text-gray-500">{areaUnit}</p>
+                </div>
+              )}
+
+              {/* Per Sq Yard */}
+              {pricePerSqYard && (
+                <div className="bg-blue-50 rounded-lg p-2 border border-blue-100 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-0.5">
+                    <DollarSign className="w-3 h-3 text-blue-500" />
+                    <span className="text-[8px] text-gray-500 uppercase font-semibold">Per Sq.Yd</span>
+                  </div>
+                  <p className="text-sm font-bold text-gray-900">₹{pricePerSqYard.toLocaleString("en-IN")}</p>
+                </div>
+              )}
+
+              {/* Facing */}
+              {facing && (
+                <div className="bg-purple-50 rounded-lg p-2 border border-purple-100 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-0.5">
+                    <Compass className="w-3 h-3 text-purple-500" />
+                    <span className="text-[8px] text-gray-500 uppercase font-semibold">Facing</span>
+                  </div>
+                  <p className="text-sm font-bold text-gray-900">{facing}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Approved By - Always show if available */}
+          {approvedBy && (
+            <div className="mt-3 flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
+              <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+              <span className="text-[10px] text-gray-600 font-medium">Approved:</span>
+              <span className="text-xs font-semibold text-green-700">
+                {Array.isArray(approvedBy) ? approvedBy.join(", ") : approvedBy}
+              </span>
+            </div>
+          )}
 
           {!property.price && (
             <button

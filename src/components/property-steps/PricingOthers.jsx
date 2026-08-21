@@ -11,6 +11,9 @@ function PricingOthersContent({ data, updateData, isEditMode }) {
   const [projectName, setProjectName] = useState('');
   const [description, setDescription] = useState('');
   const [privateNotes, setPrivateNotes] = useState('');
+  const [metaTitle, setMetaTitle] = useState('');
+  const [metaDescription, setMetaDescription] = useState('');
+  const [metaKeywords, setMetaKeywords] = useState('');
   const [approvedBy, setApprovedBy] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -103,6 +106,9 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
         setProjectName(data.projectName || '');
         setDescription(data.description || '');
         setPrivateNotes(data.privateNotes || '');
+        setMetaTitle(data.metaTitle || '');
+        setMetaDescription(data.metaDescription || '');
+        setMetaKeywords(data.metaKeywords || '');
 
         // Handle approvedBy
         if (data.approvedBy) {
@@ -137,6 +143,9 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
         setProjectName(data.projectName || '');
         setDescription(data.description || '');
         setPrivateNotes(data.privateNotes || '');
+        setMetaTitle(data.metaTitle || '');
+        setMetaDescription(data.metaDescription || '');
+        setMetaKeywords(data.metaKeywords || '');
 
         if (data.approvedBy) {
           if (typeof data.approvedBy === 'string') {
@@ -177,6 +186,9 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
         projectName: projectName || null,
         description: description || null,
         privateNotes: privateNotes || null,
+        metaTitle: metaTitle || null,
+        metaDescription: metaDescription || null,
+        metaKeywords: metaKeywords || null,
         approvedBy: approvedBy.length ? approvedBy.join(',') : null,
         amenities: amenities.length ? amenities : null,
       };
@@ -197,7 +209,7 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
         clearTimeout(updateTimeoutRef.current);
       }
     };
-  }, [projectName, description, privateNotes, JSON.stringify(approvedBy), JSON.stringify(amenities)]);
+  }, [projectName, description, privateNotes, metaTitle, metaDescription, metaKeywords, JSON.stringify(approvedBy), JSON.stringify(amenities)]);
 
   const handleApprovedChange = (value) => {
     setApprovedBy(prev =>
@@ -224,6 +236,21 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
   const handlePrivateNotesChange = (e) => {
     const value = e.target.value;
     setPrivateNotes(value);
+  };
+
+  const handleMetaTitleChange = (e) => {
+    const value = e.target.value;
+    setMetaTitle(value);
+  };
+
+  const handleMetaDescriptionChange = (e) => {
+    const value = e.target.value;
+    setMetaDescription(value);
+  };
+
+  const handleMetaKeywordsChange = (e) => {
+    const value = e.target.value;
+    setMetaKeywords(value);
   };
 
   const validateForm = () => {
@@ -253,6 +280,10 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
     if (approvedBy && approvedBy.length > 0) score += 5;
     if (privateNotes && privateNotes.trim().length > 0) score += 3;
     if (projectName && projectName.trim().length > 0) score += 2;
+    // SEO fields contribute to score
+    if (metaTitle && metaTitle.trim().length > 0) score += 3;
+    if (metaDescription && metaDescription.trim().length > 0) score += 3;
+    if (metaKeywords && metaKeywords.trim().length > 0) score += 2;
     return Math.min(score, 100);
   };
 
@@ -340,6 +371,9 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
         projectName: projectName || null,
         description: description || null,
         privateNotes: privateNotes || null,
+        metaTitle: metaTitle || null,
+        metaDescription: metaDescription || null,
+        metaKeywords: metaKeywords || null,
         approvedBy: approvedBy.length ? approvedBy.join(',') : null,
         amenities,
       };
@@ -463,28 +497,30 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
           )}
         </div>
 
-        {/* Private Notes */}
+        {/* Private Notes - Reduced size */}
         <div>
           <div className="flex justify-between items-center mb-2">
             <label className="block font-roboto text-sm font-medium text-gray-700">
               Private Notes
             </label>
             <span className="text-xs text-gray-500">
-              {privateNotes.length}/100 characters
+              {privateNotes.length}/50 characters
             </span>
           </div>
           <textarea
             value={privateNotes}
             onChange={handlePrivateNotesChange}
             placeholder="Enter private notes (visible only to owner) - Optional"
-            rows="3"
+            rows="2"
             className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-roboto resize-none"
-            maxLength={100}
+            maxLength={50}
           />
           <p className="text-xs text-gray-500 mt-1">
-            Private notes are only visible to owner. They won't appear on the frontend. This field is optional.
+            Private notes are only visible to owner. They won't appear on the frontend. This field is optional. (Max 50 characters)
           </p>
         </div>
+
+      
       </div>
 
       {/* Conditional: Approved By & Amenities */}
@@ -595,6 +631,84 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
           )}
         </button>
       </div>
+
+        {/* SEO Fields - Meta Title, Meta Description, Meta Keywords */}
+        <div className="border-t border-gray-200 pt-6 mt-4">
+          <h3 className="font-serif text-xl font-semibold text-blue-900 mb-4">
+            SEO Settings
+          </h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Optimize your property listing for search engines. These fields help improve your property's visibility.
+          </p>
+
+          {/* Meta Title */}
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <label className="block font-roboto text-sm font-medium text-gray-700">
+                Meta Title
+              </label>
+              <span className="text-xs text-gray-500">
+                {metaTitle.length}/70 characters (recommended)
+              </span>
+            </div>
+            <input
+              type="text"
+              value={metaTitle}
+              onChange={handleMetaTitleChange}
+              placeholder="Enter meta title for SEO (e.g., Premium Plot for Sale in Vizag)"
+              maxLength={70}
+              className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-roboto"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              The meta title appears in search engine results. Keep it under 70 characters for best results.
+            </p>
+          </div>
+
+          {/* Meta Description */}
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <label className="block font-roboto text-sm font-medium text-gray-700">
+                Meta Description
+              </label>
+              <span className="text-xs text-gray-500">
+                {metaDescription.length}/160 characters (recommended)
+              </span>
+            </div>
+            <textarea
+              value={metaDescription}
+              onChange={handleMetaDescriptionChange}
+              placeholder="Enter meta description for SEO (e.g., Find the best VMRDA approved plots in Visakhapatnam. Buy premium residential plots near RK Beach with excellent connectivity.)"
+              rows="2"
+              maxLength={160}
+              className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-roboto resize-none"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              The meta description appears below the title in search results. Keep it under 160 characters.
+            </p>
+          </div>
+
+          {/* Meta Keywords */}
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block font-roboto text-sm font-medium text-gray-700">
+                Meta Keywords
+              </label>
+              <span className="text-xs text-gray-500">
+                {metaKeywords.split(',').filter(k => k.trim()).length} keywords
+              </span>
+            </div>
+            <input
+              type="text"
+              value={metaKeywords}
+              onChange={handleMetaKeywordsChange}
+              placeholder="Enter keywords separated by commas (e.g., plots in Vizag, VMRDA approved plots, buy land in Visakhapatnam)"
+              className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-roboto"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Add relevant keywords separated by commas to help search engines understand your property better.
+            </p>
+          </div>
+        </div>
 
       {/* Mandatory fields note */}
       <div className="text-xs text-gray-500 text-center mt-4">

@@ -3,8 +3,15 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Providers from "@/providers/Providers";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import CallButton from "@/components/CallButton";
 import "leaflet/dist/leaflet.css";
 import Script from "next/script";
+
+export const metadata = {
+  title: "VMRDA Approved Plots in Vizag | Buy Plots in Visakhapatnam",
+  description:
+    "Explore VMRDA approved plots in Vizag and buy plots in Visakhapatnam at prime locations.",
+};
 
 export default function RootLayout({ children }) {
   return (
@@ -24,7 +31,11 @@ export default function RootLayout({ children }) {
 
           <Footer />
 
-          <WhatsAppButton />
+          {/* Fixed Button Container - WhatsApp on top, Call below */}
+          <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-center gap-3">
+            <WhatsAppButton />
+            <CallButton />
+          </div>
         </Providers>
 
         {/* Google Analytics */}
