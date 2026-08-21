@@ -2,25 +2,7 @@
 
 import React, { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Home, MapPin, Bath, Bed, Maximize,
-  ChevronLeft, ChevronRight,
-  Filter,
-  Search,
-  X,Compass,
-  ChevronDown,
-  Building2,
-  DollarSign,
-  ArrowUpDown,
-  Tag,CheckCircle,
-  Award,
-  Clock,
-  TrendingUp,
-  Play,
-  Pause,
-  Image as ImageIcon,
-  Video
-} from "lucide-react";
+import {Home, MapPin, Bath, Bed, Maximize,ChevronLeft, ChevronRight,Filter,Search,X,Compass,ChevronDown,Building2,DollarSign,ArrowUpDown,Tag,CheckCircle,Award,Clock,TrendingUp,Play,Pause,Image as ImageIcon,Video} from "lucide-react";
 import ApiService from "../hooks/ApiService";
 
 function ProjectsContent() {
