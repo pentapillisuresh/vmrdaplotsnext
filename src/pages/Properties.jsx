@@ -3,23 +3,23 @@
 import React, { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import {Home, MapPin, Bath, Bed, Maximize,ChevronLeft, ChevronRight,Filter,Search,X,ChevronDown,Building2,DollarSign,ArrowUpDown,Tag,Award,Clock,TrendingUp,Play,Pause,Image as ImageIcon,Video, Compass, CheckCircle} from "lucide-react";
+import { Home, MapPin, Bath, Bed, Maximize, ChevronLeft, ChevronRight, Filter, Search, X, ChevronDown, Building2, DollarSign, ArrowUpDown, Tag, Award, Clock, TrendingUp, Play, Pause, Image as ImageIcon, Video, Compass, CheckCircle } from "lucide-react";
 import ApiService from "../hooks/ApiService";
 
 function PropertiesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Get filters from URL query params
   const categoryIdFromUrl = searchParams.get('categoryId');
   const cityFromUrl = searchParams.get('city');
   const localityFromUrl = searchParams.get('locality');
   const priceRangeFromUrl = searchParams.get('priceRange');
-  
-  console.log("categoryIdFromUrl:::",categoryIdFromUrl);
+
+  console.log("categoryIdFromUrl:::", categoryIdFromUrl);
   const [categories, setCategories] = useState([])
   // States
-  const [filteredProperties, setFilteredProperties] = useState([]); 
+  const [filteredProperties, setFilteredProperties] = useState([]);
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -108,7 +108,7 @@ function PropertiesContent() {
     if (activeFilters.city) params.set('city', activeFilters.city);
     if (activeFilters.locality) params.set('locality', activeFilters.locality);
     if (activeFilters.priceRange && activeFilters.priceRange !== 'all') params.set('priceRange', activeFilters.priceRange);
-    
+
     const queryString = params.toString();
     const newUrl = queryString ? `/properties?${queryString}` : '/properties';
     router.replace(newUrl);
@@ -147,7 +147,7 @@ function PropertiesContent() {
 
       const response = await ApiService.get(`/properties/searchProperty/?${params.toString()}`);
       let properties = [];
-      
+
       if (response) {
         if (response.data && Array.isArray(response.data)) {
           properties = response.data;
@@ -163,10 +163,10 @@ function PropertiesContent() {
       console.log(`📊 Total properties fetched: ${properties.length}`);
       setAllProperties(properties);
       setTotalCount(properties.length);
-      
+
       const calculatedTotalPages = Math.ceil(properties.length / itemsPerPage);
       setTotalPages(Math.max(1, calculatedTotalPages));
-      
+
       return properties;
     } catch (error) {
       console.error("Error fetching all properties:", error);
@@ -184,7 +184,7 @@ function PropertiesContent() {
 
       // First, fetch all properties to get total count
       const allProps = await fetchAllPropertiesCount();
-      
+
       // Then get the current page data
       const params = new URLSearchParams();
       params.append("page", page);
@@ -217,9 +217,9 @@ function PropertiesContent() {
 
       const response = await ApiService.get(`/properties/searchProperty/?${params.toString()}`);
       console.log("📦 Full API Response:", response);
-      
+
       let properties = [];
-      
+
       if (response) {
         if (response.data && Array.isArray(response.data)) {
           properties = response.data;
@@ -252,14 +252,14 @@ function PropertiesContent() {
       }
 
       setFilteredProperties(sorted);
-      
+
       // Use total count from all properties fetch
       if (allProps.length > 0) {
         setTotalCount(allProps.length);
         const calculatedTotalPages = Math.ceil(allProps.length / itemsPerPage);
         setTotalPages(Math.max(1, calculatedTotalPages));
       }
-      
+
       setCategory({
         name: "All Properties",
         description: "Explore our property listings",
@@ -401,11 +401,10 @@ function PropertiesContent() {
                   onClick={() => {
                     setFilters(prev => ({ ...prev, marketType: "sale" }));
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
-                    filters.marketType === "sale"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${filters.marketType === "sale"
                       ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                    }`}
                 >
                   For Sale
                 </button>
@@ -413,11 +412,10 @@ function PropertiesContent() {
                   onClick={() => {
                     setFilters(prev => ({ ...prev, marketType: "rent" }));
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
-                    filters.marketType === "rent"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${filters.marketType === "rent"
                       ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                    }`}
                 >
                   For Rent
                 </button>
@@ -483,11 +481,10 @@ function PropertiesContent() {
                   value={filters.locality}
                   onChange={handleChange}
                   disabled={!filters.city}
-                  className={`w-full px-3 py-1.5 border rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8 ${
-                    !filters.city 
-                      ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed" 
+                  className={`w-full px-3 py-1.5 border rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8 ${!filters.city
+                      ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                       : "bg-gray-50 border-gray-200"
-                  }`}
+                    }`}
                 >
                   <option value="">
                     {filters.city ? "All Localities" : "Select City First"}
@@ -506,11 +503,11 @@ function PropertiesContent() {
 
             {/* Price Range */}
             <div className="mb-3">
-           
-<label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-  <span className="text-orange-500 font-bold text-sm">₹</span>
-  Price Range
-</label>
+
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                <span className="text-orange-500 font-bold text-sm">₹</span>
+                Price Range
+              </label>
 
               <div className="relative">
                 <select
@@ -519,12 +516,12 @@ function PropertiesContent() {
                   onChange={handleChange}
                   className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
-                
-                <option value="">Any Price</option>
-<option value="0-2500000">Below ₹25L</option>
-<option value="2500000-5000000">₹25L - ₹50L</option>
-<option value="5000000-10000000">₹50L - ₹1Cr</option>
-<option value="10000000-99999999">Above ₹1Cr</option>
+
+                  <option value="">Any Price</option>
+                  <option value="0-2500000">Below ₹25L</option>
+                  <option value="2500000-5000000">₹25L - ₹50L</option>
+                  <option value="5000000-10000000">₹50L - ₹1Cr</option>
+                  <option value="10000000-99999999">Above ₹1Cr</option>
                 </select>
                 <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
               </div>
@@ -696,22 +693,20 @@ function PropertiesContent() {
                   <button
                     onClick={() => handlePageChange(1)}
                     disabled={page === 1}
-                    className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
-                      page === 1
+                    className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === 1
                         ? "border-gray-200 text-gray-400 cursor-not-allowed"
                         : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                    }`}
+                      }`}
                   >
                     First
                   </button>
                   <button
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
-                      page === 1
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === 1
                         ? "border-gray-200 text-gray-400 cursor-not-allowed"
                         : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                    }`}
+                      }`}
                   >
                     <ChevronLeft className="w-4 h-4" />
                     Previous
@@ -730,17 +725,16 @@ function PropertiesContent() {
                     } else {
                       pageNum = page - 2 + i;
                     }
-                    
+
                     if (pageNum > 0 && pageNum <= totalPages) {
                       return (
                         <button
                           key={i}
                           onClick={() => handlePageChange(pageNum)}
-                          className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${
-                            page === pageNum
+                          className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${page === pageNum
                               ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
                               : "text-gray-600 hover:bg-gray-100 hover:text-orange-500"
-                          }`}
+                            }`}
                         >
                           {pageNum}
                         </button>
@@ -754,11 +748,10 @@ function PropertiesContent() {
                   <button
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
-                      page === totalPages
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === totalPages
                         ? "border-gray-200 text-gray-400 cursor-not-allowed"
                         : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                    }`}
+                      }`}
                   >
                     Next
                     <ChevronRight className="w-4 h-4" />
@@ -766,17 +759,16 @@ function PropertiesContent() {
                   <button
                     onClick={() => handlePageChange(totalPages)}
                     disabled={page === totalPages}
-                    className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
-                      page === totalPages
+                    className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === totalPages
                         ? "border-gray-200 text-gray-400 cursor-not-allowed"
                         : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                    }`}
+                      }`}
                   >
                     Last
                   </button>
                 </div>
               </div>
-              
+
               {/* Page info */}
               <div className="text-center mt-3 text-sm text-gray-500">
                 Page {page} of {totalPages} | Showing {filteredProperties.length} of {totalCount} properties
@@ -799,11 +791,11 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
   // Get category and profile info - Check multiple locations
   const categoryName = property?.category?.name || '';
   const profile = property?.profile || {};
-  
+
   // Check if it's a Plot/Land category
-  const isPlot = categoryName.toLowerCase() === "plot" || 
-                 categoryName.toLowerCase() === "land" || 
-                 categoryName.toLowerCase() === "commercial land";
+  const isPlot = categoryName.toLowerCase() === "plot" ||
+    categoryName.toLowerCase() === "land" ||
+    categoryName.toLowerCase() === "commercial land";
 
   // Try to get values from multiple possible locations
   const plotArea = profile?.plotArea || property?.plotArea || property?.area || null;
@@ -870,7 +862,7 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
   // Auto-slide carousel - 3 seconds interval
   useEffect(() => {
     if (totalMedia <= 1) return;
-    
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % totalMedia);
     }, 3000);
@@ -883,7 +875,7 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
     if (videoRef.current) {
       if (isVideo(currentIndex) && isPlaying) {
         videoRef.current.muted = true;
-        videoRef.current.play().catch(() => {});
+        videoRef.current.play().catch(() => { });
       } else if (videoRef.current) {
         videoRef.current.pause();
       }
@@ -908,7 +900,7 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
     e.stopPropagation();
     setCurrentIndex((i) => (i + 1) % totalMedia);
   };
-  
+
   const prevSlide = (e) => {
     e.stopPropagation();
     setCurrentIndex((i) => (i - 1 + totalMedia) % totalMedia);
@@ -948,7 +940,7 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
         videoRef.current.pause();
       } else {
         videoRef.current.muted = true;
-        videoRef.current.play().catch(() => {});
+        videoRef.current.play().catch(() => { });
       }
     }
   };
@@ -1002,7 +994,7 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
                 <ImageIcon className="w-12 h-12 text-gray-400" />
               </div>
             )}
-            
+
             {/* Play/Pause Overlay for Videos */}
             {isVideo(currentIndex) && (
               <>
@@ -1037,7 +1029,7 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
                 </button>
               </>
             )}
-            
+
             {/* Badges */}
             <div className="absolute top-2 left-2 flex flex-wrap gap-1.5">
               {property.availableStatus && (
@@ -1108,7 +1100,7 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
           {/* Progress Bar for Carousel */}
           {totalMedia > 1 && (
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
-              <div 
+              <div
                 className="h-full bg-orange-500 transition-all duration-300"
                 style={{ width: `${((currentIndex + 1) / totalMedia) * 100}%` }}
               ></div>
@@ -1127,7 +1119,7 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
               </div>
             ) : null}
           </div>
-          
+
           <div className="flex items-center text-gray-600 mb-2">
             <MapPin size={14} className="text-orange-500 mr-1 flex-shrink-0" />
             <span className="text-xs">{fullAddress || 'Address not available'}</span>
@@ -1155,7 +1147,9 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
                     <DollarSign className="w-3 h-3 text-blue-500" />
                     <span className="text-[8px] text-gray-500 uppercase font-semibold">Per Sq.Yd</span>
                   </div>
-                  <p className="text-sm font-bold text-gray-900">₹{pricePerSqYard.toLocaleString("en-IN")}</p>
+                  <p className="text-sm font-bold text-gray-900">₹{Math.round(
+                    parseFloat(property?.price || 0) / parseFloat(profile?.plotArea)
+                  )}</p>
                 </div>
               )}
 

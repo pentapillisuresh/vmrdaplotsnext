@@ -7,12 +7,12 @@ import {
   ChevronLeft, ChevronRight,
   Filter,
   Search,
-  X,
+  X,Compass,
   ChevronDown,
   Building2,
   DollarSign,
   ArrowUpDown,
-  Tag,
+  Tag,CheckCircle,
   Award,
   Clock,
   TrendingUp,
@@ -26,13 +26,13 @@ import ApiService from "../hooks/ApiService";
 function ProjectsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Get filters from URL query params
   const categoryIdFromUrl = searchParams.get('categoryId');
   const cityFromUrl = searchParams.get('city');
   const localityFromUrl = searchParams.get('locality');
   const priceRangeFromUrl = searchParams.get('priceRange');
-  
+
   const [categories, setCategories] = useState([])
   // States
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -124,7 +124,7 @@ function ProjectsContent() {
     if (activeFilters.city) params.set('city', activeFilters.city);
     if (activeFilters.locality) params.set('locality', activeFilters.locality);
     if (activeFilters.priceRange && activeFilters.priceRange !== 'all') params.set('priceRange', activeFilters.priceRange);
-    
+
     const queryString = params.toString();
     const newUrl = queryString ? `/project?${queryString}` : '/project';
     router.replace(newUrl);
@@ -163,7 +163,7 @@ function ProjectsContent() {
 
       const response = await ApiService.get(`/properties/searchProjects/?${params.toString()}`);
       let projects = [];
-      
+
       if (response) {
         if (response.data && Array.isArray(response.data)) {
           projects = response.data;
@@ -179,10 +179,10 @@ function ProjectsContent() {
       console.log(`📊 Total projects fetched: ${projects.length}`);
       setAllProjects(projects);
       setTotalCount(projects.length);
-      
+
       const calculatedTotalPages = Math.ceil(projects.length / itemsPerPage);
       setTotalPages(Math.max(1, calculatedTotalPages));
-      
+
       return projects;
     } catch (error) {
       console.error("Error fetching all projects:", error);
@@ -200,7 +200,7 @@ function ProjectsContent() {
 
       // First, fetch all projects to get total count
       const allProps = await fetchAllProjectsCount();
-      
+
       // Then get the current page data
       const params = new URLSearchParams();
       params.append("page", page);
@@ -233,9 +233,9 @@ function ProjectsContent() {
 
       const response = await ApiService.get(`/properties/searchProjects/?${params.toString()}`);
       console.log("📦 Full API Response:", response);
-      
+
       let projects = [];
-      
+
       if (response) {
         if (response.data && Array.isArray(response.data)) {
           projects = response.data;
@@ -268,14 +268,14 @@ function ProjectsContent() {
       }
 
       setFilteredProjects(sorted);
-      
+
       // Use total count from all projects fetch
       if (allProps.length > 0) {
         setTotalCount(allProps.length);
         const calculatedTotalPages = Math.ceil(allProps.length / itemsPerPage);
         setTotalPages(Math.max(1, calculatedTotalPages));
       }
-      
+
       setCategory({
         name: "All Projects",
         description: "Explore our project listings",
@@ -421,11 +421,10 @@ function ProjectsContent() {
                   onClick={() => {
                     setFilters(prev => ({ ...prev, marketType: "sale" }));
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
-                    filters.marketType === "sale"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${filters.marketType === "sale"
                       ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                    }`}
                 >
                   For Sale
                 </button>
@@ -433,11 +432,10 @@ function ProjectsContent() {
                   onClick={() => {
                     setFilters(prev => ({ ...prev, marketType: "rent" }));
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
-                    filters.marketType === "rent"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${filters.marketType === "rent"
                       ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                    }`}
                 >
                   For Rent
                 </button>
@@ -504,11 +502,10 @@ function ProjectsContent() {
                   value={filters.locality}
                   onChange={handleChange}
                   disabled={!filters.city}
-                  className={`w-full px-3 py-1.5 border rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8 ${
-                    !filters.city 
-                      ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed" 
+                  className={`w-full px-3 py-1.5 border rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8 ${!filters.city
+                      ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                       : "bg-gray-50 border-gray-200"
-                  }`}
+                    }`}
                 >
                   <option value="">
                     {filters.city ? "All Localities" : "Select City First"}
@@ -527,11 +524,11 @@ function ProjectsContent() {
 
             {/* Price Range */}
             <div className="mb-3">
-          
-<label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-  <span className="text-orange-500 font-bold text-sm">₹</span>
-  Price Range
-</label>
+
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                <span className="text-orange-500 font-bold text-sm">₹</span>
+                Price Range
+              </label>
 
 
               <div className="relative">
@@ -541,11 +538,11 @@ function ProjectsContent() {
                   onChange={handleChange}
                   className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8"
                 >
-                <option value="">Any Price</option>
-<option value="0-2500000">Below ₹25L</option>
-<option value="2500000-5000000">₹25L - ₹50L</option>
-<option value="5000000-10000000">₹50L - ₹1Cr</option>
-<option value="10000000-99999999">Above ₹1Cr</option>
+                  <option value="">Any Price</option>
+                  <option value="0-2500000">Below ₹25L</option>
+                  <option value="2500000-5000000">₹25L - ₹50L</option>
+                  <option value="5000000-10000000">₹50L - ₹1Cr</option>
+                  <option value="10000000-99999999">Above ₹1Cr</option>
                 </select>
                 <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
               </div>
@@ -717,22 +714,20 @@ function ProjectsContent() {
                   <button
                     onClick={() => handlePageChange(1)}
                     disabled={page === 1}
-                    className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
-                      page === 1
+                    className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === 1
                         ? "border-gray-200 text-gray-400 cursor-not-allowed"
                         : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                    }`}
+                      }`}
                   >
                     First
                   </button>
                   <button
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
-                      page === 1
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === 1
                         ? "border-gray-200 text-gray-400 cursor-not-allowed"
                         : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                    }`}
+                      }`}
                   >
                     <ChevronLeft className="w-4 h-4" />
                     Previous
@@ -751,17 +746,16 @@ function ProjectsContent() {
                     } else {
                       pageNum = page - 2 + i;
                     }
-                    
+
                     if (pageNum > 0 && pageNum <= totalPages) {
                       return (
                         <button
                           key={i}
                           onClick={() => handlePageChange(pageNum)}
-                          className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${
-                            page === pageNum
+                          className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${page === pageNum
                               ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
                               : "text-gray-600 hover:bg-gray-100 hover:text-orange-500"
-                          }`}
+                            }`}
                         >
                           {pageNum}
                         </button>
@@ -775,11 +769,10 @@ function ProjectsContent() {
                   <button
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
-                      page === totalPages
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === totalPages
                         ? "border-gray-200 text-gray-400 cursor-not-allowed"
                         : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                    }`}
+                      }`}
                   >
                     Next
                     <ChevronRight className="w-4 h-4" />
@@ -787,17 +780,16 @@ function ProjectsContent() {
                   <button
                     onClick={() => handlePageChange(totalPages)}
                     disabled={page === totalPages}
-                    className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${
-                      page === totalPages
+                    className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === totalPages
                         ? "border-gray-200 text-gray-400 cursor-not-allowed"
                         : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                    }`}
+                      }`}
                   >
                     Last
                   </button>
                 </div>
               </div>
-              
+
               {/* Page info */}
               <div className="text-center mt-3 text-sm text-gray-500">
                 Page {page} of {totalPages} | Showing {filteredProjects.length} of {totalCount} projects
@@ -857,7 +849,7 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
   // Auto-slide carousel - 3 seconds interval
   useEffect(() => {
     if (totalMedia <= 1) return;
-    
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % totalMedia);
     }, 3000);
@@ -870,7 +862,7 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
     if (videoRef.current) {
       if (isVideo(currentIndex) && isPlaying) {
         videoRef.current.muted = true;
-        videoRef.current.play().catch(() => {});
+        videoRef.current.play().catch(() => { });
       } else if (videoRef.current) {
         videoRef.current.pause();
       }
@@ -895,7 +887,7 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
     e.stopPropagation();
     setCurrentIndex((i) => (i + 1) % totalMedia);
   };
-  
+
   const prevSlide = (e) => {
     e.stopPropagation();
     setCurrentIndex((i) => (i - 1 + totalMedia) % totalMedia);
@@ -928,6 +920,22 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
 
   // Price display
   const priceDisplay = property.price ? formatPrice(property.price) : 'Contact Us';
+  const profile = property?.profile || {};
+
+  const isPlot = categoryName.toLowerCase() === "plot" ||
+  categoryName.toLowerCase() === "land" ||
+  categoryName.toLowerCase() === "commercial land";
+
+  const plotArea = profile?.plotArea || property?.plotArea || property?.area || null;
+  const areaUnit = profile?.areaUnit || property?.areaUnit || "sqft";
+  const facing = profile?.facing || property?.facing || null;
+  const approvedBy = property?.approvedBy || profile?.approvedBy || null;
+
+  // Calculate price per sq yard (convert sqft to sq yards)
+  const pricePerSqYard = plotArea && property?.price
+    ? Math.round(parseFloat(property.price) / (parseFloat(plotArea) / 9))
+    : null;
+
 
   // Toggle play/pause for videos
   const togglePlay = (e) => {
@@ -938,7 +946,7 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
         videoRef.current.pause();
       } else {
         videoRef.current.muted = true;
-        videoRef.current.play().catch(() => {});
+        videoRef.current.play().catch(() => { });
       }
     }
   };
@@ -992,7 +1000,7 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
                 <ImageIcon className="w-12 h-12 text-gray-400" />
               </div>
             )}
-            
+
             {/* Play/Pause Overlay for Videos */}
             {isVideo(currentIndex) && (
               <>
@@ -1027,7 +1035,7 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
                 </button>
               </>
             )}
-            
+
             {/* Badges */}
             <div className="absolute top-2 left-2 flex flex-wrap gap-1.5">
               {property.availableStatus && (
@@ -1098,7 +1106,7 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
           {/* Progress Bar for Carousel */}
           {totalMedia > 1 && (
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
-              <div 
+              <div
                 className="h-full bg-orange-500 transition-all duration-300"
                 style={{ width: `${((currentIndex + 1) / totalMedia) * 100}%` }}
               ></div>
@@ -1117,11 +1125,61 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
               </div>
             ) : null}
           </div>
-          
+
           <div className="flex items-center text-gray-600 mb-2">
             <MapPin size={14} className="text-orange-500 mr-1 flex-shrink-0" />
             <span className="text-xs">{fullAddress || 'Address not available'}</span>
           </div>
+          {isPlot && (
+            <div className="grid grid-cols-3 gap-2 mt-3">
+              {/* Plot Area */}
+              {plotArea && (
+                <div className="bg-orange-50 rounded-lg p-2 border border-orange-100 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-0.5">
+                    <Maximize className="w-3 h-3 text-orange-500" />
+                    <span className="text-[8px] text-gray-500 uppercase font-semibold">Area</span>
+                  </div>
+                  <p className="text-sm font-bold text-gray-900">{plotArea}</p>
+                  <p className="text-[8px] text-gray-500">{areaUnit}</p>
+                </div>
+              )}
+
+              {/* Per Sq Yard */}
+              {pricePerSqYard && (
+                <div className="bg-blue-50 rounded-lg p-2 border border-blue-100 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-0.5">
+                    <DollarSign className="w-3 h-3 text-blue-500" />
+                    <span className="text-[8px] text-gray-500 uppercase font-semibold">Per Sq.Yd</span>
+                  </div>
+                  <p className="text-sm font-bold text-gray-900">₹{Math.round(
+                    parseFloat(property?.price || 0) / parseFloat(profile?.plotArea)
+                  )}</p>
+                </div>
+              )}
+
+              {/* Facing */}
+              {facing && (
+                <div className="bg-purple-50 rounded-lg p-2 border border-purple-100 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-0.5">
+                    <Compass className="w-3 h-3 text-purple-500" />
+                    <span className="text-[8px] text-gray-500 uppercase font-semibold">Facing</span>
+                  </div>
+                  <p className="text-sm font-bold text-gray-900">{facing}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Approved By - Always show if available */}
+          {approvedBy && (
+            <div className="mt-3 flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
+              <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+              <span className="text-[10px] text-gray-600 font-medium">Approved:</span>
+              <span className="text-xs font-semibold text-green-700">
+                {Array.isArray(approvedBy) ? approvedBy.join(", ") : approvedBy}
+              </span>
+            </div>
+          )}
 
           {!property.price && (
             <button
