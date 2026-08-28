@@ -10,7 +10,7 @@ import Script from "next/script";
 export const metadata = {
   title: "VMRDA Approved Plots in Vizag | Buy Plots in Visakhapatnam",
   description:
-    "Explore VMRDA approved plots in Vizag and buy plots in Visakhapatnam at prime locations.",
+    "Plots in Vizag Plots in Visakhapatnam Explore VMRDA approved plots in Vizag and buy plots in Visakhapatnam at prime locations.",
 };
 
 export default function RootLayout({ children }) {

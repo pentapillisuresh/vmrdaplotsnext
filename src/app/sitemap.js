@@ -1,23 +1,61 @@
 export default async function sitemap() {
   const baseUrl = "https://vmrdaplots.com";
+  const apiUrl = "https://service.vmrdaplots.com/api/properties";
 
   try {
-    const response = await fetch(
-      "https://service.vmrdaplots.com/api/properties",
+    // First request to know total pages
+    const firstResponse = await fetch(
+      `${apiUrl}?page=1&limit=10`,
       {
         cache: "no-store",
       }
     );
 
-    const data = await response.json();
+    if (!firstResponse.ok) {
+      throw new Error(`API Error: ${firstResponse.status}`);
+    }
 
-    const allProperties = data.properties || [];
+    const firstData = await firstResponse.json();
+
+    let allProperties = firstData.data || [];
+
+    const totalPages = firstData.totalPages || 1;
+
+    // Fetch remaining pages
+    if (totalPages > 1) {
+      const pageRequests = [];
+
+      for (let page = 2; page <= totalPages; page++) {
+        pageRequests.push(
+          fetch(`${apiUrl}?page=${page}&limit=10`, {
+            cache: "no-store",
+          }).then((res) => {
+            if (!res.ok) {
+              throw new Error(`API Error on page ${page}: ${res.status}`);
+            }
+
+            return res.json();
+          })
+        );
+      }
+
+      const pageResponses = await Promise.all(pageRequests);
+
+      for (const pageData of pageResponses) {
+        allProperties.push(...(pageData.data || []));
+      }
+    }
 
     // Remove duplicate slugs
     const uniqueProperties = [
       ...new Map(
         allProperties
-          .filter((item) => item.slug && item.slug.trim() !== "")
+          .filter(
+            (item) =>
+              item.slug &&
+              typeof item.slug === "string" &&
+              item.slug.trim() !== ""
+          )
           .map((item) => [item.slug, item])
       ).values(),
     ];
