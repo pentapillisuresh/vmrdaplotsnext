@@ -46,7 +46,7 @@ function PropertyDetailContent({ propTitle, initialProperty }) {
   const videoRef = useRef(null);
 
   const [loading, setLoading] = useState(false);
-const [property, setProperty] = useState(initialProperty);
+  const [property, setProperty] = useState(initialProperty);
   const [selectedImage, setSelectedImage] = useState(0);
   const [page, setPage] = useState(1);
   const [similarProperties, setSimilarProperties] = useState([]);
@@ -268,16 +268,16 @@ const [property, setProperty] = useState(initialProperty);
     if (!clientId) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await ApiService.get(`/client/${clientId}`, {
+      const response = await ApiService.get(`/clients/getClient/${clientId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
-      if (response?.data) {
-        setClientDetails(response.data);
-        setClientRole(response.data.role);
+      if (response?.client) {
+        setClientDetails(response.client);
+        setClientRole(response.client.role);
       }
     } catch (error) {
       console.error('Error fetching client details:', error);
@@ -290,12 +290,12 @@ const [property, setProperty] = useState(initialProperty);
   };
 
   // Fetch property by slug/title
-useEffect(() => {
-  if (initialProperty) {
-    setProperty(initialProperty);
-    window.scrollTo(0, 0);
-  }
-}, [initialProperty]);
+  useEffect(() => {
+    if (initialProperty) {
+      setProperty(initialProperty);
+      window.scrollTo(0, 0);
+    }
+  }, [initialProperty]);
 
   // const fetchPropertyBySlug = async () => {
   //   try {
@@ -510,7 +510,7 @@ useEffect(() => {
 
   // Get role display name
   const getRoleDisplayName = (role) => {
-    if (!role) return "Agent";
+    if (!role) return "BUilder";
     const roleMap = {
       'owner': 'Property Owner',
       'agent': 'Real Estate Agent',
@@ -612,10 +612,10 @@ useEffect(() => {
                       />
                     ) : (
                       <img
-  src={getMediaUrl(selectedImage)}
-  alt={`${property?.title} - ${address?.locality || ""}, ${address?.city || ""}`}
-  className="w-full h-full object-cover"
-/>
+                        src={getMediaUrl(selectedImage)}
+                        alt={`${property?.title} - ${address?.locality || ""}, ${address?.city || ""}`}
+                        className="w-full h-full object-cover"
+                      />
                     )}
                   </>
                 ) : (
@@ -701,7 +701,7 @@ useEffect(() => {
                             alt={`${property?.title} - ${address?.locality || ""} - image ${idx + 1}`}
                             className="w-full h-full object-cover"
                             onError={(e) => {
-                              e.target.src = "https://via.placeholder.com/100x100?text=No+Image";
+                              e.target.src = '/images/logo.jpg';
                             }}
                           />
                         )}
@@ -789,21 +789,21 @@ useEffect(() => {
                     {category.name === "Plot" && (
                       safeShow(profile?.plotArea) && (
                         <>
-                        <FeatureCardPremium
-                          icon={<Maximize size={22} />}
-                          label="Plot Area"
-                          value={`${profile?.plotArea} ${profile?.areaUnit || "sqft"}`}
-                        />
-                        <FeatureCardPremium
+                          <FeatureCardPremium
+                            icon={<Maximize size={22} />}
+                            label="Plot Area"
+                            value={`${profile?.plotArea} ${profile?.areaUnit || "sqft"}`}
+                          />
+                          <FeatureCardPremium
                             icon={<Maximize size={22} />}
                             label={`Per ${profile?.areaUnit || "sqft"} `}
                             value={
                               profile?.landArea
                                 ? Math.round(
-                                    parseFloat(property?.price || 0) / parseFloat(profile?.plotArea)
-                                  )
+                                  parseFloat(property?.price || 0) / parseFloat(profile?.plotArea)
+                                )
                                 : 0
-                            }                          />
+                            } />
                         </>
                       )
                     )}
@@ -821,10 +821,10 @@ useEffect(() => {
                             value={
                               profile?.landArea
                                 ? Math.round(
-                                    parseFloat(property?.price || 0) / parseFloat(profile?.landArea)
-                                  )
+                                  parseFloat(property?.price || 0) / parseFloat(profile?.landArea)
+                                )
                                 : 0
-                            }                          />
+                            } />
                         </>
                       )
                     )}
@@ -1061,7 +1061,7 @@ useEffect(() => {
                 <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <Phone size={18} />
-                    Contact {clientRole ? getRoleDisplayName(clientRole) : 'Agent'}
+                    Contact {clientRole ? getRoleDisplayName(clientRole) : 'Builder'}
                   </h3>
                 </div>
 
@@ -1220,9 +1220,9 @@ useEffect(() => {
                             alt={property?.title}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                             onError={(e) => {
-                              e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
-                            }}
-                          />
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/images/logo.jpg';
+                            }} />
                           <button
                             onClick={(e) => { e.stopPropagation(); toggleFavorite(property); }}
                             className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
@@ -1369,9 +1369,9 @@ export default function PropertyDetail({ title, initialProperty }) {
       </div>
     }>
       <PropertyDetailContent
-  propTitle={title}
-  initialProperty={initialProperty}
-/>
+        propTitle={title}
+        initialProperty={initialProperty}
+      />
     </Suspense>
   );
 }

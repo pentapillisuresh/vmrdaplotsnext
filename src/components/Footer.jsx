@@ -4,11 +4,24 @@ import { useState } from "react";
 import { FiMail, FiPhone, FiMapPin, FiFacebook, FiTwitter, FiInstagram, FiLinkedin } from "react-icons/fi";
 import BuyFormModal from "./BuyFormModal";
 import DevelopmentFormModal from "./DevelopmentFormModal";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Footer = () => {
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
   const [isDevelopmentModalOpen, setIsDevelopmentModalOpen] = useState(false);
-  
+  const router = useRouter();
+
+  // Handle rent click navigation
+  const handleRentClick = () => {
+    const marketType = "rent";
+
+    const queryString = new URLSearchParams({
+      marketType: marketType,
+    }).toString();
+    console.log("queryString:", queryString);
+    router.replace(`/properties-list?${queryString}`);
+  };
+
   // ✅ Dynamic year
   const currentYear = new Date().getFullYear();
 
@@ -33,7 +46,6 @@ const Footer = () => {
     { name: "Properties in Visakhapatnam", href: "#" },
     { name: "Properties in srikakulam", href: "#" },
     { name: "Properties in vizinagaram", href: "#" },
-    { name: "Properties in duvvada", href: "#" },
   ];
 
   return (
@@ -98,6 +110,17 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
+            <div className="space-y-5">
+              <button
+                onClick={handleRentClick}
+                className="hover:text-orange-500 transition-colors duration-300 flex items-center group w-full text-left"
+              >
+                <span className="mr-2 transform group-hover:translate-x-1 transition-transform duration-300">
+                  →
+                </span>
+                Rent
+              </button>
+            </div>
           </div>
 
           {/* Get In Touch */}

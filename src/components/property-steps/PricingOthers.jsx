@@ -8,12 +8,13 @@ import Swal from 'sweetalert2';
 import Confetti from 'react-confetti';
 
 function PricingOthersContent({ data, updateData, isEditMode }) {
+
   const [projectName, setProjectName] = useState('');
   const [description, setDescription] = useState('');
   const [privateNotes, setPrivateNotes] = useState('');
-  const [metaTitle, setMetaTitle] = useState('');
+  const [metaTitle, setMetaTitle] = useState(`${data.propertyName},${data.title}`);
   const [metaDescription, setMetaDescription] = useState('');
-  const [metaKeywords, setMetaKeywords] = useState('');
+  const [metaKeywords, setMetaKeywords] = useState(`${data.categoryName} in ${data.address.city},${data.categoryName} in ${data.address.locality}`);
   const [approvedBy, setApprovedBy] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -106,9 +107,9 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
         setProjectName(data.projectName || '');
         setDescription(data.description || '');
         setPrivateNotes(data.privateNotes || '');
-        setMetaTitle(data.metaTitle || '');
+        setMetaTitle(data.metaTitle || `${data.propertyName},${data.title}`);
         setMetaDescription(data.metaDescription || '');
-        setMetaKeywords(data.metaKeywords || '');
+        setMetaKeywords(data.metaKeywords || `${data.categoryName} in ${data.address.city},${data.categoryName} in ${data.address.locality}`);
 
         // Handle approvedBy
         if (data.approvedBy) {
@@ -179,13 +180,13 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
     // Debounce the update to prevent rapid updates
     updateTimeoutRef.current = setTimeout(() => {
       // Prevent recursive updates
-      isUpdating.current = true;
+      isUpdating.current = true; 
 
       const updatedData = {
         ...data,
         projectName: projectName || null,
         description: description || null,
-        privateNotes: privateNotes || null,
+        privateNote: privateNotes || null,
         metaTitle: metaTitle || null,
         metaDescription: metaDescription || null,
         metaKeywords: metaKeywords || null,
@@ -370,7 +371,7 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
         ...data,
         projectName: projectName || null,
         description: description || null,
-        privateNotes: privateNotes || null,
+        privateNote: privateNotes || null,
         metaTitle: metaTitle || null,
         metaDescription: metaDescription || null,
         metaKeywords: metaKeywords || null,
@@ -382,7 +383,7 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
 
       const clientToken = localStorage.getItem('token');
       let response;
-      console.log("propertyDataToSave:::", data.id)
+      console.log("propertyDataToSave:::", data)
       if (isEditMode && data?.id) {
         response = await ApiService.put(`/properties/${data.id}`, propertyDataToSave, {
           headers: {
@@ -576,62 +577,6 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
           </div>
         )}
 
-      {/* Property Summary */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-10">
-        <h3 className="font-serif text-lg font-bold text-blue-900 mb-4">Property Summary</h3>
-        <div className="grid grid-cols-2 gap-4 font-roboto text-sm">
-          <div>
-            <span className="text-gray-600">Type:</span>
-            <span className="ml-2 font-medium text-gray-900">{data.propertySubtype || 'N/A'}</span>
-          </div>
-          <div>
-            <span className="text-gray-600">Location:</span>
-            <span className="ml-2 font-medium text-gray-900">{data.address?.city || data.city || 'N/A'}</span>
-          </div>
-
-          {(data.propertySubtype === 'Plot' || data.propertySubtype === 'Flat/Apartment') && (
-            <>
-              <div>
-                <span className="text-gray-600">Approved By:</span>
-                <span className="ml-2 font-medium text-gray-900">{approvedBy.join(', ') || 'N/A'}</span>
-              </div>
-              <div className="col-span-2">
-                <span className="text-gray-600">Amenities:</span>
-                <span className="ml-2 font-medium text-gray-900">
-                  {amenities.join(', ') || 'N/A'}
-                </span>
-              </div>
-            </>
-          )}
-
-          <div>
-            <span className="text-gray-600">Property Score:</span>
-            <span className="ml-2 font-medium text-orange-500">{calculateScore()}%</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex gap-4">
-        <button
-          onClick={() => handleSubmit('published')}
-          disabled={isPublishDisabled}
-          className="flex-1 bg-blue-900 hover:bg-blue-800 text-white font-roboto font-medium px-8 py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-        >
-          {loading ? (
-            <span className="flex items-center justify-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Publishing...
-            </span>
-          ) : (
-            isEditMode ? 'Update Property' : 'Publish Property'
-          )}
-        </button>
-      </div>
-
         {/* SEO Fields - Meta Title, Meta Description, Meta Keywords */}
         <div className="border-t border-gray-200 pt-6 mt-4">
           <h3 className="font-serif text-xl font-semibold text-blue-900 mb-4">
@@ -709,6 +654,64 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
             </p>
           </div>
         </div>
+
+              {/* Property Summary */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-10">
+        <h3 className="font-serif text-lg font-bold text-blue-900 mb-4">Property Summary</h3>
+        <div className="grid grid-cols-2 gap-4 font-roboto text-sm">
+          <div>
+            <span className="text-gray-600">Type:</span>
+            <span className="ml-2 font-medium text-gray-900">{data.propertySubtype || 'N/A'}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">Location:</span>
+            <span className="ml-2 font-medium text-gray-900">{data.address?.city || data.city || 'N/A'}</span>
+          </div>
+
+          {(data.propertySubtype === 'Plot' || data.propertySubtype === 'Flat/Apartment') && (
+            <>
+              <div>
+                <span className="text-gray-600">Approved By:</span>
+                <span className="ml-2 font-medium text-gray-900">{approvedBy.join(', ') || 'N/A'}</span>
+              </div>
+              <div className="col-span-2">
+                <span className="text-gray-600">Amenities:</span>
+                <span className="ml-2 font-medium text-gray-900">
+                  {amenities.join(', ') || 'N/A'}
+                </span>
+              </div>
+            </>
+          )}
+
+          <div>
+            <span className="text-gray-600">Property Score:</span>
+            <span className="ml-2 font-medium text-orange-500">{calculateScore()}%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-4">
+        <button
+          onClick={() => handleSubmit('published')}
+          disabled={isPublishDisabled}
+          className="flex-1 bg-blue-900 hover:bg-blue-800 text-white font-roboto font-medium px-8 py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+        >
+          {loading ? (
+            <span className="flex items-center justify-center">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Publishing...
+            </span>
+          ) : (
+            isEditMode ? 'Update Property' : 'Publish Property'
+          )}
+        </button>
+      </div>
+
+
 
       {/* Mandatory fields note */}
       <div className="text-xs text-gray-500 text-center mt-4">

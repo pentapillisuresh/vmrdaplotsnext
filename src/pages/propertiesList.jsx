@@ -16,9 +16,10 @@ import ApiService from "../hooks/ApiService";
 function PropertiesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Get filters from URL query params
   const categoryIdFromUrl = searchParams.get('categoryId');
+  const marketTypeFromUrl = searchParams.get('marketType');
   const cityFromUrl = searchParams.get('city');
   const localityFromUrl = searchParams.get('locality');
   const priceRangeFromUrl = searchParams.get('priceRange');
@@ -40,7 +41,7 @@ function PropertiesContent() {
   // Filters
   const [filters, setFilters] = useState({
     categoryId: categoryIdFromUrl || "",
-    marketType: "sale",
+    marketType: marketTypeFromUrl||"sale",
     status: "",
     city: cityFromUrl || "",
     locality: localityFromUrl || "",
@@ -107,6 +108,7 @@ function PropertiesContent() {
   useEffect(() => {
     const params = new URLSearchParams();
     if (activeFilters.categoryId) params.set('categoryId', activeFilters.categoryId);
+    if (activeFilters.marketType) params.set('marketType', activeFilters.marketType);
     if (activeFilters.city) params.set('city', activeFilters.city);
     if (activeFilters.locality) params.set('locality', activeFilters.locality);
     if (activeFilters.priceRange && activeFilters.priceRange !== 'all') params.set('priceRange', activeFilters.priceRange);

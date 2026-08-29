@@ -229,7 +229,7 @@ const RegisterFormContent = () => {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="w-full pl-9 pr-10 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm bg-white"
+                    className="w-full pl-9 pr-10 py-2.5 text-[#333333] border border-gray-200 rounded-full focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-300 text-sm bg-white"
                     placeholder="Create a password (min 6 characters)"
                   />
                   <button

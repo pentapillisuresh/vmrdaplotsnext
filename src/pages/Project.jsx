@@ -972,9 +972,9 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
                     alt={property.title}
                     className="absolute inset-0 w-full h-full object-cover group-hover/image:scale-110 transition-transform duration-700"
                     onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
-                    }}
-                  />
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/images/logo.jpg';
+                    }}                  />
                 )}
               </>
             ) : (

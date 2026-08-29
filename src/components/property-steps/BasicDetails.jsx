@@ -6,7 +6,7 @@ import ApiService from '../../hooks/ApiService';
 
 const BasicDetails = ({ data, updateData, onNext, isEditMode }) => {
   const { userProfile } = useAuth();
-  console.log("basicData::",data)
+
   // Use refs to prevent infinite loops
   const isInitialMount = useRef(true);
   const previousDataRef = useRef(data);
@@ -124,6 +124,7 @@ const BasicDetails = ({ data, updateData, onNext, isEditMode }) => {
     updateData({
       categoryId: selectedCategory?.id || '',
       title: title.trim(),
+      categoryName:selectedCategory.name,
       marketType: listingType,
       propertyKind: propertyType,
       propertySubtype,

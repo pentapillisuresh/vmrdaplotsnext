@@ -390,9 +390,8 @@ function ManageListingsContent() {
                           alt={listing?.title}
                           className="w-full h-full object-cover rounded-lg"
                           onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
-                          }}
-                        />
+                            e.target.src = '/images/logo.jpg';
+                          }}                        />
                       </SoldOutOverlay>
                     </div>
 

@@ -499,7 +499,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                     Length (ft) <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     value={length}
                     onChange={(e) => setLength(e.target.value)}
                     className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
@@ -510,7 +510,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                     Width (ft) <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     value={breadth ?? ""}
                     onChange={(e) => setBreadth(e.target.value)}
                     className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
@@ -682,9 +682,9 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                 </div>
               </div>
 
-              <p className="font-roboto mb-3 bold text-black-600">
+              {/* <p className="font-roboto mb-3 bold text-black-600">
                 {Math.round(price / carpetArea)} per {areaUnit}
-              </p>
+              </p> */}
               <div className="flex flex-wrap gap-3 mb-6">
                 {!showBuiltArea && (
                   <button
@@ -859,7 +859,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                     type="text"
                     readOnly
                     value={closedParking}
-                    className="w-12 text-center border-x border-gray-200 focus:outline-none"
+                    className="w-12 text-center border-x border-gray-200 focus:outline-none text-[#333333]"
                   />
                   <button
                     type="button"
@@ -892,7 +892,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                     type="text"
                     readOnly
                     value={openParking}
-                    className="w-12 text-center border-x border-gray-200 focus:outline-none"
+                    className="w-12 text-center border-x border-gray-200 focus:outline-none text-[#333333]"
                   />
                   <button
                     type="button"
@@ -953,12 +953,10 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                     Property on Floor <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     value={propertyOnFloor}
                     onChange={(e) => handlePropertyOnFloorChange(e.target.value)}
                     placeholder="Enter floor number (0-99)"
-                    min="0"
-                    max="99"
                     className="w-full border border-gray-300 rounded-lg px-4 text-gray-600 py-3 focus:ring-2 focus:ring-orange-500"
                   />
                   {propertyOnFloor !== "" && !validatePropertyOnFloor(propertyOnFloor) && (
@@ -970,12 +968,10 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                     Total Floors <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     value={totalFloors}
                     onChange={(e) => handleTotalFloorsChange(e.target.value)}
                     placeholder="Enter total floors (1-99)"
-                    min="1"
-                    max="99"
                     className="w-full border border-gray-300 rounded-lg px-4 text-gray-600 py-3 focus:ring-2 focus:ring-orange-500"
                   />
                   {totalFloors !== "" && !validateTotalFloors(totalFloors) && (
@@ -1009,7 +1005,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                   onClick={() => setStatus((opt))}
                   className={`px-5 py-2 rounded-full border-2 ${status === opt
                     ? "bg-orange-500 text-white border-orange-500"
-                    : "border-gray-300"
+                    : "border-gray-300 text-[#d3d3d3]"
                     }`}
                 >
                   {opt}

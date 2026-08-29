@@ -13,10 +13,10 @@ function PropertiesContent() {
   // Get filters from URL query params
   const categoryIdFromUrl = searchParams.get('categoryId');
   const cityFromUrl = searchParams.get('city');
+  const marketTypeFromUrl = searchParams.get('marketType') || "sale";
   const localityFromUrl = searchParams.get('locality');
   const priceRangeFromUrl = searchParams.get('priceRange');
 
-  console.log("categoryIdFromUrl:::", categoryIdFromUrl);
   const [categories, setCategories] = useState([])
   // States
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -38,14 +38,15 @@ function PropertiesContent() {
   // Filters
   const [filters, setFilters] = useState({
     categoryId: categoryIdFromUrl || "",
-    marketType: "sale",
+    marketType: marketTypeFromUrl || "sale",
     status: "",
     city: cityFromUrl || "",
     locality: localityFromUrl || "",
     clientId: "",
     priceRange: priceRangeFromUrl || "all",
   });
-
+  console.log("marketTypeFromUrl::",marketTypeFromUrl)
+console.log("rrr::",filters.marketType)
   const [activeFilters, setActiveFilters] = useState(filters);
 
   useEffect(() => {
@@ -106,6 +107,7 @@ function PropertiesContent() {
     const params = new URLSearchParams();
     if (activeFilters.categoryId) params.set('categoryId', activeFilters.categoryId);
     if (activeFilters.city) params.set('city', activeFilters.city);
+    if (activeFilters.marketType) params.set('marketType', activeFilters.marketType); // ← add this
     if (activeFilters.locality) params.set('locality', activeFilters.locality);
     if (activeFilters.priceRange && activeFilters.priceRange !== 'all') params.set('priceRange', activeFilters.priceRange);
 
@@ -808,20 +810,6 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
     ? Math.round(parseFloat(property.price) / (parseFloat(plotArea) / 9))
     : null;
 
-  // Debug log to check what data is available
-  console.log("🔍 Property Data Debug:", {
-    title: property?.title,
-    category: categoryName,
-    isPlot: isPlot,
-    plotArea: plotArea,
-    areaUnit: areaUnit,
-    facing: facing,
-    approvedBy: approvedBy,
-    pricePerSqYard: pricePerSqYard,
-    profile: profile,
-    property: property
-  });
-
   // Parse photos - handle both array and string
   let media = [];
   try {
@@ -984,9 +972,9 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
                     alt={property.title}
                     className="absolute inset-0 w-full h-full object-cover group-hover/image:scale-110 transition-transform duration-700"
                     onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
-                    }}
-                  />
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/images/logo.jpg';
+                    }}                  />
                 )}
               </>
             ) : (

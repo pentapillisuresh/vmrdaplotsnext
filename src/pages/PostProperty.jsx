@@ -54,6 +54,9 @@ function PostPropertyContent() {
     amenities: [],
     privateNotes: '',
     projectName: '',
+    metaTitle:'',
+    metaDescription:'',
+    metaKeywords:'',
     address: {
       city: '',
       locality: '',
@@ -136,8 +139,11 @@ function PostPropertyContent() {
           ageOfProperty: property.ageOfProperty || "",
           youtubeUrl: property.youtubeUrl || "",
           amenities: property.amenities || [],
-  
-          // Media
+          metaTitle:property.metaTitle,
+          metaDescription:property.metaDescription,
+          metaKeywords:property.metaKeywords,
+          privateNotes:property.privateNote,
+                // Media
           photos: property.photos
             ? property.photos
             : [],
@@ -343,6 +349,9 @@ function PostPropertyContent() {
     if (p.price) score += 30;
     if (p.address.city) score += 10;
     if (p.address.locality) score += 10;
+    if (p.metaTitle) score += 3;
+    if (p.metaDescription) score += 4;
+    if (p.metaKeywords) score += 3;
     return Math.min(score, 100);
   };
 
