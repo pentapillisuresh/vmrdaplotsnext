@@ -348,7 +348,6 @@ function PostPropertyContent() {
     if (p.marketType) score += 10;
     if (p.price) score += 30;
     if (p.address.city) score += 10;
-    if (p.address.locality) score += 10;
     if (p.metaTitle) score += 3;
     if (p.metaDescription) score += 4;
     if (p.metaKeywords) score += 3;

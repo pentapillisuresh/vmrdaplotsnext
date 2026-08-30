@@ -274,17 +274,17 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
     if (data.marketType) score += 10;
     if (data.address && (data.address.city || data.city)) score += 10;
     if (data.amenities && data.amenities.length > 0) score += 10;
-    if (data.propertyProfile && Object.keys(data.propertyProfile).length > 0) score += 20;
+    if (data.propertyProfile && Object.keys(data.propertyProfile).length > 0) score += 17;
     if (data.price) score += 10;
-    if (data.propertySubtype) score += 20;
-    if (description && description.trim().length >= 10) score += 10;
+    if (data.propertySubtype) score += 10;
+    if (description && description.trim().length >= 10) score += 5;
     if (approvedBy && approvedBy.length > 0) score += 5;
-    if (privateNotes && privateNotes.trim().length > 0) score += 3;
-    if (projectName && projectName.trim().length > 0) score += 2;
+    if (privateNotes && privateNotes.trim().length > 0) score += 5;
+    if (projectName && projectName.trim().length > 0) score += 3;
     // SEO fields contribute to score
     if (metaTitle && metaTitle.trim().length > 0) score += 3;
     if (metaDescription && metaDescription.trim().length > 0) score += 3;
-    if (metaKeywords && metaKeywords.trim().length > 0) score += 2;
+    if (metaKeywords && metaKeywords.trim().length > 0) score += 4;
     return Math.min(score, 100);
   };
 
@@ -383,7 +383,7 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
 
       const clientToken = localStorage.getItem('token');
       let response;
-      console.log("propertyDataToSave:::", data)
+
       if (isEditMode && data?.id) {
         response = await ApiService.put(`/properties/${data.id}`, propertyDataToSave, {
           headers: {
@@ -505,7 +505,7 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
               Private Notes
             </label>
             <span className="text-xs text-gray-500">
-              {privateNotes.length}/50 characters
+              {privateNotes.length}/100 characters
             </span>
           </div>
           <textarea

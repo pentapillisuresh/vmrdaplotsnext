@@ -138,6 +138,7 @@ export default function PropertyForm({ initialData = null, onSubmit, onCancel, a
           />
           <input
             type="number"
+            onWheel={(e) => e.currentTarget.blur()}
             placeholder="Price (₹)"
             value={formData.price}
             onChange={(e) => handleChange("price", e.target.value)}
@@ -221,6 +222,7 @@ export default function PropertyForm({ initialData = null, onSubmit, onCancel, a
           />
           <input
             type="number"
+            onWheel={(e) => e.currentTarget.blur()}
             placeholder="Bedrooms"
             value={formData.propertyProfile.bedrooms}
             onChange={(e) => handleChange("bedrooms", e.target.value, "propertyProfile")}
@@ -228,6 +230,7 @@ export default function PropertyForm({ initialData = null, onSubmit, onCancel, a
           />
           <input
             type="number"
+            onWheel={(e) => e.currentTarget.blur()}
             placeholder="Bathrooms"
             value={formData.propertyProfile.bathrooms}
             onChange={(e) => handleChange("bathrooms", e.target.value, "propertyProfile")}
@@ -235,6 +238,7 @@ export default function PropertyForm({ initialData = null, onSubmit, onCancel, a
           />
           <input
             type="number"
+            onWheel={(e) => e.currentTarget.blur()}
             placeholder="Balconies"
             value={formData.propertyProfile.balconies}
             onChange={(e) => handleChange("balconies", e.target.value, "propertyProfile")}
@@ -289,6 +293,7 @@ export default function PropertyForm({ initialData = null, onSubmit, onCancel, a
           />
           <input
             type="number"
+            onWheel={(e) => e.currentTarget.blur()}
             placeholder="Parking Spaces"
             value={formData.propertyProfile.parkingSpaces}
             onChange={(e) => handleChange("parkingSpaces", e.target.value, "propertyProfile")}

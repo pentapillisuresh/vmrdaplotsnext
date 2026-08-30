@@ -45,8 +45,8 @@ function PropertiesContent() {
     clientId: "",
     priceRange: priceRangeFromUrl || "all",
   });
-  console.log("marketTypeFromUrl::",marketTypeFromUrl)
-console.log("rrr::",filters.marketType)
+  console.log("marketTypeFromUrl::", marketTypeFromUrl)
+  console.log("rrr::", filters.marketType)
   const [activeFilters, setActiveFilters] = useState(filters);
 
   useEffect(() => {
@@ -404,8 +404,8 @@ console.log("rrr::",filters.marketType)
                     setFilters(prev => ({ ...prev, marketType: "sale" }));
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${filters.marketType === "sale"
-                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                 >
                   For Sale
@@ -415,8 +415,8 @@ console.log("rrr::",filters.marketType)
                     setFilters(prev => ({ ...prev, marketType: "rent" }));
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${filters.marketType === "rent"
-                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                 >
                   For Rent
@@ -484,8 +484,8 @@ console.log("rrr::",filters.marketType)
                   onChange={handleChange}
                   disabled={!filters.city}
                   className={`w-full px-3 py-1.5 border rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8 ${!filters.city
-                      ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-gray-50 border-gray-200"
+                    ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                    : "bg-gray-50 border-gray-200"
                     }`}
                 >
                   <option value="">
@@ -696,8 +696,8 @@ console.log("rrr::",filters.marketType)
                     onClick={() => handlePageChange(1)}
                     disabled={page === 1}
                     className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === 1
-                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                      ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                      : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
                       }`}
                   >
                     First
@@ -706,8 +706,8 @@ console.log("rrr::",filters.marketType)
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === 1
-                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                      ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                      : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
                       }`}
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -734,8 +734,8 @@ console.log("rrr::",filters.marketType)
                           key={i}
                           onClick={() => handlePageChange(pageNum)}
                           className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${page === pageNum
-                              ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
-                              : "text-gray-600 hover:bg-gray-100 hover:text-orange-500"
+                            ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
+                            : "text-gray-600 hover:bg-gray-100 hover:text-orange-500"
                             }`}
                         >
                           {pageNum}
@@ -751,8 +751,8 @@ console.log("rrr::",filters.marketType)
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === totalPages
-                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                      ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                      : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
                       }`}
                   >
                     Next
@@ -762,8 +762,8 @@ console.log("rrr::",filters.marketType)
                     onClick={() => handlePageChange(totalPages)}
                     disabled={page === totalPages}
                     className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === totalPages
-                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                      ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                      : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
                       }`}
                   >
                     Last
@@ -974,7 +974,8 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = '/images/logo.jpg';
-                    }}                  />
+                    }}
+                  />
                 )}
               </>
             ) : (

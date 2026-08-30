@@ -433,7 +433,7 @@ const PhotosVideos = ({ data = {}, updateData, onNext }) => {
                       alt={`Photo ${idx + 1}`}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.currentTarget.src = 'https://via.placeholder.com/150?text=Error';
+                        e.target.src = '/images/logo.jpg';
                       }}
                     />
                     {/* Watermark overlay */}

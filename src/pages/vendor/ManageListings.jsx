@@ -391,7 +391,8 @@ function ManageListingsContent() {
                           className="w-full h-full object-cover rounded-lg"
                           onError={(e) => {
                             e.target.src = '/images/logo.jpg';
-                          }}                        />
+                          }}
+                        />
                       </SoldOutOverlay>
                     </div>
 
@@ -413,14 +414,14 @@ function ManageListingsContent() {
                         </div>
                         <span
                           className={`px-4 py-1 rounded-full text-sm font-medium ${listing?.isSold
-                              ? 'bg-red-100 text-red-700'
-                              : listing?.status === 'verified'
+                            ? 'bg-red-100 text-red-700'
+                            : listing?.status === 'verified'
+                              ? 'bg-green-100 text-green-700'
+                              : listing?.status === 'active'
                                 ? 'bg-green-100 text-green-700'
-                                : listing?.status === 'active'
-                                  ? 'bg-green-100 text-green-700'
-                                  : listing?.status === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-700'
-                                    : 'bg-gray-100 text-gray-700'
+                                : listing?.status === 'pending'
+                                  ? 'bg-yellow-100 text-yellow-700'
+                                  : 'bg-gray-100 text-gray-700'
                             }`}
                         >
                           {listing?.isSold ? 'Sold' : listing?.status?.charAt(0).toUpperCase() + listing?.status?.slice(1) || 'Unknown'}
@@ -553,8 +554,8 @@ function ManageListingsContent() {
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
                       className={`p-2 rounded-lg border transition-colors ${currentPage === 1
-                          ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                          : 'border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
+                        ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
                         }`}
                     >
                       <ChevronLeft className="w-5 h-5" />
@@ -566,8 +567,8 @@ function ManageListingsContent() {
                         key={pageNum}
                         onClick={() => handlePageChange(pageNum)}
                         className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === pageNum
-                            ? 'bg-orange-500 text-white'
-                            : 'border border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
+                          ? 'bg-orange-500 text-white'
+                          : 'border border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
                           }`}
                       >
                         {pageNum}
@@ -579,8 +580,8 @@ function ManageListingsContent() {
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
                       className={`p-2 rounded-lg border transition-colors ${currentPage === totalPages
-                          ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                          : 'border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
+                        ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
                         }`}
                     >
                       <ChevronRight className="w-5 h-5" />

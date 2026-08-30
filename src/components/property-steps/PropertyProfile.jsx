@@ -430,6 +430,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
             </label>
             <input
               type="number"
+              onWheel={(e) => e.currentTarget.blur()}
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="Enter property price"
@@ -445,7 +446,8 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                   </label>
                   <input
                     type="number"
-                    value={plotArea}
+                    onWheel={(e) => e.currentTarget.blur()}
+                    value={plotArea === 0 ? "" : plotArea}
                     onChange={(e) => setPlotArea(e.target.value)}
                     placeholder="Enter area"
                     className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
@@ -458,6 +460,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                   </label>
                   <input
                     type="number"
+                    onWheel={(e) => e.currentTarget.blur()}
                     value={landArea}
                     onChange={(e) => setLandArea(e.target.value)}
                     placeholder="Enter area"
@@ -646,6 +649,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
             </label>
             <input
               type="number"
+              onWheel={(e) => e.currentTarget.blur()}
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="Enter property price"
@@ -665,6 +669,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                 <div className="grid grid-cols-2 gap-4">
                   <input
                     type="number"
+                    onWheel={(e) => e.currentTarget.blur()}
                     value={carpetArea}
                     onChange={(e) => setCarpetArea(e.target.value)}
                     placeholder="Enter area"
@@ -729,6 +734,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                   <div className="grid grid-cols-2 gap-4">
                     <input
                       type="number"
+                      onWheel={(e) => e.currentTarget.blur()}
                       value={builtArea}
                       onChange={(e) => setBuiltArea(e.target.value)}
                       placeholder="Enter area"
@@ -758,6 +764,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                   <div className="grid grid-cols-2 gap-4">
                     <input
                       type="number"
+                      onWheel={(e) => e.currentTarget.blur()}
                       value={superBuiltArea}
                       onChange={(e) => setSuperBuiltArea(e.target.value)}
                       placeholder="Enter area"
@@ -788,6 +795,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                     <input
                       type="number"
                       value={UDS_area}
+                      onWheel={(e) => e.currentTarget.blur()}
                       onChange={(e) => setUDS_area(e.target.value)}
                       placeholder="Enter UDS area"
                       className="w-full border border-gray-300 rounded-lg px-4 text-gray-600 py-3 focus:ring-2 focus:ring-orange-500"
@@ -817,6 +825,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                     <input
                       type="number"
                       value={plotSize}
+                      onWheel={(e) => e.currentTarget.blur()}
                       onChange={(e) => setPlotSize(e.target.value)}
                       placeholder="Enter Plot area"
                       className="w-full border border-gray-300 rounded-lg px-4 text-gray-600 py-3 focus:ring-2 focus:ring-orange-500"
@@ -917,6 +926,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                   </label>
                   <input
                     type="number"
+                    onWheel={(e) => e.currentTarget.blur()}
                     value={units}
                     onChange={(e) => setUnits(e.target.value)}
                     placeholder="Enter total units"
@@ -988,6 +998,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
             </label>
             <input
               type="number"
+              onWheel={(e) => e.currentTarget.blur()}
               value={parkingSpaces}
               onChange={(e) => setParkingSpaces(e.target.value)}
               placeholder="Number of parking slots"
@@ -1021,6 +1032,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
               </label>
               <input
                 type="number"
+                onWheel={(e) => e.currentTarget.blur()}
                 value={ageOfProperty}
                 onChange={(e) => setAgeOfProperty(e.target.value)}
                 placeholder="Enter age in years"
@@ -1063,6 +1075,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                       </label>
                       <input
                         type="number"
+                        onWheel={(e) => e.currentTarget.blur()}
                         value={roadWidth}
                         onChange={(e) => setRoadWidth(e.target.value)}
                         placeholder="Enter road width"
@@ -1196,6 +1209,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                           </label>
                           <input
                             type="number"
+                            onWheel={(e) => e.currentTarget.blur()}
                             value={cabins}
                             onChange={(e) => setCabins(e.target.value)}
                             placeholder="No. of cabins"
@@ -1209,6 +1223,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                           </label>
                           <input
                             type="number"
+                            onWheel={(e) => e.currentTarget.blur()}
                             value={conferenceRooms}
                             onChange={(e) => setConferenceRooms(e.target.value)}
                             placeholder="No. of rooms"
@@ -1222,6 +1237,7 @@ const PropertyProfile = ({ data = {}, onNext, updateData }) => {
                           </label>
                           <input
                             type="number"
+                            onWheel={(e) => e.currentTarget.blur()}
                             value={workstations}
                             onChange={(e) => setWorkstations(e.target.value)}
                             placeholder="No. of desks"

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {Home, MapPin, Bath, Bed, Maximize,ChevronLeft, ChevronRight,Filter,Search,X,Compass,ChevronDown,Building2,DollarSign,ArrowUpDown,Tag,CheckCircle,Award,Clock,TrendingUp,Play,Pause,Image as ImageIcon,Video} from "lucide-react";
+import { Home, MapPin, Bath, Bed, Maximize, ChevronLeft, ChevronRight, Filter, Search, X, Compass, ChevronDown, Building2, DollarSign, ArrowUpDown, Tag, CheckCircle, Award, Clock, TrendingUp, Play, Pause, Image as ImageIcon, Video } from "lucide-react";
 import ApiService from "../hooks/ApiService";
 
 function ProjectsContent() {
@@ -404,8 +404,8 @@ function ProjectsContent() {
                     setFilters(prev => ({ ...prev, marketType: "sale" }));
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${filters.marketType === "sale"
-                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                 >
                   For Sale
@@ -415,8 +415,8 @@ function ProjectsContent() {
                     setFilters(prev => ({ ...prev, marketType: "rent" }));
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${filters.marketType === "rent"
-                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                 >
                   For Rent
@@ -485,8 +485,8 @@ function ProjectsContent() {
                   onChange={handleChange}
                   disabled={!filters.city}
                   className={`w-full px-3 py-1.5 border rounded-lg text-xs text-[#333333] focus:border-orange-500 focus:bg-white focus:outline-none transition-all duration-300 appearance-none pr-8 ${!filters.city
-                      ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-gray-50 border-gray-200"
+                    ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                    : "bg-gray-50 border-gray-200"
                     }`}
                 >
                   <option value="">
@@ -697,8 +697,8 @@ function ProjectsContent() {
                     onClick={() => handlePageChange(1)}
                     disabled={page === 1}
                     className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === 1
-                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                      ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                      : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
                       }`}
                   >
                     First
@@ -707,8 +707,8 @@ function ProjectsContent() {
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === 1
-                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                      ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                      : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
                       }`}
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -735,8 +735,8 @@ function ProjectsContent() {
                           key={i}
                           onClick={() => handlePageChange(pageNum)}
                           className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all duration-300 ${page === pageNum
-                              ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
-                              : "text-gray-600 hover:bg-gray-100 hover:text-orange-500"
+                            ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-200"
+                            : "text-gray-600 hover:bg-gray-100 hover:text-orange-500"
                             }`}
                         >
                           {pageNum}
@@ -752,8 +752,8 @@ function ProjectsContent() {
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === totalPages
-                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                      ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                      : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
                       }`}
                   >
                     Next
@@ -763,8 +763,8 @@ function ProjectsContent() {
                     onClick={() => handlePageChange(totalPages)}
                     disabled={page === totalPages}
                     className={`px-3 py-2 rounded-lg border transition-all duration-300 text-sm font-medium ${page === totalPages
-                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                      ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                      : "border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
                       }`}
                   >
                     Last
@@ -905,8 +905,8 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
   const profile = property?.profile || {};
 
   const isPlot = categoryName.toLowerCase() === "plot" ||
-  categoryName.toLowerCase() === "land" ||
-  categoryName.toLowerCase() === "commercial land";
+    categoryName.toLowerCase() === "land" ||
+    categoryName.toLowerCase() === "commercial land";
 
   const plotArea = profile?.plotArea || property?.plotArea || property?.area || null;
   const areaUnit = profile?.areaUnit || property?.areaUnit || "sqft";
@@ -974,7 +974,8 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = '/images/logo.jpg';
-                    }}                  />
+                    }}
+                  />
                 )}
               </>
             ) : (
