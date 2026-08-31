@@ -2,8 +2,8 @@ import PropertyDetail from "@/pages/PropertyDetail";
 import { notFound } from "next/navigation";
 
 const SITE_URL = "https://vmrdaplots.com";
-// const API_URL = "https://service.vmrdaplots.com/api";
-const API_URL = "http://localhost:3001/api";
+const API_URL = "https://service.vmrdaplots.com/api";
+// const API_URL = "http://localhost:3001/api";
 
 /**
  * Fetch property by slug
