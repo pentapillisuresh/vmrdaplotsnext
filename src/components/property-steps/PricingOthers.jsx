@@ -14,7 +14,7 @@ function PricingOthersContent({ data, updateData, isEditMode }) {
   const [privateNotes, setPrivateNotes] = useState('');
   const [metaTitle, setMetaTitle] = useState(`${data.propertyName},${data.title}`);
   const [metaDescription, setMetaDescription] = useState('');
-  const [metaKeywords, setMetaKeywords] = useState(`${data.categoryName} in ${data.address.city},${data.categoryName} in ${data.address.locality}`);
+  const [metaKeywords, setMetaKeywords] = useState('');
   const [approvedBy, setApprovedBy] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,50 +37,104 @@ function PricingOthersContent({ data, updateData, isEditMode }) {
   const isUpdating = useRef(false);
 
   const approvedOptions = ['VMRDA', 'VUDA', 'DTCP', 'LRS', 'GVMC', 'RERA', 'Bank Loan'];
-  const amenitiesOptions = ['Security','Maintenance Staff','Clubhouse','Park / Garden','Gym / Rooms','children play area','gated community','Swimming Pool','24/7 water service','power service','Wi-Fi','borewall','compound wall','Lift','Power Backup'];
+  const amenitiesOptions = ['Security', 'Maintenance Staff', 'Clubhouse', 'Park / Garden', 'Gym / Rooms', 'children play area', 'gated community', 'Swimming Pool', '24/7 water service', 'power service', 'Wi-Fi', 'borewall', 'compound wall', 'Lift', 'Power Backup'];
+
+  useEffect(() => {
+    const keywords = [
+      `${data.categoryName} in ${data.address.city}`,
+      `${data.categoryName} for Sale in ${data.address.city}`,
+      `Residential ${data.categoryName} in ${data.address.city}`,
+      `Open ${data.categoryName} in ${data.address.city}`,
+
+      // Only generate approval keywords when approvedBy has values
+      ...(approvedBy?.length
+        ? approvedBy.map(
+          approval =>
+            `${approval} Approved ${data.categoryName} in ${data.address.city}`
+        )
+        : []),
+
+      ...(approvedBy?.length
+        ? approvedBy.map(
+          approval =>
+            `${approval} ${data.categoryName} in ${data.address.city}`
+        )
+        : []),
+
+      `Buy and Sell Properties in ${data.address.city}`,
+      `Properties in ${data.address.city}`,
+      `Commercial Properties in ${data.address.city}`,
+
+      `${data.categoryName} in ${data.address.locality}`,
+      `${data.categoryName} for Sale in ${data.address.locality}`,
+      `Residential ${data.categoryName} in ${data.address.locality}`,
+      `Open ${data.categoryName} in ${data.address.locality}`,
+
+      // Only generate approval keywords when approvedBy has values
+      ...(approvedBy?.length
+        ? approvedBy.map(
+          approval =>
+            `${approval} Approved ${data.categoryName} in ${data.address.locality}`
+        )
+        : []),
+
+      ...(approvedBy?.length
+        ? approvedBy.map(
+          approval =>
+            `${approval} ${data.categoryName} in ${data.address.locality}`
+        )
+        : []),
+
+      `Buy and Sell Properties in ${data.address.locality}`,
+      `Properties in ${data.address.locality}`,
+      `Commercial Properties in ${data.address.locality}`,
+    ];
+
+    setMetaKeywords(keywords.join(', '));
+  }, [approvedBy, data]);
 
   // Filter amenities based on category
-const filteredAmenities = amenitiesOptions.filter((amenity) => {
-  // Hide Lift, Wi-Fi, Power Backup for Plot/Land
-  if (
-    (data.propertySubtype === "Plot") &&
-    ["Lift", "Wi-Fi",'Swimming Pool','Gym / Rooms', "Power Backup"].includes(amenity)
-  ) {
-    return false;
-  }
-  if (
-    (data.propertySubtype === "Land") &&
-    ['Security','Maintenance Staff','Clubhouse','Park / Garden','Gym / Rooms','children play area','gated community','Swimming Pool','24/7 water service','power service','Wi-Fi','Lift','Power Backup'].includes(amenity)
-  ) {
-    return false;
-  }
+  const filteredAmenities = amenitiesOptions.filter((amenity) => {
+    // Hide Lift, Wi-Fi, Power Backup for Plot/Land
+    if (
+      (data.propertySubtype === "Plot") &&
+      ["Lift", "Wi-Fi", 'Swimming Pool', 'Gym / Rooms', "Power Backup"].includes(amenity)
+    ) {
+      return false;
+    }
+    if (
+      (data.propertySubtype === "Land") &&
+      ['Security', 'Maintenance Staff', 'Clubhouse', 'Park / Garden', 'Gym / Rooms', 'children play area', 'gated community', 'Swimming Pool', '24/7 water service', 'power service', 'Wi-Fi', 'Lift', 'Power Backup'].includes(amenity)
+    ) {
+      return false;
+    }
 
-  // Show borewall & compound wall only for Land
-  if (
-    ["borewall", "compound wall"].includes(amenity) &&
-    data.propertySubtype !== "Land"
-  ) {
-    return false;   
-  }
+    // Show borewall & compound wall only for Land
+    if (
+      ["borewall", "compound wall"].includes(amenity) &&
+      data.propertySubtype !== "Land"
+    ) {
+      return false;
+    }
 
-  // Show 24/7 water service & power service only for Flat
-  if (
-    ["24/7 water service", "power service"].includes(amenity) &&
-    data.propertySubtype !== "Flat/Apartment"
-  ) {
-    return false;
-  }
+    // Show 24/7 water service & power service only for Flat
+    if (
+      ["24/7 water service", "power service"].includes(amenity) &&
+      data.propertySubtype !== "Flat/Apartment"
+    ) {
+      return false;
+    }
 
-  // Show children's play area & gated community only for Flat and Plot
-  if (
-    ["children play area", "gated community"].includes(amenity) &&
-    !["Flat/Apartment", "Plot"].includes(data.propertySubtype)
-  ) {
-    return false;
-  }
+    // Show children's play area & gated community only for Flat and Plot
+    if (
+      ["children play area", "gated community"].includes(amenity) &&
+      !["Flat/Apartment", "Plot"].includes(data.propertySubtype)
+    ) {
+      return false;
+    }
 
-  return true;
-});
+    return true;
+  });
 
   // Handle window resize for confetti
   useEffect(() => {
@@ -180,7 +234,7 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
     // Debounce the update to prevent rapid updates
     updateTimeoutRef.current = setTimeout(() => {
       // Prevent recursive updates
-      isUpdating.current = true; 
+      isUpdating.current = true;
 
       const updatedData = {
         ...data,
@@ -470,7 +524,7 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
               Property Description <span className="text-red-500">*</span>
             </label>
             <span className={`text-xs ${description.length > 0 && description.length < 10 ? 'text-red-500' :
-                description.length >= 10 ? 'text-green-500' : 'text-gray-500'
+              description.length >= 10 ? 'text-green-500' : 'text-gray-500'
               }`}>
               {description.length}/10+ characters
             </span>
@@ -521,7 +575,7 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
           </p>
         </div>
 
-      
+
       </div>
 
       {/* Conditional: Approved By & Amenities */}
@@ -542,8 +596,8 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
                     type="button"
                     onClick={() => handleApprovedChange(opt)}
                     className={`px-4 py-2.5 rounded-full border-2 transition-all ${approvedBy.includes(opt)
-                        ? 'bg-blue-900 border-blue-900 text-white'
-                        : 'bg-white border-gray-300 text-gray-700 hover:border-orange-300'
+                      ? 'bg-blue-900 border-blue-900 text-white'
+                      : 'bg-white border-gray-300 text-gray-700 hover:border-orange-300'
                       }`}
                   >
                     {opt}
@@ -577,82 +631,82 @@ const filteredAmenities = amenitiesOptions.filter((amenity) => {
           </div>
         )}
 
-        {/* SEO Fields - Meta Title, Meta Description, Meta Keywords */}
-        <div className="border-t border-gray-200 pt-6 mt-4">
-          <p className="text-sm text-gray-500 mb-4">
-            Optimize your property listing for search engines. These fields help improve your property's visibility.
+      {/* SEO Fields - Meta Title, Meta Description, Meta Keywords */}
+      <div className="border-t border-gray-200 pt-6 mt-4">
+        <p className="text-sm text-gray-500 mb-4">
+          Optimize your property listing for search engines. These fields help improve your property's visibility.
+        </p>
+
+        {/* Meta Title */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <label className="block font-roboto text-sm font-medium text-gray-700">
+              Meta Title
+            </label>
+            <span className="text-xs text-gray-500">
+              {metaTitle.length}/70 characters (recommended)
+            </span>
+          </div>
+          <input
+            type="text"
+            value={metaTitle}
+            onChange={handleMetaTitleChange}
+            placeholder="Enter meta title for SEO (e.g., Premium Plot for Sale in Vizag)"
+            maxLength={70}
+            className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-roboto"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            The meta title appears in search engine results. Keep it under 70 characters for best results.
           </p>
-
-          {/* Meta Title */}
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <label className="block font-roboto text-sm font-medium text-gray-700">
-                Meta Title
-              </label>
-              <span className="text-xs text-gray-500">
-                {metaTitle.length}/70 characters (recommended)
-              </span>
-            </div>
-            <input
-              type="text"
-              value={metaTitle}
-              onChange={handleMetaTitleChange}
-              placeholder="Enter meta title for SEO (e.g., Premium Plot for Sale in Vizag)"
-              maxLength={70}
-              className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-roboto"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              The meta title appears in search engine results. Keep it under 70 characters for best results.
-            </p>
-          </div>
-
-          {/* Meta Description */}
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <label className="block font-roboto text-sm font-medium text-gray-700">
-                Meta Description
-              </label>
-              <span className="text-xs text-gray-500">
-                {metaDescription.length}/160 characters (recommended)
-              </span>
-            </div>
-            <textarea
-              value={metaDescription}
-              onChange={handleMetaDescriptionChange}
-              placeholder="Enter meta description for SEO (e.g., Find the best VMRDA approved plots in Visakhapatnam. Buy premium residential plots near RK Beach with excellent connectivity.)"
-              rows="2"
-              maxLength={160}
-              className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-roboto resize-none"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              The meta description appears below the title in search results. Keep it under 160 characters.
-            </p>
-          </div>
-
-          {/* Meta Keywords */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block font-roboto text-sm font-medium text-gray-700">
-                Meta Keywords
-              </label>
-              <span className="text-xs text-gray-500">
-                {metaKeywords.split(',').filter(k => k.trim()).length} keywords
-              </span>
-            </div>
-            <input
-              type="text"
-              value={metaKeywords}
-              onChange={handleMetaKeywordsChange}
-              placeholder="Enter keywords separated by commas (e.g., plots in Vizag, VMRDA approved plots, buy land in Visakhapatnam)"
-              className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-roboto"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Add relevant keywords separated by commas to help search engines understand your property better.
-            </p>
-          </div>
         </div>
 
-              {/* Property Summary */}
+        {/* Meta Description */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <label className="block font-roboto text-sm font-medium text-gray-700">
+              Meta Description
+            </label>
+            <span className="text-xs text-gray-500">
+              {metaDescription.length}/160 characters (recommended)
+            </span>
+          </div>
+          <textarea
+            value={metaDescription}
+            onChange={handleMetaDescriptionChange}
+            placeholder="Enter meta description for SEO (e.g., Find the best VMRDA approved plots in Visakhapatnam. Buy premium residential plots near RK Beach with excellent connectivity.)"
+            rows="2"
+            maxLength={160}
+            className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-roboto resize-none"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            The meta description appears below the title in search results. Keep it under 160 characters.
+          </p>
+        </div>
+
+        {/* Meta Keywords */}
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <label className="block font-roboto text-sm font-medium text-gray-700">
+              Meta Keywords
+            </label>
+            <span className="text-xs text-gray-500">
+              {metaKeywords.split(',').filter(k => k.trim()).length} keywords
+            </span>
+          </div>
+          <input
+            type="text"
+            value={metaKeywords}
+            onChange={handleMetaKeywordsChange}
+            placeholder="Enter keywords separated by commas (e.g., plots in Vizag, VMRDA approved plots, buy land in Visakhapatnam)"
+            className="w-full px-4 text-gray-600 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-roboto"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Add relevant keywords separated by commas to help search engines understand your property better.
+          </p>
+        </div>
+      </div>
+
+      {/* Property Summary */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-10">
         <h3 className="font-serif text-lg font-bold text-blue-900 mb-4">Property Summary</h3>
         <div className="grid grid-cols-2 gap-4 font-roboto text-sm">
