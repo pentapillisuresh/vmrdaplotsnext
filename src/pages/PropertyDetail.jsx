@@ -1040,14 +1040,16 @@ function PropertyDetailContent({ propTitle, initialProperty }) {
               {/* Map Section */}
               <SectionPremium title="Location on Map">
                 <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-                  <PropertyMap
-                    lat={address?.lat}
-                    lon={address?.lon}
-                    slug={property?.slug}
-                    title={property?.title}
-                    image={getPhotoSrc(property?.photos)}
-                    location={address?.locality}
-                  />
+                <PropertyMap
+  lat={address?.lat}
+  lon={address?.lon}
+  slug={property?.slug}
+  title={property?.title}
+  image={getPhotoSrc(property?.photos)}
+  location={`${address?.locality || ""}, ${address?.city || ""}`}
+  locality={address?.locality}
+  city={address?.city}
+/>
                 </div>
               </SectionPremium>
             </div>

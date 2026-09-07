@@ -96,16 +96,12 @@ export async function generateMetadata({ params }) {
 
   const property = await getProperty(title);
 
-  /**
-   * Property not found
-   */
+  // Property not found
   if (!property) {
     return {
       title: "Property Not Found | VMRDA Plots",
-
       description:
         "The requested property could not be found on VMRDA Plots.",
-
       robots: {
         index: false,
         follow: false,
@@ -130,68 +126,139 @@ export async function generateMetadata({ params }) {
 
   const category =
     property.category?.name ||
+    property.categoryName ||
+    property.propertySubtype ||
     "Property";
 
-  /**
-   * Clean SEO description
+  /*
+   * ==========================================
+   * SEO TITLE
+   * ==========================================
+   *
+   * Priority:
+   * 1. Admin entered metaTitle
+   * 2. Automatically generated title
    */
-  const description =
+
+  const seoTitle =
+    property.metaTitle?.trim() ||
+    `${propertyTitle} for Sale in ${locality || city} | VMRDA Plots`;
+
+  /*
+   * ==========================================
+   * SEO DESCRIPTION
+   * ==========================================
+   *
+   * Priority:
+   * 1. Admin entered metaDescription
+   * 2. Property description
+   * 3. Automatically generated description
+   */
+
+  const cleanPropertyDescription =
     property.description
       ?.replace(/\s+/g, " ")
-      .trim()
-      .substring(0, 160) ||
-    `${propertyTitle} ${category} for sale in ${
-      locality ? `${locality}, ` : ""
-    }${city}.`;
+      .trim();
 
-  /**
-   * Canonical URL
+  const seoDescription =
+    property.metaDescription?.trim() ||
+    cleanPropertyDescription ||
+    `Explore ${category} for sale in ${
+      locality ? `${locality}, ` : ""
+    }${city}. View property details, location, amenities, pricing and more on VMRDA Plots.`;
+
+  /*
+   * ==========================================
+   * SEO KEYWORDS
+   * ==========================================
+   *
+   * Use admin entered keywords if available.
+   * Otherwise generate useful keywords.
    */
+
+  const seoKeywords = property.metaKeywords
+    ? property.metaKeywords
+        .split(",")
+        .map((keyword) => keyword.trim())
+        .filter(Boolean)
+    : [
+        `${category} in ${city}`,
+        `${category} for sale in ${city}`,
+        `${category} in ${locality}`,
+        `${category} for sale in ${locality}`,
+        `properties in ${city}`,
+        `plots for sale in ${city}`,
+        `real estate in ${city}`,
+        "VMRDA Plots",
+        "VMRDA approved plots",
+        "Properties for Sale in Visakhapatnam",
+        "Real Estate Visakhapatnam",
+      ].filter(Boolean);
+
+  /*
+   * ==========================================
+   * CANONICAL URL
+   * ==========================================
+   */
+
   const canonicalUrl =
     `${SITE_URL}/property/${property.slug || title}`;
 
-  /**
-   * Main image
+  /*
+   * ==========================================
+   * MAIN IMAGE
+   * ==========================================
    */
+
   const mainImage =
     images.length > 0
       ? images[0]
       : undefined;
 
   return {
-    /**
-     * SEO Title
+    /*
+     * ========================================
+     * TITLE
+     * ========================================
      */
-    title: `${propertyTitle} | VMRDA Plots`,
 
-    /**
-     * SEO Description
-     */
-    description,
+    title: seoTitle,
 
-    /**
-     * Keywords
+    /*
+     * ========================================
+     * DESCRIPTION
+     * ========================================
      */
-    keywords: [
-      propertyTitle,
-      category,
-      locality,
-      city,
-      "VMRDA Plots",
-      "VMRDA approved plots",
-      "Plots for Sale",
-      "Plots for Sale in Visakhapatnam",
-      "Properties for Sale in Visakhapatnam",
-      "Real Estate Visakhapatnam",
-    ].filter(Boolean),
 
-    /**
-     * Robots
+    description: seoDescription,
+
+    /*
+     * ========================================
+     * KEYWORDS
+     * ========================================
      */
+
+    keywords: seoKeywords,
+
+    /*
+     * ========================================
+     * CANONICAL
+     * ========================================
+     */
+
+    alternates: {
+      canonical: canonicalUrl,
+    },
+
+    /*
+     * ========================================
+     * ROBOTS
+     * ========================================
+     */
+
     robots: {
       index: true,
       follow: true,
-
       googleBot: {
         index: true,
         follow: true,
@@ -201,54 +268,40 @@ export async function generateMetadata({ params }) {
       },
     },
 
-    /**
-     * Canonical URL
+    /*
+     * ========================================
+     * OPEN GRAPH
+     * ========================================
      */
-    alternates: {
-      canonical: canonicalUrl,
-    },
 
-    /**
-     * Open Graph
-     */
     openGraph: {
-      title: propertyTitle,
-
-      description,
-
+      title: seoTitle,
+      description: seoDescription,
       url: canonicalUrl,
-
       siteName: "VMRDA Plots",
-
       type: "website",
-
       locale: "en_IN",
 
-      /**
-       * All property images
-       */
       images: images.map((image) => ({
         url: image,
-
         width: 1200,
-
         height: 800,
-
         alt: `${propertyTitle} - ${
           locality ? `${locality}, ` : ""
         }${city}`,
       })),
     },
 
-    /**
-     * Twitter / X
+    /*
+     * ========================================
+     * TWITTER / X
+     * ========================================
      */
+
     twitter: {
       card: "summary_large_image",
-
-      title: propertyTitle,
-
-      description,
+      title: seoTitle,
+      description: seoDescription,
 
       images: mainImage
         ? [mainImage]
