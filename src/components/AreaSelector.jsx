@@ -1,12 +1,17 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import areaData from '../data/areaData';
 import { motion } from "framer-motion";
 
 const AreaSelector = () => {
   const cardRefs = useRef([]);
+  const [showAll, setShowAll] = useState(false);
+
+  const INITIAL_COUNT = 10;
+  const visibleAreas = showAll ? areaData : areaData.slice(0, INITIAL_COUNT);
+  const hasMore = areaData.length > INITIAL_COUNT;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,37 +37,34 @@ const AreaSelector = () => {
         if (card) observer.unobserve(card);
       });
     };
-  }, []);
+  }, [showAll]);
 
   return (
     <div className="py-12 px-4 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto">
         {/* Header with animation */}
         <div className="text-center overflow-hidden">
-          <div className="inline-flex items-center justify-center  opacity-0 animate-fadeInDown">
-              <div className="flex items-center justify-center ">
-            <div className="text-center mb-6 sm:mb-10">
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-              >
-                <span className="inline-block bg-orange-500 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-semibold text-xs uppercase tracking-[0.15em] shadow-lg">
-                vizag prime  LOCATIONS
-                </span>
-              </motion.div>
+          <div className="inline-flex items-center justify-center opacity-0 animate-fadeInDown">
+            <div className="flex items-center justify-center">
+              <div className="text-center mb-6 sm:mb-10">
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
+                >
+                  <span className="inline-block bg-orange-500 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-semibold text-xs uppercase tracking-[0.15em] shadow-lg">
+                    vizag prime LOCATIONS
+                  </span>
+                </motion.div>
+              </div>
             </div>
           </div>
-          </div>
-       
         </div>
-
-       
 
         {/* Areas Grid - 5 columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {areaData.map((area, index) => (
+          {visibleAreas.map((area, index) => (
             <div
               key={area.id}
               ref={(el) => (cardRefs.current[index] = el)}
@@ -73,30 +75,22 @@ const AreaSelector = () => {
                 className="group block"
               >
                 <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden h-full border border-gray-200 hover:border-[#001F3F]/20 hover:scale-[1.02]">
-                  {/* Area Header with shimmer effect */}
+                  {/* Area Header */}
                   <div className="p-4 pb-3 border-b border-gray-100 relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                    
+
                     <div className="flex justify-between items-start mb-2 relative z-10">
                       <h3 className="font-bold text-base text-[#001F3F] group-hover:text-[#001F3F]/90 transition-colors duration-300 line-clamp-1">
                         {area.name}
                       </h3>
-                      <span className={`text-xs font-bold px-2 py-1 rounded-full transition-all duration-300 transform group-hover:scale-105 ${
-                        area.demand === 'Very High' ? 'bg-red-50 text-red-700 border border-red-200' :
-                        area.demand === 'High' ? 'bg-orange-50 text-orange-700 border border-orange-200' :
-                        area.demand === 'Medium' ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
-                        'bg-green-50 text-green-700 border border-green-200'
-                      }`}>
-                        {area.demand}
-                      </span>
                     </div>
-                    
+
                     <div className="flex items-center text-gray-600 relative z-10 mt-1">
                       <svg className="w-4 h-4 mr-1 text-gray-400 group-hover:text-[#001F3F] transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                      <p className="text-xs font-medium text-gray-600 truncate">{area.location}</p>
+                      <p className="text-xs font-medium text-gray-600 truncate">Visakhapatnam, Andhra Pradesh</p>
                     </div>
                   </div>
 
@@ -118,6 +112,27 @@ const AreaSelector = () => {
             </div>
           ))}
         </div>
+
+        {/* View More / View Less Button */}
+        {hasMore && (
+          <div className="flex justify-center mt-10">
+            <button
+              onClick={() => setShowAll((prev) => !prev)}
+              className="group inline-flex items-center gap-2 bg-[#001F3F] hover:bg-[#001F3F]/90 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              {showAll ? 'View Less' : `View More (${areaData.length - INITIAL_COUNT})`}
+              <svg
+                className={`w-5 h-5 transition-transform duration-300 ${showAll ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Add CSS for animations */}
@@ -132,7 +147,7 @@ const AreaSelector = () => {
             transform: translateY(0);
           }
         }
-        
+
         @keyframes fadeInDown {
           from {
             opacity: 0;
@@ -143,7 +158,7 @@ const AreaSelector = () => {
             transform: translateY(0);
           }
         }
-        
+
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -152,31 +167,31 @@ const AreaSelector = () => {
             opacity: 1;
           }
         }
-        
+
         .animate-fadeInUp {
           animation: fadeInUp 0.6s ease-out forwards;
         }
-        
+
         .animate-fadeInDown {
           animation: fadeInDown 0.6s ease-out forwards;
         }
-        
+
         .animate-fadeIn {
           animation: fadeIn 0.8s ease-out forwards;
         }
-        
+
         .animation-delay-100 {
           animation-delay: 100ms;
         }
-        
+
         .animation-delay-200 {
           animation-delay: 200ms;
         }
-        
+
         .animation-delay-300 {
           animation-delay: 300ms;
         }
-        
+
         .line-clamp-1 {
           overflow: hidden;
           display: -webkit-box;

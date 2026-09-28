@@ -1,18 +1,8 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import {
-  MapPin,
-  Bed,
-  Bath,
-  Maximize,
-  ChevronLeft,
-  ChevronRight,
-  Monitor,
-  DoorClosed,
-  Presentation,
-} from "lucide-react";
+import { MapPin } from "lucide-react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -42,6 +32,8 @@ const RecentViewProperties = () => {
 
     const num = parseFloat(price);
 
+    if (isNaN(num)) return "N/A";
+
     if (num >= 10000000) {
       return `₹${(num / 10000000).toFixed(2)} Cr`;
     }
@@ -63,30 +55,26 @@ const RecentViewProperties = () => {
       });
 
       const propertyList =
-        response?.map((item) => item.property) || [];
+        response
+          ?.map((item) => item?.property)
+          ?.filter(Boolean) || [];
 
       setProperties(propertyList);
-
     } catch (err) {
       console.error("Error fetching properties:", err);
+      setProperties([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // CREATE SEO URL
-  const createSlug = (title) => {
-    return title
-      ?.toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-");
-  };
-
-  // NAVIGATE PROPERTY PAGE
   const handlePropertyClick = (property) => {
+    const slug = property?.slug;
 
-    const slug = property.slug;
+    if (!slug) {
+      console.error("Property slug is missing:", property);
+      return;
+    }
 
     console.log("Navigating To:", `/property/${slug}`);
 
@@ -104,7 +92,9 @@ const RecentViewProperties = () => {
 
   const swiperConfig = {
     modules: [Navigation, Pagination, Autoplay],
+
     spaceBetween: 30,
+
     slidesPerView: 1,
 
     navigation: false,
@@ -140,24 +130,23 @@ const RecentViewProperties = () => {
 
   return (
     <section className="py-20 bg-white relative">
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="text-center mb-10">
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                  viewport={{ once: true }}
-                >
-                  <span className="inline-block bg-orange-500 text-white px-6 py-2 rounded-full font-semibold text-xs uppercase tracking-[0.15em] shadow-lg">
-                    RECENTLY VIEWED
-                  </span>
-                </motion.div>
-              </div>
+        {/* SECTION TITLE */}
+        <div className="text-center mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <span className="inline-block bg-orange-500 text-white px-6 py-2 rounded-full font-semibold text-xs uppercase tracking-[0.15em] shadow-lg">
+              RECENTLY VIEWED
+            </span>
+          </motion.div>
+        </div>
 
-      
-
+        {/* LOADING */}
         {loading ? (
           <div className="text-center py-10">
             Loading properties...
@@ -165,12 +154,14 @@ const RecentViewProperties = () => {
 
         ) : properties.length === 0 ? (
 
+          /* EMPTY STATE */
           <div className="text-center py-10 text-gray-500">
             No recently viewed properties.
           </div>
 
         ) : (
 
+          /* PROPERTY SLIDER */
           <div className="relative group">
 
             <Swiper
@@ -178,91 +169,164 @@ const RecentViewProperties = () => {
               className="recent-properties-swiper"
             >
 
-              {properties.map((property) => (
+              {properties.map((property, index) => {
 
-                <SwiperSlide key={property.id}>
+                /*
+                 * IMPORTANT:
+                 * Do not use only property.id here.
+                 *
+                 * The API can return duplicate property IDs.
+                 * Adding index guarantees that React receives
+                 * a unique key for every rendered slide.
+                 */
+                const propertyKey =
+                  `${property?.id || property?.slug || "property"}-${index}`;
 
-                  <article
-                    onClick={() => handlePropertyClick(property)}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer border border-gray-100 hover:border-orange-200"
-                  >
+                return (
+                  <SwiperSlide key={propertyKey}>
 
-                    {/* IMAGE */}
-                    <div className="h-56 overflow-hidden relative">
+                    <article
+                      onClick={() =>
+                        handlePropertyClick(property)
+                      }
+                      className="
+                        bg-white
+                        rounded-xl
+                        shadow-lg
+                        overflow-hidden
+                        cursor-pointer
+                        border
+                        border-gray-100
+                        hover:border-orange-200
+                        transition-all
+                        duration-300
+                        hover:shadow-xl
+                      "
+                    >
 
-                      <img
-                        src={getPhotoSrc(property.photos)}
-                        alt={property.title}
-                        className="w-full h-full object-cover"
-                      />
+                      {/* IMAGE */}
+                      <div className="h-56 overflow-hidden relative">
 
-                    </div>
-
-                    {/* CONTENT */}
-                    <div className="p-6">
-
-                      <h3 className="text-xl font-bold text-[#003366] mb-2">
-                        {property.title}
-                      </h3>
-
-                      {property?.address && (
-                        <div className="flex items-center gap-2 text-gray-600 mb-4">
-
-                          <MapPin
-                            size={16}
-                            className="text-orange-500"
-                          />
-
-                          <span className="text-sm">
-                            {property.address.locality},{" "}
-                            {property.address.city}
-                          </span>
-
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-
-                        <div className="text-right">
-
-                          {property.price ? (
-
-                            <div className="text-2xl font-bold text-orange-600">
-                              {formatPrice(property.price)}
-                            </div>
-
-                          ) : (
-
-                            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg">
-                              Contact Us
-                            </button>
-
-                          )}
-
-                        </div>
-
-                        <button className="text-[#003366] font-semibold text-sm">
-                          View Details →
-                        </button>
+                        <img
+                          src={getPhotoSrc(property?.photos)}
+                          alt={
+                            property?.title ||
+                            "Property"
+                          }
+                          className="
+                            w-full
+                            h-full
+                            object-cover
+                            transition-transform
+                            duration-500
+                            hover:scale-105
+                          "
+                        />
 
                       </div>
 
-                    </div>
+                      {/* CONTENT */}
+                      <div className="p-6">
 
-                  </article>
+                        {/* TITLE */}
+                        <h3 className="text-xl font-bold text-[#003366] mb-2 line-clamp-2">
+                          {property?.title || "Property"}
+                        </h3>
 
-                </SwiperSlide>
+                        {/* LOCATION */}
+                        {property?.address && (
+                          <div className="flex items-center gap-2 text-gray-600 mb-4">
 
-              ))}
+                            <MapPin
+                              size={16}
+                              className="text-orange-500 flex-shrink-0"
+                            />
+
+                            <span className="text-sm line-clamp-1">
+                              {property?.address?.locality}
+                              {property?.address?.locality &&
+                              property?.address?.city
+                                ? ", "
+                                : ""}
+                              {property?.address?.city}
+                            </span>
+
+                          </div>
+                        )}
+
+                        {/* BOTTOM CONTENT */}
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+
+                          {/* PRICE */}
+                          <div className="text-right">
+
+                            {property?.price ? (
+
+                              <div className="text-2xl font-bold text-orange-600">
+                                {formatPrice(
+                                  property.price
+                                )}
+                              </div>
+
+                            ) : (
+
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  router.push("/contact");
+                                }}
+                                className="
+                                  bg-blue-600
+                                  text-white
+                                  px-4
+                                  py-2
+                                  rounded-lg
+                                  hover:bg-blue-700
+                                  transition
+                                "
+                              >
+                                Contact Us
+                              </button>
+
+                            )}
+
+                          </div>
+
+                          {/* VIEW DETAILS */}
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handlePropertyClick(property);
+                            }}
+                            className="
+                              text-[#003366]
+                              font-semibold
+                              text-sm
+                              hover:text-orange-500
+                              transition
+                            "
+                          >
+                            View Details →
+                          </button>
+
+                        </div>
+
+                      </div>
+
+                    </article>
+
+                  </SwiperSlide>
+                );
+              })}
 
             </Swiper>
 
           </div>
-
         )}
 
       </div>
-
     </section>
   );
 };

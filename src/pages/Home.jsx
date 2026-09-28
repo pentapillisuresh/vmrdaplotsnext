@@ -18,6 +18,7 @@ import ApiService from "../hooks/ApiService";
 import RecentViewProperties from "../components/RecentViewProperties";
 import FeaturedProjects from "../components/FeaturedProjects";
 import AboutVMRDA from "../components/AboutVMRDA";
+import StatsSection from '../pages/StatsSection';
 
 function HomeContent() {
   const [loading, setLoading] = useState(false);
@@ -68,6 +69,7 @@ function HomeContent() {
       {/* <Testimonials /> */}
       <LocationsSection cityLocalities={cityLocalities} />
       <AreaSelector />
+      <StatsSection />
     </div>
   );
 }

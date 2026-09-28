@@ -210,54 +210,7 @@ const LocationsSection = ({ cityLocalities }) => {
           </button>
         </div>
 
-        {/* Stats Section - 3 Cards in a Row */}
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-12 sm:mt-16 md:mt-20"
-          data-aos="fade-up"
-          data-aos-delay="500"
-        >
-          {/* Card 1 */}
-          <div className="bg-white rounded-2xl shadow-md text-center p-6 sm:p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
-            <div
-              className="flex justify-center items-center mx-auto w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-orange-100 group-hover:bg-orange-500 transition-colors duration-300 mb-3 sm:mb-4"
-              data-aos="zoom-in"
-              data-aos-delay="600"
-            >
-              <Home className="text-orange-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:text-white transition-colors duration-300" />
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">150+</h3>
-            <p className="text-gray-600 text-xs sm:text-sm mt-1 sm:mt-2 font-medium">Properties Listed</p>
-            <div className="w-10 sm:w-12 h-1 bg-orange-500 mx-auto mt-2 sm:mt-3 rounded-full group-hover:w-14 sm:group-hover:w-16 transition-all duration-300"></div>
-          </div>
-
-          {/* Card 2 */}
-          <div className="bg-white rounded-2xl shadow-md text-center p-6 sm:p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
-            <div
-              className="flex justify-center items-center mx-auto w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-orange-100 group-hover:bg-orange-500 transition-colors duration-300 mb-3 sm:mb-4"
-              data-aos="zoom-in"
-              data-aos-delay="700"
-            >
-              <Users className="text-orange-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:text-white transition-colors duration-300" />
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">100+</h3>
-            <p className="text-gray-600 text-xs sm:text-sm mt-1 sm:mt-2 font-medium">Happy Clients</p>
-            <div className="w-10 sm:w-12 h-1 bg-orange-500 mx-auto mt-2 sm:mt-3 rounded-full group-hover:w-14 sm:group-hover:w-16 transition-all duration-300"></div>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bg-white rounded-2xl shadow-md text-center p-6 sm:p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
-            <div
-              className="flex justify-center items-center mx-auto w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-orange-100 group-hover:bg-orange-500 transition-colors duration-300 mb-3 sm:mb-4"
-              data-aos="zoom-in"
-              data-aos-delay="800"
-            >
-              <Handshake className="text-orange-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:text-white transition-colors duration-300" />
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">100+</h3>
-            <p className="text-gray-600 text-xs sm:text-sm mt-1 sm:mt-2 font-medium">Successful Deals</p>
-            <div className="w-10 sm:w-12 h-1 bg-orange-500 mx-auto mt-2 sm:mt-3 rounded-full group-hover:w-14 sm:group-hover:w-16 transition-all duration-300"></div>
-          </div>
-        </div>
+       
       </div>
     </section>
   );
