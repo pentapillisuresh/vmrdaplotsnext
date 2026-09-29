@@ -8,7 +8,7 @@ import "leaflet/dist/leaflet.css";
 import Script from "next/script";
 
 export const metadata = {
-  title: "VMRDA Approved Plots in Vizag | Buy Plots in Visakhapatnam",
+  title: "VMRDA Approved Plots in Vizag | Buy & Sell Plots in Visakhapatnam",
   description:
     "Plots in Vizag Plots in Visakhapatnam Explore VMRDA approved plots in Vizag and buy plots in Visakhapatnam at prime locations.",
 };
