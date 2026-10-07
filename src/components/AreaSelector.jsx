@@ -180,19 +180,34 @@ const AreaSelector = () => {
 
         {/* View More / View Less Button */}
         {hasMore && (
-          <div className="flex justify-center mt-10">
+          <div className="flex justify-center mt-8 sm:mt-10">
 
             <button
               onClick={() => setShowAll((prev) => !prev)}
-              className="group inline-flex items-center gap-2 bg-[#001F3F] hover:bg-[#001F3F]/90 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              aria-label={
+                showAll
+                  ? 'View less locations'
+                  : 'View more locations'
+              }
+              title={
+                showAll
+                  ? 'View less locations'
+                  : 'View more locations'
+              }
+              className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm tracking-wide shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
             >
-              {showAll
-                ? 'View Less'
-                : `View More (${sortedAreas.length - INITIAL_COUNT})`}
+
+              <span>
+                {showAll
+                  ? 'View Less'
+                  : `View More (${sortedAreas.length - INITIAL_COUNT})`}
+              </span>
 
               <svg
-                className={`w-5 h-5 transition-transform duration-300 ${
-                  showAll ? 'rotate-180' : ''
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 ${
+                  showAll
+                    ? 'rotate-180'
+                    : 'group-hover:translate-y-0.5'
                 }`}
                 fill="none"
                 stroke="currentColor"
@@ -206,6 +221,7 @@ const AreaSelector = () => {
                   d="M19 9l-7 7-7-7"
                 />
               </svg>
+
             </button>
 
           </div>

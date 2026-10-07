@@ -1,17 +1,27 @@
 import PropertyDetail from "@/pages/PropertyDetail";
-import { notFound } from "next/navigation";
+import {  redirect } from "next/navigation";
+import { cache } from "react";
 
 const SITE_URL = "https://vmrdaplots.com";
 const API_URL = "https://service.vmrdaplots.com/api";
-// const API_URL = "http://localhost:3001/api";
 
-/**
- * Fetch property by slug
- */
-async function getProperty(title) {
+// ============================================================
+// FETCH PROPERTY
+// ============================================================
+// cache() makes generateMetadata() and Page() share the same
+// property request during the same server render.
+// ============================================================
+
+const getProperty = cache(async (slug) => {
+  if (!slug) {
+    return null;
+  }
+
   try {
+    const cleanSlug = String(slug).trim();
+
     const res = await fetch(
-      `${API_URL}/properties/getBySlug/${encodeURIComponent(title)}`,
+      `${API_URL}/properties/getBySlug/${encodeURIComponent(cleanSlug)}`,
       {
         next: {
           revalidate: 3600,
@@ -20,6 +30,10 @@ async function getProperty(title) {
     );
 
     if (!res.ok) {
+      console.error(
+        `Property API failed for ${cleanSlug}: ${res.status}`
+      );
+
       return null;
     }
 
@@ -28,422 +42,662 @@ async function getProperty(title) {
     return data?.property || null;
   } catch (error) {
     console.error("Property fetch error:", error);
+
     return null;
   }
-}
+});
 
-/**
- * Get property images
- * Supports:
- * - Array
- * - JSON string
- * - Single URL
- *
- * Also converts HTTP → HTTPS.
- */
+// ============================================================
+// GET PROPERTY IMAGES
+// ============================================================
+
 function getImages(photos) {
-  if (!photos) return [];
+  if (!photos) {
+    return [];
+  }
 
   let images = [];
 
+  // Array
   if (Array.isArray(photos)) {
     images = photos;
-  } else if (typeof photos === "string") {
+  }
+
+  // String
+  else if (typeof photos === "string") {
+    const trimmed = photos.trim();
+
+    if (!trimmed) {
+      return [];
+    }
+
     try {
-      const parsed = JSON.parse(photos);
+      const parsed = JSON.parse(trimmed);
 
       if (Array.isArray(parsed)) {
         images = parsed;
       } else {
-        images = [photos];
+        images = [trimmed];
       }
     } catch {
-      images = [photos];
+      images = [trimmed];
     }
   }
 
   return images
     .filter(
-      (img) =>
-        typeof img === "string" &&
-        img.trim() !== ""
+      (image) =>
+        typeof image === "string" &&
+        image.trim() !== ""
     )
-    .map((img) => {
-      const cleanUrl = img.trim();
+    .map((image) => {
+      let cleanUrl = image.trim();
 
-      // Convert HTTP image URL to HTTPS
-      if (cleanUrl.startsWith("http://")) {
-        return cleanUrl.replace(
+      // Convert HTTP to HTTPS
+      if (/^http:\/\//i.test(cleanUrl)) {
+        cleanUrl = cleanUrl.replace(
           /^http:\/\//i,
           "https://"
         );
       }
 
-      // Handle relative image paths
+      // Relative image URL
       if (cleanUrl.startsWith("/")) {
         return `${API_URL}${cleanUrl}`;
       }
 
       return cleanUrl;
-    });
+    })
+    .filter(Boolean);
 }
 
-/**
- * Dynamic SEO Metadata
- */
+// ============================================================
+// CLEAN TEXT
+// ============================================================
+
+function cleanText(value) {
+  if (!value) {
+    return "";
+  }
+
+  return String(value)
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// ============================================================
+// GET PROPERTY TITLE
+// ============================================================
+
+function getPropertyTitle(property) {
+  return (
+    property?.title ||
+    property?.propertyName ||
+    property?.name ||
+    "Property for Sale in Visakhapatnam"
+  );
+}
+
+// ============================================================
+// GET CITY
+// ============================================================
+
+function getCity(property) {
+  return (
+    property?.address?.city ||
+    property?.city ||
+    property?.location?.city ||
+    "Visakhapatnam"
+  );
+}
+
+// ============================================================
+// GET LOCALITY
+// ============================================================
+
+function getLocality(property) {
+  return (
+    property?.address?.locality ||
+    property?.locality ||
+    property?.area ||
+    property?.location?.locality ||
+    ""
+  );
+}
+
+// ============================================================
+// GET CATEGORY
+// ============================================================
+
+function getCategory(property) {
+  return (
+    property?.category?.name ||
+    property?.categoryName ||
+    property?.propertySubtype ||
+    property?.propertyType ||
+    "Property"
+  );
+}
+
+// ============================================================
+// GET SEO KEYWORDS
+// ============================================================
+
+function getSeoKeywords(property, propertyTitle, city, locality, category) {
+  // Admin entered keywords
+  if (
+    property?.metaKeywords &&
+    typeof property.metaKeywords === "string"
+  ) {
+    const adminKeywords = property.metaKeywords
+      .split(",")
+      .map((keyword) => keyword.trim())
+      .filter(Boolean);
+
+    if (adminKeywords.length > 0) {
+      return adminKeywords;
+    }
+  }
+
+  const keywords = [
+    propertyTitle,
+    `${propertyTitle} for sale`,
+    `${category} in ${city}`,
+    `${category} for sale in ${city}`,
+
+    locality
+      ? `${category} in ${locality}`
+      : null,
+
+    locality
+      ? `${category} for sale in ${locality}`
+      : null,
+
+    locality
+      ? `properties in ${locality}`
+      : null,
+
+    locality
+      ? `property for sale in ${locality}`
+      : null,
+
+    `properties in ${city}`,
+    `properties for sale in ${city}`,
+    `plots for sale in ${city}`,
+    `real estate in ${city}`,
+    `land for sale in ${city}`,
+
+    "VMRDA Plots",
+    "VMRDA approved plots",
+    "properties for sale in Visakhapatnam",
+    "real estate Visakhapatnam",
+  ];
+
+  return [...new Set(keywords.filter(Boolean))];
+}
+
+// ============================================================
+// GET DESCRIPTION
+// ============================================================
+
+function getSeoDescription(
+  property,
+  propertyTitle,
+  city,
+  locality,
+  category
+) {
+  // Admin meta description
+  const adminDescription = cleanText(
+    property?.metaDescription
+  );
+
+  if (adminDescription) {
+    return adminDescription;
+  }
+
+  // Property description
+  const propertyDescription = cleanText(
+    property?.description
+  );
+
+  if (propertyDescription) {
+    return propertyDescription.slice(0, 300);
+  }
+
+  // Automatically generated description
+  return cleanText(
+    `Explore ${propertyTitle}, a ${category} for sale in ${
+      locality ? `${locality}, ` : ""
+    }${city}. View property price, location, images, amenities, property details and contact information on VMRDA Plots.`
+  );
+}
+
+// ============================================================
+// DYNAMIC SEO METADATA
+// ============================================================
+
 export async function generateMetadata({ params }) {
   const { title } = await params;
 
   const property = await getProperty(title);
 
-  // Property not found
+  // ==========================================================
+  // PROPERTY NOT FOUND
+  // ==========================================================
+
   if (!property) {
     return {
       title: "Property Not Found | VMRDA Plots",
+
       description:
         "The requested property could not be found on VMRDA Plots.",
+
       robots: {
         index: false,
         follow: false,
       },
+
+      alternates: {
+        canonical: SITE_URL,
+      },
     };
   }
 
+  // ==========================================================
+  // PROPERTY DATA
+  // ==========================================================
+
   const images = getImages(property.photos);
 
-  const propertyTitle =
-    property.title ||
-    property.propertyName ||
-    "Property for Sale in Visakhapatnam";
+  const propertyTitle = getPropertyTitle(property);
 
-  const city =
-    property.address?.city ||
-    "Visakhapatnam";
+  const city = getCity(property);
 
-  const locality =
-    property.address?.locality ||
-    "";
+  const locality = getLocality(property);
 
-  const category =
-    property.category?.name ||
-    property.categoryName ||
-    property.propertySubtype ||
-    "Property";
+  const category = getCategory(property);
 
-  /*
-   * ==========================================
-   * SEO TITLE
-   * ==========================================
-   *
-   * Priority:
-   * 1. Admin entered metaTitle
-   * 2. Automatically generated title
-   */
+  // ==========================================================
+  // DESCRIPTION
+  // ==========================================================
+
+  const seoDescription = getSeoDescription(
+    property,
+    propertyTitle,
+    city,
+    locality,
+    category
+  );
+
+  // ==========================================================
+  // SEO TITLE
+  // ==========================================================
 
   const seoTitle =
-    property.metaTitle?.trim() ||
-    `${propertyTitle} for Sale in ${locality || city} | VMRDA Plots`;
+    cleanText(property.metaTitle) ||
+    `${propertyTitle} for Sale in ${
+      locality || city
+    } | VMRDA Plots`;
 
-  /*
-   * ==========================================
-   * SEO DESCRIPTION
-   * ==========================================
-   *
-   * Priority:
-   * 1. Admin entered metaDescription
-   * 2. Property description
-   * 3. Automatically generated description
-   */
+  // ==========================================================
+  // KEYWORDS
+  // ==========================================================
 
-  const cleanPropertyDescription =
-    property.description
-      ?.replace(/\s+/g, " ")
-      .trim();
+  const seoKeywords = getSeoKeywords(
+    property,
+    propertyTitle,
+    city,
+    locality,
+    category
+  );
 
-  const seoDescription =
-    property.metaDescription?.trim() ||
-    cleanPropertyDescription ||
-    `Explore ${category} for sale in ${
-      locality ? `${locality}, ` : ""
-    }${city}. View property details, location, amenities, pricing and more on VMRDA Plots.`;
+  // ==========================================================
+  // IMPORTANT:
+  // ALWAYS USE THE DATABASE SLUG FOR CANONICAL URL
+  // ==========================================================
 
-  /*
-   * ==========================================
-   * SEO KEYWORDS
-   * ==========================================
-   *
-   * Use admin entered keywords if available.
-   * Otherwise generate useful keywords.
-   */
-
-  const seoKeywords = property.metaKeywords
-    ? property.metaKeywords
-        .split(",")
-        .map((keyword) => keyword.trim())
-        .filter(Boolean)
-    : [
-        `${category} in ${city}`,
-        `${category} for sale in ${city}`,
-        `${category} in ${locality}`,
-        `${category} for sale in ${locality}`,
-        `properties in ${city}`,
-        `plots for sale in ${city}`,
-        `real estate in ${city}`,
-        "VMRDA Plots",
-        "VMRDA approved plots",
-        "Properties for Sale in Visakhapatnam",
-        "Real Estate Visakhapatnam",
-      ].filter(Boolean);
-
-  /*
-   * ==========================================
-   * CANONICAL URL
-   * ==========================================
-   */
+  const actualSlug =
+    property.slug ||
+    String(title).trim();
 
   const canonicalUrl =
-    `${SITE_URL}/property/${property.slug || title}`;
+    `${SITE_URL}/property/${encodeURIComponent(actualSlug)}`;
 
-  /*
-   * ==========================================
-   * MAIN IMAGE
-   * ==========================================
-   */
+  // ==========================================================
+  // MAIN IMAGE
+  // ==========================================================
 
   const mainImage =
     images.length > 0
       ? images[0]
       : undefined;
 
+  // ==========================================================
+  // IMAGE METADATA
+  // ==========================================================
+
+  const openGraphImages =
+    images.length > 0
+      ? images.map((image) => ({
+          url: image,
+          width: 1200,
+          height: 800,
+          alt: `${propertyTitle}${
+            locality
+              ? ` - ${locality}`
+              : ""
+          }${
+            city
+              ? `, ${city}`
+              : ""
+          }`,
+        }))
+      : [];
+
+  // ==========================================================
+  // RETURN METADATA
+  // ==========================================================
+
   return {
-    /*
-     * ========================================
-     * TITLE
-     * ========================================
-     */
+    metadataBase: new URL(SITE_URL),
 
     title: seoTitle,
 
-    /*
-     * ========================================
-     * DESCRIPTION
-     * ========================================
-     */
-
     description: seoDescription,
-
-    /*
-     * ========================================
-     * KEYWORDS
-     * ========================================
-     */
 
     keywords: seoKeywords,
 
-    /*
-     * ========================================
-     * CANONICAL
-     * ========================================
-     */
+    applicationName: "VMRDA Plots",
+
+    authors: [
+      {
+        name: "VMRDA Plots",
+        url: SITE_URL,
+      },
+    ],
+
+    creator: "VMRDA Plots",
+
+    publisher: "VMRDA Plots",
 
     alternates: {
       canonical: canonicalUrl,
     },
 
-    /*
-     * ========================================
-     * ROBOTS
-     * ========================================
-     */
-
     robots: {
       index: true,
       follow: true,
+
       googleBot: {
         index: true,
         follow: true,
+
         "max-image-preview": "large",
+
         "max-video-preview": -1,
+
         "max-snippet": -1,
       },
     },
 
-    /*
-     * ========================================
-     * OPEN GRAPH
-     * ========================================
-     */
-
     openGraph: {
       title: seoTitle,
+
       description: seoDescription,
+
       url: canonicalUrl,
+
       siteName: "VMRDA Plots",
+
       type: "website",
+
       locale: "en_IN",
 
-      images: images.map((image) => ({
-        url: image,
-        width: 1200,
-        height: 800,
-        alt: `${propertyTitle} - ${
-          locality ? `${locality}, ` : ""
-        }${city}`,
-      })),
+      ...(openGraphImages.length > 0
+        ? {
+            images: openGraphImages,
+          }
+        : {}),
     },
-
-    /*
-     * ========================================
-     * TWITTER / X
-     * ========================================
-     */
 
     twitter: {
       card: "summary_large_image",
+
       title: seoTitle,
+
       description: seoDescription,
 
-      images: mainImage
-        ? [mainImage]
-        : [],
+      ...(mainImage
+        ? {
+            images: [mainImage],
+          }
+        : {}),
     },
+
+    ...(images.length > 0
+      ? {
+          icons: {
+            icon: "/favicon.ico",
+          },
+        }
+      : {}),
   };
 }
 
-/**
- * Property Page
- */
+// ============================================================
+// PROPERTY PAGE
+// ============================================================
+
 export default async function Page({ params }) {
   const { title } = await params;
 
-  /**
-   * Fetch property
-   */
+  // ==========================================================
+  // FETCH PROPERTY
+  // ==========================================================
+
   const property = await getProperty(title);
 
-  /**
-   * Property not found
-   */
+  // ==========================================================
+  // PROPERTY NOT FOUND
+  // ==========================================================
+
   if (!property) {
-    notFound();
+    redirect("/");
   }
 
-  /**
-   * Property images
-   */
+  // ==========================================================
+  // PROPERTY SLUG
+  // ==========================================================
+
+  const propertySlug =
+    property.slug ||
+    String(title).trim();
+
+  // ==========================================================
+  // IMPORTANT:
+  // Redirect old/wrong URLs to the real database slug.
+  //
+  // Example:
+  //
+  // /property/old-title
+  //
+  // becomes
+  //
+  // /property/real-database-slug
+  //
+  // This prevents duplicate URLs.
+  // ==========================================================
+
+  if (
+    property.slug &&
+    String(title).trim() !== String(property.slug).trim()
+  ) {
+    redirect(
+      `/property/${encodeURIComponent(property.slug)}`
+    );
+  }
+
+  // ==========================================================
+  // PROPERTY IMAGES
+  // ==========================================================
+
   const images = getImages(property.photos);
 
-  /**
-   * Property information
-   */
+  // ==========================================================
+  // PROPERTY INFORMATION
+  // ==========================================================
+
   const propertyTitle =
-    property.title ||
-    property.propertyName ||
-    "Property for Sale in Visakhapatnam";
+    getPropertyTitle(property);
 
   const city =
-    property.address?.city ||
-    "Visakhapatnam";
+    getCity(property);
 
   const locality =
-    property.address?.locality ||
-    "";
+    getLocality(property);
 
   const category =
-    property.category?.name ||
-    "Property";
+    getCategory(property);
 
   const description =
-    property.description ||
+    cleanText(property.description) ||
     `${propertyTitle} ${category} for sale in ${
-      locality ? `${locality}, ` : ""
+      locality
+        ? `${locality}, `
+        : ""
     }${city}.`;
 
-  /**
-   * Canonical URL
-   */
-  const canonicalUrl =
-    `${SITE_URL}/property/${property.slug || title}`;
+  // ==========================================================
+  // CANONICAL URL
+  // ==========================================================
 
-  /**
-   * JSON-LD Structured Data
-   */
+  const canonicalUrl =
+    `${SITE_URL}/property/${encodeURIComponent(propertySlug)}`;
+
+  // ==========================================================
+  // PRICE
+  // ==========================================================
+
+  const numericPrice =
+    property.price !== undefined &&
+    property.price !== null &&
+    property.price !== "" &&
+    !Number.isNaN(Number(property.price))
+      ? Number(property.price)
+      : null;
+
+  // ==========================================================
+  // PROPERTY IMAGES FOR JSON-LD
+  // ==========================================================
+
+  const structuredImages =
+    images.length > 0
+      ? images
+      : [
+          `${SITE_URL}/og-image.jpg`,
+        ];
+
+  // ==========================================================
+  // AVAILABILITY
+  // ==========================================================
+
+  const propertyStatus =
+    String(
+      property.status ||
+      property.propertyStatus ||
+      property.saleStatus ||
+      ""
+    ).toLowerCase();
+
+  const isSold =
+    propertyStatus === "sold" ||
+    propertyStatus === "sold out" ||
+    propertyStatus === "soldout";
+
+  // ==========================================================
+  // JSON-LD
+  // ==========================================================
+
   const jsonLd = {
     "@context": "https://schema.org",
 
     "@type": "RealEstateListing",
 
+    "@id": canonicalUrl,
+
     name: propertyTitle,
 
-    description: description
-      .replace(/\s+/g, " ")
-      .trim(),
+    description,
 
     url: canonicalUrl,
 
-    /**
-     * Property images
-     */
-    image: images,
+    image: structuredImages,
 
-    /**
-     * Main webpage
-     */
+    inLanguage: "en-IN",
+
     mainEntityOfPage: {
       "@type": "WebPage",
 
       "@id": canonicalUrl,
+
+      url: canonicalUrl,
+
+      name: propertyTitle,
     },
 
-    /**
-     * Property type
-     */
-    additionalType: category,
+    about: {
+      "@type": "Place",
 
-    /**
-     * Address
-     */
-    address: {
-      "@type": "PostalAddress",
+      name: propertyTitle,
 
-      ...(locality
-        ? {
-            addressLocality: locality,
-          }
-        : {}),
+      address: {
+        "@type": "PostalAddress",
 
-      ...(city
-        ? {
-            addressRegion: city,
-          }
-        : {}),
+        ...(locality
+          ? {
+              addressLocality: locality,
+            }
+          : {}),
 
-      addressCountry: "IN",
+        ...(city
+          ? {
+              addressRegion: city,
+            }
+          : {}),
+
+        addressCountry: "IN",
+      },
     },
 
-    /**
-     * Price information
-     */
-    ...(property.price
+    ...(category
+      ? {
+          additionalType: category,
+        }
+      : {}),
+
+    ...(numericPrice !== null
       ? {
           offers: {
             "@type": "Offer",
 
-            price: Number(property.price),
+            url: canonicalUrl,
+
+            price: numericPrice,
 
             priceCurrency: "INR",
 
-            availability:
-              "https://schema.org/InStock",
+            availability: isSold
+              ? "https://schema.org/SoldOut"
+              : "https://schema.org/InStock",
 
-            url: canonicalUrl,
+            itemCondition:
+              "https://schema.org/NewCondition",
           },
         }
       : {}),
 
-    /**
-     * Property owner / agent
-     */
     ...(property.client
       ? {
           seller: {
@@ -458,9 +712,16 @@ export default async function Page({ params }) {
       : {}),
   };
 
+  // ==========================================================
+  // PAGE
+  // ==========================================================
+
   return (
     <>
-      {/* JSON-LD Structured Data */}
+      {/* =====================================================
+          JSON-LD STRUCTURED DATA
+      ===================================================== */}
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -468,9 +729,12 @@ export default async function Page({ params }) {
         }}
       />
 
-      {/* Property Page */}
+      {/* =====================================================
+          PROPERTY PAGE
+      ===================================================== */}
+
       <PropertyDetail
-        title={title}
+        title={propertySlug}
         initialProperty={property}
       />
     </>

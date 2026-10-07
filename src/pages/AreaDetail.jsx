@@ -1,9 +1,13 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
+
 import { useRouter, useParams } from 'next/navigation';
+
 import Link from 'next/link';
+
 import areaData from '../data/areaData';
+
 import {
   ArrowLeft,
   MapPin,
@@ -72,6 +76,7 @@ function AreaDetailContent() {
   if (!area) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+
         <h1 className="text-3xl font-bold text-[#001F3F] mb-4">
           Area not found
         </h1>
@@ -82,6 +87,7 @@ function AreaDetailContent() {
         >
           ← Back to Home
         </Link>
+
       </div>
     );
   }
@@ -90,21 +96,10 @@ function AreaDetailContent() {
     <div className="min-h-screen bg-white">
 
       {/* =========================================================
-          BACK BUTTON
-      ========================================================= */}
-      <div className="container mx-auto px-4 pt-3 pb-2">
-        <Link
-          href="/"
-          className="inline-flex items-center text-[#001F3F] hover:text-orange-500 font-medium transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          Back to All Areas
-        </Link>
-      </div>
-
-      {/* =========================================================
           HERO SECTION
+          BACK BUTTON IS NOW INSIDE THE IMAGE
       ========================================================= */}
+
       <div className="relative w-full overflow-hidden bg-white">
 
         {/* Full Image - No Cropping */}
@@ -117,8 +112,36 @@ function AreaDetailContent() {
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none">
 
-          {/* Hero Content */}
+          {/* =====================================================
+              BACK TO ALL AREAS
+              INSIDE IMAGE
+          ===================================================== */}
+
+          <div className="absolute top-0 left-0 right-0 px-5 md:px-8 pt-4 md:pt-6 pointer-events-auto">
+
+            <div className="container mx-auto">
+
+              <Link
+                href="/"
+                className="inline-flex items-center text-white hover:text-orange-400 font-medium transition-colors drop-shadow-lg"
+              >
+
+                <ArrowLeft className="w-5 h-5 mr-2" />
+
+                Back to All Areas
+
+              </Link>
+
+            </div>
+
+          </div>
+
+          {/* =====================================================
+              HERO CONTENT
+          ===================================================== */}
+
           <div className="absolute bottom-0 left-0 right-0 px-5 md:px-8 pb-5 md:pb-7 text-white">
+
             <div className="container mx-auto">
 
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
@@ -126,22 +149,27 @@ function AreaDetailContent() {
               </h1>
 
               <div className="flex items-center text-gray-200">
+
                 <MapPin className="w-5 h-5 mr-2 flex-shrink-0" />
 
                 <p className="text-base md:text-lg">
                   Visakhapatnam, Andhra Pradesh
                 </p>
+
               </div>
 
             </div>
+
           </div>
 
         </div>
+
       </div>
 
       {/* =========================================================
           MAIN CONTENT
       ========================================================= */}
+
       <div className="container mx-auto px-4 py-8 relative z-10">
 
         <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 border border-gray-200">
@@ -149,6 +177,7 @@ function AreaDetailContent() {
           {/* =====================================================
               SEO TITLE
           ===================================================== */}
+
           <div className="mb-8">
 
             <h2 className="text-2xl md:text-3xl font-bold text-[#001F3F] mb-3">
@@ -164,6 +193,7 @@ function AreaDetailContent() {
           {/* =====================================================
               ARTICLE
           ===================================================== */}
+
           <div className="mb-10">
 
             <h3 className="text-2xl font-bold text-[#001F3F] mb-4">
@@ -177,68 +207,67 @@ function AreaDetailContent() {
               </p>
 
             </div>
+
           </div>
 
           {/* =====================================================
               WHY INVEST IN AREA
-              
-              This is dynamically connected to:
-              area.whyInvest
-              
-              So every area automatically displays its own
-              Why Invest content.
           ===================================================== */}
-       {/* =====================================================
-    WHY INVEST IN AREA
-===================================================== */}
-{area.whyInvest &&
-  area.whyInvest.length > 0 && (
-    <div className="mb-10">
 
-      {/* Why Invest Box */}
-      <div className="bg-[#001F3F] rounded-2xl p-6 md:p-8">
+          {area.whyInvest &&
+            area.whyInvest.length > 0 && (
 
-        {/* Heading */}
-        <h3 className="text-2xl md:text-3xl font-bold text-white mb-6">
-          Why Invest in {area.name}?
-        </h3>
+              <div className="mb-10">
 
-        {/* Points */}
-        <div className="space-y-4">
+                {/* Why Invest Box */}
+                <div className="bg-[#001F3F] rounded-2xl p-6 md:p-8">
 
-          {area.whyInvest.map((point, index) => (
+                  {/* Heading */}
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-6">
+                    Why Invest in {area.name}?
+                  </h3>
 
-            <div
-              key={index}
-              className="flex items-start gap-3"
-            >
+                  {/* Points */}
+                  <div className="space-y-4">
 
-              {/* Orange Check Circle */}
-              <div className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full border-2 border-orange-500 flex items-center justify-center">
-                <Check
-                  className="w-3 h-3 text-orange-500"
-                  strokeWidth={3}
-                />
+                    {area.whyInvest.map((point, index) => (
+
+                      <div
+                        key={index}
+                        className="flex items-start gap-3"
+                      >
+
+                        {/* Orange Check Circle */}
+                        <div className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full border-2 border-orange-500 flex items-center justify-center">
+
+                          <Check
+                            className="w-3 h-3 text-orange-500"
+                            strokeWidth={3}
+                          />
+
+                        </div>
+
+                        {/* Point Text */}
+                        <p className="text-white text-base md:text-lg leading-relaxed">
+                          {point}
+                        </p>
+
+                      </div>
+
+                    ))}
+
+                  </div>
+
+                </div>
+
               </div>
 
-              {/* Point Text */}
-              <p className="text-white text-base md:text-lg leading-relaxed">
-                {point}
-              </p>
+            )}
 
-            </div>
-
-          ))}
-
-        </div>
-
-      </div>
-
-    </div>
-  )}
           {/* =====================================================
               PRIMARY & SECONDARY KEYWORDS
           ===================================================== */}
+
           <div className="mb-10">
 
             <h3 className="text-2xl font-bold text-[#001F3F] mb-4">
@@ -292,8 +321,10 @@ function AreaDetailContent() {
           {/* =====================================================
               SUGGESTED ARTICLE SECTIONS
           ===================================================== */}
+
           {area.suggestedArticleSections &&
             area.suggestedArticleSections.length > 0 && (
+
               <div className="mb-10">
 
                 <h3 className="text-2xl font-bold text-[#001F3F] mb-4">
@@ -339,13 +370,16 @@ function AreaDetailContent() {
                 </ul>
 
               </div>
+
             )}
 
           {/* =====================================================
               FAQ CONTENT
           ===================================================== */}
+
           {area.faqContent &&
             area.faqContent.length > 0 && (
+
               <div className="mb-10">
 
                 <h3 className="text-2xl font-bold text-[#001F3F] mb-4">
@@ -375,15 +409,20 @@ function AreaDetailContent() {
                         </span>
 
                         {openFaq === index ? (
+
                           <ChevronUp className="w-5 h-5 text-orange-500 flex-shrink-0" />
+
                         ) : (
+
                           <ChevronDown className="w-5 h-5 text-[#001F3F] flex-shrink-0" />
+
                         )}
 
                       </button>
 
                       {/* FAQ Answer */}
                       {openFaq === index && (
+
                         <div className="p-4 bg-white border-t border-gray-200">
 
                           <p className="text-gray-700 leading-relaxed">
@@ -391,6 +430,7 @@ function AreaDetailContent() {
                           </p>
 
                         </div>
+
                       )}
 
                     </div>
@@ -400,16 +440,17 @@ function AreaDetailContent() {
                 </div>
 
               </div>
+
             )}
 
           {/* =====================================================
               RECOMMENDED INTERNAL LINKS
-              
-              Kept from your previous code but commented.
           ===================================================== */}
+
           {/*
           {area.recommendedInternalLinks &&
             area.recommendedInternalLinks.length > 0 && (
+
               <div className="mb-10">
 
                 <h3 className="text-2xl font-bold text-[#001F3F] mb-4">
@@ -434,12 +475,14 @@ function AreaDetailContent() {
                 </div>
 
               </div>
+
             )}
           */}
 
           {/* =====================================================
               NEARBY AREAS
           ===================================================== */}
+
           <div className="mb-10">
 
             <h3 className="text-2xl font-bold text-[#001F3F] mb-6">
@@ -472,6 +515,7 @@ function AreaDetailContent() {
           {/* =====================================================
               CTA
           ===================================================== */}
+
           <div className="bg-[#001F3F] rounded-2xl p-8 text-center text-white">
 
             <h3 className="text-2xl font-bold mb-3">
@@ -498,6 +542,7 @@ function AreaDetailContent() {
           </div>
 
         </div>
+
       </div>
 
     </div>
@@ -507,12 +552,15 @@ function AreaDetailContent() {
 // =============================================================
 // SUSPENSE WRAPPER
 // =============================================================
+
 export default function AreaDetail() {
   return (
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-white">
+
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#001F3F]"></div>
+
         </div>
       }
     >

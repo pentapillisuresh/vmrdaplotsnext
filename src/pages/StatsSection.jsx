@@ -33,6 +33,9 @@ const StatsSection = () => {
         mt-10
         sm:mt-12
         md:mt-14
+        mb-10
+        sm:mb-14
+        md:mb-16
         max-w-4xl
         mx-auto
       "
