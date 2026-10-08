@@ -181,7 +181,7 @@ const Footer = () => {
               <FiPhone className="w-5 h-5 text-orange-500 mt-1 flex-shrink-0" />
               <div>
                 <h4 className="text-white font-medium mb-1">Call Us</h4>
-                <p className="text-sm text-gray-400">+91 7989834055</p>
+                <p className="text-sm text-gray-400">+91 9381943819</p>
               </div>
             </div>
             <div

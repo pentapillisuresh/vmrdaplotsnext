@@ -219,7 +219,7 @@ function Contact() {
                         Phone Number
                       </h3>
                       <p className="font-roboto text-gray-600 leading-relaxed">
-                        +91 7989834055
+                        +91 9381943819
                       </p>
                     </div>
                   </div>

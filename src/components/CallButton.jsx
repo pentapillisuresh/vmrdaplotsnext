@@ -3,7 +3,7 @@
 import { FaPhoneAlt } from "react-icons/fa";
 
 export default function CallButton() {
-  const phoneNumber = "7989834055";
+  const phoneNumber = "9381943819";
 
   const callUrl = `tel:${phoneNumber}`;
 

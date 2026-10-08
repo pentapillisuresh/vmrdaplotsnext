@@ -67,7 +67,7 @@ const TermsConditions = () => {
             </p>
 
             <p className="text-gray-700">
-              Phone: +91 7989834055
+              Phone: +91 9381943819
             </p>
           </div>
         </div>
