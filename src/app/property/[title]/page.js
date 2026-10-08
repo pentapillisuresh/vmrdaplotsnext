@@ -1,16 +1,50 @@
 import PropertyDetail from "@/pages/PropertyDetail";
-import {  redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { cache } from "react";
 
 const SITE_URL = "https://vmrdaplots.com";
 const API_URL = "https://service.vmrdaplots.com/api";
 
-// ============================================================
-// FETCH PROPERTY
-// ============================================================
-// cache() makes generateMetadata() and Page() share the same
-// property request during the same server render.
-// ============================================================
+/* ============================================================
+   NORMALIZE SLUG
+   ============================================================ */
+
+function normalizeSlug(value) {
+  if (!value) return "";
+
+  let slug = String(value).trim();
+
+  // Decode URL encoded values such as %2C
+  try {
+    slug = decodeURIComponent(slug);
+  } catch {
+    // Keep original value if decoding fails
+  }
+
+  // Remove leading/trailing spaces
+  slug = slug.trim();
+
+  // Replace spaces with hyphens
+  slug = slug.replace(/\s+/g, "-");
+
+  // Remove accidental trailing commas
+  slug = slug.replace(/,+$/g, "");
+
+  // Remove accidental trailing punctuation
+  slug = slug.replace(/[.,;:!?]+$/g, "");
+
+  // Remove duplicate hyphens
+  slug = slug.replace(/-+/g, "-");
+
+  // Remove leading/trailing hyphens
+  slug = slug.replace(/^-+|-+$/g, "");
+
+  return slug;
+}
+
+/* ============================================================
+   FETCH PROPERTY
+   ============================================================ */
 
 const getProperty = cache(async (slug) => {
   if (!slug) {
@@ -18,7 +52,17 @@ const getProperty = cache(async (slug) => {
   }
 
   try {
-    const cleanSlug = String(slug).trim();
+    const cleanSlug = normalizeSlug(slug);
+
+    console.log("======================================");
+    console.log("PROPERTY REQUEST");
+    console.log("Original slug:", slug);
+    console.log("Clean slug:", cleanSlug);
+    console.log(
+      "API URL:",
+      `${API_URL}/properties/getBySlug/${encodeURIComponent(cleanSlug)}`
+    );
+    console.log("======================================");
 
     const res = await fetch(
       `${API_URL}/properties/getBySlug/${encodeURIComponent(cleanSlug)}`,
@@ -47,9 +91,9 @@ const getProperty = cache(async (slug) => {
   }
 });
 
-// ============================================================
-// GET PROPERTY IMAGES
-// ============================================================
+/* ============================================================
+   GET PROPERTY IMAGES
+   ============================================================ */
 
 function getImages(photos) {
   if (!photos) {
@@ -58,12 +102,18 @@ function getImages(photos) {
 
   let images = [];
 
-  // Array
+  /* ----------------------------------------------------------
+     Array
+  ---------------------------------------------------------- */
+
   if (Array.isArray(photos)) {
     images = photos;
   }
 
-  // String
+  /* ----------------------------------------------------------
+     String
+  ---------------------------------------------------------- */
+
   else if (typeof photos === "string") {
     const trimmed = photos.trim();
 
@@ -93,7 +143,10 @@ function getImages(photos) {
     .map((image) => {
       let cleanUrl = image.trim();
 
-      // Convert HTTP to HTTPS
+      /* --------------------------------------------------------
+         Convert HTTP to HTTPS
+      -------------------------------------------------------- */
+
       if (/^http:\/\//i.test(cleanUrl)) {
         cleanUrl = cleanUrl.replace(
           /^http:\/\//i,
@@ -101,7 +154,10 @@ function getImages(photos) {
         );
       }
 
-      // Relative image URL
+      /* --------------------------------------------------------
+         Relative image URL
+      -------------------------------------------------------- */
+
       if (cleanUrl.startsWith("/")) {
         return `${API_URL}${cleanUrl}`;
       }
@@ -111,9 +167,9 @@ function getImages(photos) {
     .filter(Boolean);
 }
 
-// ============================================================
-// CLEAN TEXT
-// ============================================================
+/* ============================================================
+   CLEAN TEXT
+   ============================================================ */
 
 function cleanText(value) {
   if (!value) {
@@ -126,9 +182,9 @@ function cleanText(value) {
     .trim();
 }
 
-// ============================================================
-// GET PROPERTY TITLE
-// ============================================================
+/* ============================================================
+   GET PROPERTY TITLE
+   ============================================================ */
 
 function getPropertyTitle(property) {
   return (
@@ -139,9 +195,9 @@ function getPropertyTitle(property) {
   );
 }
 
-// ============================================================
-// GET CITY
-// ============================================================
+/* ============================================================
+   GET CITY
+   ============================================================ */
 
 function getCity(property) {
   return (
@@ -152,9 +208,9 @@ function getCity(property) {
   );
 }
 
-// ============================================================
-// GET LOCALITY
-// ============================================================
+/* ============================================================
+   GET LOCALITY
+   ============================================================ */
 
 function getLocality(property) {
   return (
@@ -166,9 +222,9 @@ function getLocality(property) {
   );
 }
 
-// ============================================================
-// GET CATEGORY
-// ============================================================
+/* ============================================================
+   GET CATEGORY
+   ============================================================ */
 
 function getCategory(property) {
   return (
@@ -180,12 +236,21 @@ function getCategory(property) {
   );
 }
 
-// ============================================================
-// GET SEO KEYWORDS
-// ============================================================
+/* ============================================================
+   GET SEO KEYWORDS
+   ============================================================ */
 
-function getSeoKeywords(property, propertyTitle, city, locality, category) {
-  // Admin entered keywords
+function getSeoKeywords(
+  property,
+  propertyTitle,
+  city,
+  locality,
+  category
+) {
+  /* ----------------------------------------------------------
+     Admin entered keywords
+  ---------------------------------------------------------- */
+
   if (
     property?.metaKeywords &&
     typeof property.metaKeywords === "string"
@@ -200,10 +265,17 @@ function getSeoKeywords(property, propertyTitle, city, locality, category) {
     }
   }
 
+  /* ----------------------------------------------------------
+     Automatic keywords
+  ---------------------------------------------------------- */
+
   const keywords = [
     propertyTitle,
+
     `${propertyTitle} for sale`,
+
     `${category} in ${city}`,
+
     `${category} for sale in ${city}`,
 
     locality
@@ -223,23 +295,34 @@ function getSeoKeywords(property, propertyTitle, city, locality, category) {
       : null,
 
     `properties in ${city}`,
+
     `properties for sale in ${city}`,
+
     `plots for sale in ${city}`,
+
     `real estate in ${city}`,
+
     `land for sale in ${city}`,
 
     "VMRDA Plots",
+
     "VMRDA approved plots",
+
     "properties for sale in Visakhapatnam",
+
     "real estate Visakhapatnam",
   ];
 
-  return [...new Set(keywords.filter(Boolean))];
+  return [
+    ...new Set(
+      keywords.filter(Boolean)
+    ),
+  ];
 }
 
-// ============================================================
-// GET DESCRIPTION
-// ============================================================
+/* ============================================================
+   GET DESCRIPTION
+   ============================================================ */
 
 function getSeoDescription(
   property,
@@ -248,7 +331,10 @@ function getSeoDescription(
   locality,
   category
 ) {
-  // Admin meta description
+  /* ----------------------------------------------------------
+     Admin meta description
+  ---------------------------------------------------------- */
+
   const adminDescription = cleanText(
     property?.metaDescription
   );
@@ -257,7 +343,10 @@ function getSeoDescription(
     return adminDescription;
   }
 
-  // Property description
+  /* ----------------------------------------------------------
+     Property description
+  ---------------------------------------------------------- */
+
   const propertyDescription = cleanText(
     property?.description
   );
@@ -266,7 +355,10 @@ function getSeoDescription(
     return propertyDescription.slice(0, 300);
   }
 
-  // Automatically generated description
+  /* ----------------------------------------------------------
+     Automatic description
+  ---------------------------------------------------------- */
+
   return cleanText(
     `Explore ${propertyTitle}, a ${category} for sale in ${
       locality ? `${locality}, ` : ""
@@ -274,18 +366,18 @@ function getSeoDescription(
   );
 }
 
-// ============================================================
-// DYNAMIC SEO METADATA
-// ============================================================
+/* ============================================================
+   DYNAMIC SEO METADATA
+   ============================================================ */
 
 export async function generateMetadata({ params }) {
   const { title } = await params;
 
   const property = await getProperty(title);
 
-  // ==========================================================
-  // PROPERTY NOT FOUND
-  // ==========================================================
+  /* ==========================================================
+     PROPERTY NOT FOUND
+  ========================================================== */
 
   if (!property) {
     return {
@@ -305,35 +397,40 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  // ==========================================================
-  // PROPERTY DATA
-  // ==========================================================
+  /* ==========================================================
+     PROPERTY DATA
+  ========================================================== */
 
   const images = getImages(property.photos);
 
-  const propertyTitle = getPropertyTitle(property);
+  const propertyTitle =
+    getPropertyTitle(property);
 
-  const city = getCity(property);
+  const city =
+    getCity(property);
 
-  const locality = getLocality(property);
+  const locality =
+    getLocality(property);
 
-  const category = getCategory(property);
+  const category =
+    getCategory(property);
 
-  // ==========================================================
-  // DESCRIPTION
-  // ==========================================================
+  /* ==========================================================
+     DESCRIPTION
+  ========================================================== */
 
-  const seoDescription = getSeoDescription(
-    property,
-    propertyTitle,
-    city,
-    locality,
-    category
-  );
+  const seoDescription =
+    getSeoDescription(
+      property,
+      propertyTitle,
+      city,
+      locality,
+      category
+    );
 
-  // ==========================================================
-  // SEO TITLE
-  // ==========================================================
+  /* ==========================================================
+     SEO TITLE
+  ========================================================== */
 
   const seoTitle =
     cleanText(property.metaTitle) ||
@@ -341,42 +438,47 @@ export async function generateMetadata({ params }) {
       locality || city
     } | VMRDA Plots`;
 
-  // ==========================================================
-  // KEYWORDS
-  // ==========================================================
+  /* ==========================================================
+     KEYWORDS
+  ========================================================== */
 
-  const seoKeywords = getSeoKeywords(
-    property,
-    propertyTitle,
-    city,
-    locality,
-    category
-  );
+  const seoKeywords =
+    getSeoKeywords(
+      property,
+      propertyTitle,
+      city,
+      locality,
+      category
+    );
 
-  // ==========================================================
-  // IMPORTANT:
-  // ALWAYS USE THE DATABASE SLUG FOR CANONICAL URL
-  // ==========================================================
+  /* ==========================================================
+     DATABASE SLUG
+  ========================================================== */
 
   const actualSlug =
-    property.slug ||
-    String(title).trim();
+    normalizeSlug(
+      property.slug || title
+    );
+
+  /* ==========================================================
+     CANONICAL URL
+  ========================================================== */
 
   const canonicalUrl =
     `${SITE_URL}/property/${encodeURIComponent(actualSlug)}`;
 
-  // ==========================================================
-  // MAIN IMAGE
-  // ==========================================================
+  /* ==========================================================
+     MAIN IMAGE
+  ========================================================== */
 
   const mainImage =
     images.length > 0
       ? images[0]
       : undefined;
 
-  // ==========================================================
-  // IMAGE METADATA
-  // ==========================================================
+  /* ==========================================================
+     IMAGE METADATA
+  ========================================================== */
 
   const openGraphImages =
     images.length > 0
@@ -384,6 +486,7 @@ export async function generateMetadata({ params }) {
           url: image,
           width: 1200,
           height: 800,
+
           alt: `${propertyTitle}${
             locality
               ? ` - ${locality}`
@@ -396,9 +499,9 @@ export async function generateMetadata({ params }) {
         }))
       : [];
 
-  // ==========================================================
-  // RETURN METADATA
-  // ==========================================================
+  /* ==========================================================
+     RETURN METADATA
+  ========================================================== */
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -476,78 +579,73 @@ export async function generateMetadata({ params }) {
         : {}),
     },
 
-    ...(images.length > 0
-      ? {
-          icons: {
-            icon: "/favicon.ico",
-          },
-        }
-      : {}),
+    icons: {
+      icon: "/favicon.ico",
+    },
   };
 }
 
-// ============================================================
-// PROPERTY PAGE
-// ============================================================
+/* ============================================================
+   PROPERTY PAGE
+   ============================================================ */
 
 export default async function Page({ params }) {
   const { title } = await params;
 
-  // ==========================================================
-  // FETCH PROPERTY
-  // ==========================================================
+  /* ==========================================================
+     NORMALIZE INCOMING SLUG
+  ========================================================== */
 
-  const property = await getProperty(title);
+  const incomingSlug = normalizeSlug(title);
 
-  // ==========================================================
-  // PROPERTY NOT FOUND
-  // ==========================================================
+  /* ==========================================================
+     FETCH PROPERTY
+  ========================================================== */
+
+  const property =
+    await getProperty(incomingSlug);
+
+  /* ==========================================================
+     PROPERTY NOT FOUND
+  ========================================================== */
 
   if (!property) {
     redirect("/");
   }
 
-  // ==========================================================
-  // PROPERTY SLUG
-  // ==========================================================
+  /* ==========================================================
+     PROPERTY DATABASE SLUG
+  ========================================================== */
 
   const propertySlug =
-    property.slug ||
-    String(title).trim();
+    normalizeSlug(
+      property.slug || incomingSlug
+    );
 
-  // ==========================================================
-  // IMPORTANT:
-  // Redirect old/wrong URLs to the real database slug.
-  //
-  // Example:
-  //
-  // /property/old-title
-  //
-  // becomes
-  //
-  // /property/real-database-slug
-  //
-  // This prevents duplicate URLs.
-  // ==========================================================
+  /* ==========================================================
+     REDIRECT WRONG URL TO DATABASE SLUG
+  ========================================================== */
 
   if (
     property.slug &&
-    String(title).trim() !== String(property.slug).trim()
+    normalizeSlug(title) !==
+      normalizeSlug(property.slug)
   ) {
     redirect(
-      `/property/${encodeURIComponent(property.slug)}`
+      `/property/${encodeURIComponent(propertySlug)}`
     );
   }
 
-  // ==========================================================
-  // PROPERTY IMAGES
-  // ==========================================================
+  /* ==========================================================
+     PROPERTY IMAGES
+  ========================================================== */
 
-  const images = getImages(property.photos);
+  const images =
+    getImages(property.photos);
 
-  // ==========================================================
-  // PROPERTY INFORMATION
-  // ==========================================================
+  /* ==========================================================
+     PROPERTY INFORMATION
+  ========================================================== */
 
   const propertyTitle =
     getPropertyTitle(property);
@@ -561,6 +659,10 @@ export default async function Page({ params }) {
   const category =
     getCategory(property);
 
+  /* ==========================================================
+     DESCRIPTION
+  ========================================================== */
+
   const description =
     cleanText(property.description) ||
     `${propertyTitle} ${category} for sale in ${
@@ -569,16 +671,18 @@ export default async function Page({ params }) {
         : ""
     }${city}.`;
 
-  // ==========================================================
-  // CANONICAL URL
-  // ==========================================================
+  /* ==========================================================
+     CANONICAL URL
+  ========================================================== */
 
   const canonicalUrl =
-    `${SITE_URL}/property/${encodeURIComponent(propertySlug)}`;
+    `${SITE_URL}/property/${encodeURIComponent(
+      propertySlug
+    )}`;
 
-  // ==========================================================
-  // PRICE
-  // ==========================================================
+  /* ==========================================================
+     PRICE
+  ========================================================== */
 
   const numericPrice =
     property.price !== undefined &&
@@ -588,9 +692,9 @@ export default async function Page({ params }) {
       ? Number(property.price)
       : null;
 
-  // ==========================================================
-  // PROPERTY IMAGES FOR JSON-LD
-  // ==========================================================
+  /* ==========================================================
+     PROPERTY IMAGES FOR JSON-LD
+  ========================================================== */
 
   const structuredImages =
     images.length > 0
@@ -599,9 +703,9 @@ export default async function Page({ params }) {
           `${SITE_URL}/og-image.jpg`,
         ];
 
-  // ==========================================================
-  // AVAILABILITY
-  // ==========================================================
+  /* ==========================================================
+     AVAILABILITY
+  ========================================================== */
 
   const propertyStatus =
     String(
@@ -616,9 +720,9 @@ export default async function Page({ params }) {
     propertyStatus === "sold out" ||
     propertyStatus === "soldout";
 
-  // ==========================================================
-  // JSON-LD
-  // ==========================================================
+  /* ==========================================================
+     JSON-LD
+  ========================================================== */
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -712,15 +816,15 @@ export default async function Page({ params }) {
       : {}),
   };
 
-  // ==========================================================
-  // PAGE
-  // ==========================================================
+  /* ==========================================================
+     PAGE
+  ========================================================== */
 
   return (
     <>
-      {/* =====================================================
+      {/* ======================================================
           JSON-LD STRUCTURED DATA
-      ===================================================== */}
+      ====================================================== */}
 
       <script
         type="application/ld+json"
@@ -729,9 +833,9 @@ export default async function Page({ params }) {
         }}
       />
 
-      {/* =====================================================
+      {/* ======================================================
           PROPERTY PAGE
-      ===================================================== */}
+      ====================================================== */}
 
       <PropertyDetail
         title={propertySlug}
