@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Providers from "@/providers/Providers";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import CallButton from "@/components/CallButton";
+import IntroScreen from "@/components/IntroScreen";
 import "leaflet/dist/leaflet.css";
 import Script from "next/script";
 
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
       </head>
 
       <body className="overflow-x-hidden">
+
         <Providers>
           <Header />
 
@@ -31,12 +33,15 @@ export default function RootLayout({ children }) {
 
           <Footer />
 
-          {/* Fixed Button Container - WhatsApp on top, Call below */}
+          {/* Fixed Button Container */}
           <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-center gap-3">
             <WhatsAppButton />
             <CallButton />
           </div>
         </Providers>
+
+        {/* FULL SCREEN INTRO */}
+        <IntroScreen />
 
         {/* Google Analytics */}
         <Script
@@ -53,6 +58,7 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-X4LGT3FVSJ');
           `}
         </Script>
+
       </body>
     </html>
   );
