@@ -134,6 +134,7 @@ function PropertiesContent() {
           marketType,
           status,
           city,
+          catType,
           locality,
           clientId,
           priceRange,
@@ -145,6 +146,7 @@ function PropertiesContent() {
         if (city) params.append("city", city);
         if (locality) params.append("locality", locality);
         if (clientId) params.append("clientId", clientId);
+        if (catType) params.append("catType", catType);
 
         // Price Range
         if (priceRange !== "all") {
