@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Home, MapPin, Bath, Bed, Maximize, ChevronLeft, ChevronRight, Filter, Search, X, ChevronDown, Building2, IndianRupee, ArrowUpDown, Tag, Award, Clock, TrendingUp, Play, Pause, Image as ImageIcon, Video, Compass, CheckCircle } from "lucide-react";
 import ApiService from "../hooks/ApiService";
+import { openProperty } from "../hooks/openProperty";
 
 function PropertiesContent() {
   const router = useRouter();
@@ -306,10 +307,15 @@ function PropertiesContent() {
   };
 
   // Handle property click
-  const handlePropertyClick = (property) => {
-    sessionStorage.setItem('selectedProperty', JSON.stringify(property));
-    router.push(`/property/${property.slug}`);
-  };
+  // const handlePropertyClick = (property) => {
+  //   sessionStorage.setItem('selectedProperty', JSON.stringify(property));
+  //   router.push(`/property/${property.slug}`);
+  // };
+  
+const handlePropertyClick = (property) => {
+  openProperty(property);
+};
+
 
   // UI
   if (loading || isLoadingAll)

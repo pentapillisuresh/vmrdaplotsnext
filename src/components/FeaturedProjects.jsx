@@ -19,6 +19,9 @@ import ApiService from "../hooks/ApiService";
 import getPhotoSrc from "../hooks/getPhotos";
 import { motion } from "framer-motion";
 
+import { openProperty } from "../hooks/openProperty";
+
+
 const FeaturedProjects = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -186,7 +189,7 @@ const FeaturedProjects = () => {
                     className={`rounded-xl shadow-lg overflow-hidden cursor-pointer group transition-all duration-300 mx-2 my-4 border h-full flex flex-col ${property.isSold
                       ? "bg-gray-100 opacity-75 border-red-300"
                       : "bg-white hover:shadow-2xl border-gray-100 hover:border-orange-200"
-                      }`} onClick={() => handleProjectClick(property)}
+                      }`}   onClick={() => openProperty(property)}
                   >
                     <div
                       className={`absolute top-5 left-3 z-10 px-3 py-1 rounded-full text-xs font-semibold shadow-md text-white ${property.isSold

@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import areaData from '../data/areaData';
 import { motion } from 'framer-motion';
+import { openArea } from '../hooks/openArea';
 
 const AreaSelector = () => {
   const cardRefs = useRef([]);
@@ -11,19 +12,21 @@ const AreaSelector = () => {
 
   const INITIAL_COUNT = 10;
 
-  // Sort areas alphabetically by area name
+  // Sort areas alphabetically by area name.
   const sortedAreas = [...areaData].sort((a, b) =>
     a.name.localeCompare(b.name, undefined, {
       sensitivity: 'base',
     })
   );
 
+  // Display the first 10 areas initially.
   const visibleAreas = showAll
     ? sortedAreas
     : sortedAreas.slice(0, INITIAL_COUNT);
 
   const hasMore = sortedAreas.length > INITIAL_COUNT;
 
+  // Animate cards when they enter the viewport.
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -44,22 +47,27 @@ const AreaSelector = () => {
     });
 
     return () => {
-      cardRefs.current.forEach((card) => {
-        if (card) observer.unobserve(card);
-      });
+      observer.disconnect();
     };
   }, [showAll]);
+
+  // Support keyboard navigation.
+  const handleAreaKeyDown = (event, area) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openArea(area);
+    }
+  };
 
   return (
     <div className="py-12 px-4 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto">
 
-        {/* Header with animation */}
+        {/* Header */}
         <div className="text-center overflow-hidden">
           <div className="inline-flex items-center justify-center opacity-0 animate-fadeInDown">
             <div className="flex items-center justify-center">
               <div className="text-center mb-6 sm:mb-10">
-
                 <motion.div
                   initial={{ opacity: 0, y: -20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -70,35 +78,38 @@ const AreaSelector = () => {
                     VIZAG PRIME LOCATIONS
                   </span>
                 </motion.div>
-
               </div>
             </div>
           </div>
         </div>
 
-        {/* Areas Grid - 5 columns */}
+        {/* Areas Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-
           {visibleAreas.map((area, index) => (
             <div
-              key={area.id}
+              key={area.id ?? area.name}
               ref={(el) => {
                 cardRefs.current[index] = el;
               }}
               className="opacity-0 transform translate-y-4"
             >
-              <Link
-                href={`/area/${area.name
-                  .toLowerCase()
-                  .replace(/\s+/g, '-')}`}
-                className="group block"
+              {/* Clickable area card */}
+              <div
+                role="link"
+                tabIndex={0}
+                aria-label={`View properties in ${area.name}`}
+                onClick={() => openArea(area)}
+                onKeyDown={(event) =>
+                  handleAreaKeyDown(event, area)
+                }
+                className="group block cursor-pointer rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
               >
                 <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden h-full border border-gray-200 hover:border-[#001F3F]/20 hover:scale-[1.02]">
 
                   {/* Area Header */}
                   <div className="p-4 pb-3 border-b border-gray-100 relative overflow-hidden">
 
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
 
                     <div className="flex justify-between items-start mb-2 relative z-10">
                       <h3 className="font-bold text-base text-[#001F3F] group-hover:text-[#001F3F]/90 transition-colors duration-300 line-clamp-1">
@@ -106,14 +117,15 @@ const AreaSelector = () => {
                       </h3>
                     </div>
 
+                    {/* Location */}
                     <div className="flex items-center text-gray-600 relative z-10 mt-1">
-
                       <svg
                         className="w-4 h-4 mr-1 text-gray-400 group-hover:text-[#001F3F] transition-colors duration-300"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -133,16 +145,14 @@ const AreaSelector = () => {
                       <p className="text-xs font-medium text-gray-600 truncate">
                         Visakhapatnam, Andhra Pradesh
                       </p>
-
                     </div>
                   </div>
 
                   {/* Area Details */}
                   <div className="p-4 pt-3">
 
-                    {/* View Details Button */}
+                    {/* View Details */}
                     <div className="relative overflow-hidden rounded-lg group-hover:shadow-md transition-all duration-300">
-
                       <div className="flex items-center justify-between p-2 bg-gradient-to-r from-[#001F3F]/5 to-[#001F3F]/10 group-hover:from-[#001F3F]/10 group-hover:to-[#001F3F]/15 transition-all duration-500">
 
                         <span className="text-[#001F3F] font-semibold text-xs">
@@ -155,6 +165,7 @@ const AreaSelector = () => {
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                           xmlns="http://www.w3.org/2000/svg"
+                          aria-hidden="true"
                         >
                           <path
                             strokeLinecap="round"
@@ -163,26 +174,22 @@ const AreaSelector = () => {
                             d="M17 8l4 4m0 0l-4 4m4-4H3"
                           />
                         </svg>
-
                       </div>
 
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#001F3F]/0 via-[#001F3F]/5 to-[#001F3F]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#001F3F]/0 via-[#001F3F]/5 to-[#001F3F]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                     </div>
                   </div>
-
                 </div>
-              </Link>
+              </div>
             </div>
           ))}
-
         </div>
 
-        {/* View More / View Less Button */}
+        {/* View More / View Less */}
         {hasMore && (
           <div className="flex justify-center mt-8 sm:mt-10">
-
             <button
+              type="button"
               onClick={() => setShowAll((prev) => !prev)}
               aria-label={
                 showAll
@@ -196,7 +203,6 @@ const AreaSelector = () => {
               }
               className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm tracking-wide shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer"
             >
-
               <span>
                 {showAll
                   ? 'View Less'
@@ -213,6 +219,7 @@ const AreaSelector = () => {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -221,12 +228,9 @@ const AreaSelector = () => {
                   d="M19 9l-7 7-7-7"
                 />
               </svg>
-
             </button>
-
           </div>
         )}
-
       </div>
 
       {/* CSS Animations */}

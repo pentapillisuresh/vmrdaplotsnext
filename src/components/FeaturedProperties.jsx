@@ -18,6 +18,9 @@ import ApiService from "../hooks/ApiService";
 import getPhotoSrc from "../hooks/getPhotos";
 import { motion } from "framer-motion";
 
+import { openProperty } from "../hooks/openProperty";
+
+
 const FeaturedPropertiesContent = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -97,13 +100,19 @@ const FeaturedPropertiesContent = () => {
       .trim();
   };
 
-  const handlePropertyClick = (property) => {
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('selectedProperty', JSON.stringify(property));
-    }
-    const slug = property.slug;
-    router.push(`/property/${slug}`);
-  };
+  // const handlePropertyClick = (property) => {
+  //   if (typeof window !== 'undefined') {
+  //     sessionStorage.setItem('selectedProperty', JSON.stringify(property));
+  //   }
+  //   const slug = property.slug;
+  //   router.push(`/property/${slug}`);
+  // };
+
+
+  
+const handlePropertyClick = (property) => {
+  openProperty(property);
+};
 
   const swiperConfig = {
     modules: [Navigation, Pagination, Autoplay],
