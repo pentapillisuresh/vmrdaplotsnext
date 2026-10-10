@@ -37,7 +37,7 @@ const CommercialAdSection = () => {
 
         if (data?.photo) {
           setCommercialAds(data.photo);
-          console.log("rrr:::",commercialAds);
+
         } else {
           console.warn("No commercial ad photo found, using fallback video.");
         }

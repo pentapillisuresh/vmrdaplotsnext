@@ -47,8 +47,6 @@ function PropertiesContent() {
     clientId: "",
     priceRange: priceRangeFromUrl || "all",
   });
-  console.log("marketTypeFromUrl::", marketTypeFromUrl)
-  console.log("rrr::", filters.marketType)
   const [activeFilters, setActiveFilters] = useState(filters);
 
   useEffect(() => {
