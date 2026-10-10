@@ -3,35 +3,7 @@
 
 import React, { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Compass,
-  Share2,
-  Bed,
-  Bath,
-  Maximize,
-  Building,
-  MapPin,
-  CheckCircle,
-  Phone,
-  Mail,
-  Calendar,
-  Monitor,
-  DoorClosed,
-  Presentation,
-  Heart,
-  ChevronLeft,
-  ChevronRight,
-  Play,
-  Video,
-  Image as ImageIcon,
-  User,
-  MessageSquare,
-  Send,
-  ArrowUp,
-  ArrowDown
-} from "lucide-react";
-
+import {ArrowLeft,Compass,Share2,Bed,Bath,Maximize,Building,MapPin,CheckCircle,Phone,Mail,Calendar,Monitor,DoorClosed,Presentation,Heart,ChevronLeft,ChevronRight,Play,Video,Image as ImageIcon,User,MessageSquare,Send,ArrowUp,ArrowDown} from "lucide-react";
 import ApiService from "../hooks/ApiService";
 import AOS from "aos";
 import dynamic from "next/dynamic";
@@ -210,51 +182,8 @@ function PropertyDetailContent({
   // YOUR API USES:
   // isSold: true
   // =======================================================
-
-  const isPropertySold = (
-    propertyItem
-  ) => {
-    if (!propertyItem) {
-      return false;
-    }
-
-    const isSoldValue =
-      propertyItem.isSold;
-
-    // Primary backend field
-    if (
-      isSoldValue === true ||
-      isSoldValue === "true" ||
-      isSoldValue === 1 ||
-      isSoldValue === "1"
-    ) {
-      return true;
-    }
-
-    // Fallback in case backend sends status
-    const availableStatus =
-      String(
-        propertyItem.availableStatus ||
-          ""
-      )
-        .trim()
-        .toLowerCase()
-        .replace(/[-_]+/g, " ")
-        .replace(/\s+/g, " ");
-
-    if (
-      availableStatus === "sold" ||
-      availableStatus === "sold out" ||
-      availableStatus === "soldout"
-    ) {
-      return true;
-    }
-
-    return false;
-  };
-
-  const propertyIsSoldOut =
-    isPropertySold(property);
+console.log("isSoild::",property.isSold)
+  const propertyIsSoldOut = String(property.isSold);
 
   // =======================================================
   // CREATE SLUG
@@ -1423,7 +1352,7 @@ function PropertyDetailContent({
                     SHOWS WHEN isSold === true
                 ================================================= */}
 
-                {propertyIsSoldOut && (
+                {(propertyIsSoldOut==="true") && (
                   <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
 
                     {/* Slight dark overlay */}
@@ -2857,11 +2786,7 @@ function PropertyDetailContent({
                       similarProperty
                     ) => {
 
-                      const similarIsSold =
-                        isPropertySold(
-                          similarProperty
-                        );
-
+                      const similarIsSold =similarProperty.isSold
                       return (
                         <SwiperSlide
                           key={

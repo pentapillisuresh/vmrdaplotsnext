@@ -17,7 +17,7 @@ function PropertiesContent() {
   const marketTypeFromUrl = searchParams.get('marketType') || "sale";
   const localityFromUrl = searchParams.get('locality');
   const priceRangeFromUrl = searchParams.get('priceRange');
-
+  const catTypeFromUrl = searchParams.get("catType");
   const [categories, setCategories] = useState([])
   // States
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -42,6 +42,7 @@ function PropertiesContent() {
     marketType: marketTypeFromUrl || "sale",
     status: "",
     city: cityFromUrl || "",
+    catType: catTypeFromUrl || "",
     locality: localityFromUrl || "",
     clientId: "",
     priceRange: priceRangeFromUrl || "all",
@@ -107,6 +108,9 @@ function PropertiesContent() {
   useEffect(() => {
     const params = new URLSearchParams();
     if (activeFilters.categoryId) params.set('categoryId', activeFilters.categoryId);
+    if (activeFilters.catType) {
+      params.set("catType", activeFilters.catType);
+    }
     if (activeFilters.city) params.set('city', activeFilters.city);
     if (activeFilters.marketType) params.set('marketType', activeFilters.marketType); // ← add this
     if (activeFilters.locality) params.set('locality', activeFilters.locality);
@@ -129,14 +133,18 @@ function PropertiesContent() {
         categoryId,
         marketType,
         status,
-        city,
+        city,catType,
         locality,
         clientId,
         priceRange,
       } = activeFilters;
 
       if (categoryId) params.append("categoryId", categoryId);
-      params.append("marketType", marketType || "sale");
+
+      if (activeFilters.catType) {
+        params.append("catType", activeFilters.catType);
+      }
+            params.append("marketType", marketType || "sale");
       if (status) params.append("status", status);
       if (city) params.append("city", city);
       if (locality) params.append("locality", locality);
@@ -204,7 +212,11 @@ function PropertiesContent() {
       } = activeFilters;
 
       if (categoryId) params.append("categoryId", categoryId);
-      params.append("marketType", marketType || "sale");
+
+      if (activeFilters.catType) {
+        params.append("catType", activeFilters.catType);
+      }
+            params.append("marketType", marketType || "sale");
       if (status) params.append("status", status);
       if (city) params.append("city", city);
       if (locality) params.append("locality", locality);

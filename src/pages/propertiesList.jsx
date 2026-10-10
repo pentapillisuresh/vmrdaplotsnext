@@ -3,14 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import {
-  Home, MapPin, Bath, Bed, Maximize,
-  ChevronLeft, ChevronRight,
-  Compass,
-  Monitor,
-  DoorClosed,
-  Presentation,
-} from "lucide-react";
+import {Home, MapPin, Bath, Bed, Maximize,ChevronLeft, ChevronRight,Compass,Monitor,DoorClosed,Presentation} from "lucide-react";
 import ApiService from "../hooks/ApiService";
 
 function PropertiesContent() {
@@ -23,7 +16,7 @@ function PropertiesContent() {
   const cityFromUrl = searchParams.get('city');
   const localityFromUrl = searchParams.get('locality');
   const priceRangeFromUrl = searchParams.get('priceRange');
-  
+  const catTypeFromUrl = searchParams.get("catType");
   const [categories, setCategories] = useState([])
   // States
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -43,6 +36,7 @@ function PropertiesContent() {
     categoryId: categoryIdFromUrl || "",
     marketType: marketTypeFromUrl||"sale",
     status: "",
+    catType: catTypeFromUrl || "",
     city: cityFromUrl || "",
     locality: localityFromUrl || "",
     clientId: "",
@@ -108,6 +102,9 @@ function PropertiesContent() {
   useEffect(() => {
     const params = new URLSearchParams();
     if (activeFilters.categoryId) params.set('categoryId', activeFilters.categoryId);
+    if (activeFilters.catType) {
+      params.set("catType", activeFilters.catType);
+    }
     if (activeFilters.marketType) params.set('marketType', activeFilters.marketType);
     if (activeFilters.city) params.set('city', activeFilters.city);
     if (activeFilters.locality) params.set('locality', activeFilters.locality);
