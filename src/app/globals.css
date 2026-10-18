@@ -43,3 +43,22 @@ body {
 .property-tooltip::before {
   display: none !important;
 }
+
+
+/* Property gallery zoom-out animation */
+@keyframes propertyZoomOut {
+  from {
+    transform: scale(1.12);
+    opacity: 0.7;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.property-zoom-out {
+  animation: propertyZoomOut 1.2s ease-out both;
+  will-change: transform, opacity;
+}

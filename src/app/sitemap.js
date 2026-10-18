@@ -236,6 +236,40 @@ function getStaticUrls() {
 // SITEMAP
 // ============================================================
 
+
+function getPropertyImageUrls(photos) {
+  if (!photos) return [];
+
+  let items = photos;
+
+  if (typeof items === "string") {
+    try {
+      items = JSON.parse(items);
+    } catch {
+      return [];
+    }
+  }
+
+  if (!Array.isArray(items)) return [];
+
+  return items
+    .map((photo) => {
+      if (typeof photo === "string") return photo;
+
+      return (
+        photo?.url ||
+        photo?.src ||
+        photo?.imageUrl ||
+        ""
+      );
+    })
+    .filter(
+      (url) =>
+        typeof url === "string" &&
+        /^https?:\/\//i.test(url)
+    );
+}
+
 export default async function sitemap() {
   try {
     // ========================================================
@@ -274,6 +308,8 @@ export default async function sitemap() {
           changeFrequency: "daily",
 
           priority: 0.9,
+            // SEO: include this property's image URLs
+  images: getPropertyImageUrls(property.photos),
         };
       });
 

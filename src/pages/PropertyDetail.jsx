@@ -21,7 +21,9 @@ import {
   Presentation,
   Heart,
   ChevronLeft,
+
   ChevronRight,
+    X,
   Play,
   Video,
   Image as ImageIcon,
@@ -133,6 +135,8 @@ function PropertyDetailContent({
 
   const [clientDetails, setClientDetails] =
     useState(null);
+
+    const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   // =======================================================
   // FAVORITES
@@ -1395,19 +1399,17 @@ function PropertyDetailContent({
                         }}
                       />
                     ) : (
-                      <img
-                        src={getMediaUrl(
-                          selectedImage
-                        )}
-                        alt={`${property?.title} - ${
-                          address?.locality ||
-                          ""
-                        }, ${
-                          address?.city ||
-                          ""
-                        }`}
-                        className="w-full h-full object-cover"
-                      />
+                  <img
+  src={getMediaUrl(selectedImage)}
+  alt={`${property?.title || "Property"} in ${
+    address?.locality || address?.city || "Visakhapatnam"
+  }, Andhra Pradesh`}
+ className="w-full h-full object-cover property-zoom-out"
+  loading="eager"
+  fetchPriority="high"
+  decoding="async"
+   onClick={() => setIsGalleryOpen(true)}
+/>
                     )}
                   </>
                 ) : (
@@ -3201,6 +3203,89 @@ function PropertyDetailContent({
         )}
 
       </div>
+
+      {isGalleryOpen && totalMedia > 0 && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95"
+          onClick={() => setIsGalleryOpen(false)}
+        >
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsGalleryOpen(false);
+            }}
+            className="absolute right-4 top-4 z-50 rounded-full bg-white/10 p-3 text-white hover:bg-white/20"
+            aria-label="Close gallery"
+          >
+            <X size={28} />
+          </button>
+
+          {/* Previous button */}
+          {totalMedia > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(
+                  (prev) => (prev - 1 + totalMedia) % totalMedia
+                );
+              }}
+              className="absolute left-3 top-1/2 z-50 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white"
+              aria-label="Previous media"
+            >
+              <ChevronLeft size={32} />
+            </button>
+          )}
+
+          {/* Current image or video */}
+          <div
+            className="flex h-full w-full items-center justify-center p-4 sm:p-12"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {isVideo(selectedImage) ? (
+              <video
+                key={selectedImage}
+                src={getMediaUrl(selectedImage)}
+                controls
+                autoPlay
+                playsInline
+                className="max-h-full max-w-full object-contain"
+              />
+            ) : (
+              <img
+                key={selectedImage}
+                src={getMediaUrl(selectedImage)}
+                alt={`Property media ${selectedImage + 1}`}
+                className="max-h-full max-w-full object-contain"
+              />
+            )}
+          </div>
+
+          {/* Next button */}
+          {totalMedia > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(
+                  (prev) => (prev + 1) % totalMedia
+                );
+              }}
+              className="absolute right-3 top-1/2 z-50 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white"
+              aria-label="Next media"
+            >
+              <ChevronRight size={32} />
+            </button>
+          )}
+
+          {/* Media counter */}
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-4 py-2 text-sm text-white">
+            {selectedImage + 1} / {totalMedia}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
