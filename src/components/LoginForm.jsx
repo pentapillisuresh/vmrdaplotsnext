@@ -68,7 +68,6 @@ const LoginFormContent = ({ onClose }) => {
         setError('Something went wrong. Please try again.');
       }
     } catch (err) {
-      console.log("rrr:::",err.data.message);
       setError(err.data.message);
     } finally {
       setLoading(false);

@@ -46,7 +46,7 @@ function normalizeSlug(value) {
    FETCH PROPERTY
    ============================================================ */
 
-const getProperty = cache(async (slug) => {
+const getProperty = (async (slug) => {
   if (!slug) {
     return null;
   }
@@ -67,10 +67,8 @@ const getProperty = cache(async (slug) => {
     const res = await fetch(
       `${API_URL}/properties/getBySlug/${encodeURIComponent(cleanSlug)}`,
       {
-        next: {
-          revalidate: 3600,
-        },
-      }
+        cache: "no-store",
+    }
     );
 
     if (!res.ok) {
@@ -82,7 +80,7 @@ const getProperty = cache(async (slug) => {
     }
 
     const data = await res.json();
-
+console.log("property details::",data?.property)
     return data?.property || null;
   } catch (error) {
     console.error("Property fetch error:", error);
@@ -707,19 +705,8 @@ export default async function Page({ params }) {
      AVAILABILITY
   ========================================================== */
 
-  const propertyStatus =
-    String(
-      property.status ||
-      property.propertyStatus ||
-      property.saleStatus ||
-      ""
-    ).toLowerCase();
-
-  const isSold =
-    propertyStatus === "sold" ||
-    propertyStatus === "sold out" ||
-    propertyStatus === "soldout";
-
+  const isSold = Boolean(property.isSold)
+    console.log(property.title,"::isssSold::",isSold)
   /* ==========================================================
      JSON-LD
   ========================================================== */

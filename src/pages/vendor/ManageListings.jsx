@@ -236,7 +236,7 @@ function ManageListingsContent() {
         setShowEditModal(false);
         router.push('/vendor/manage-listings');
       } else {
-        console.log("rrr::", response?.message);
+
       }
       fetchListings();
       setShowEditModal(false);

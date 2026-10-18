@@ -65,11 +65,12 @@ const PropertyCategories = ({ categories }) => {
 
   // Open all properties in a new tab
   const handleCommercialClick = () => {
-    window.open(
-      "/properties-list",
-      "_blank",
-      "noopener,noreferrer"
-    );
+    const params = new URLSearchParams();
+    params.set("catType","Commercial");
+
+    const url = `/properties-list?${params.toString()}`;
+
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   // Keyboard accessibility

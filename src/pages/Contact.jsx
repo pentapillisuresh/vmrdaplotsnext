@@ -48,7 +48,7 @@ function Contact() {
           "Content-Type": "application/json"
         }
       });
-      console.log("rrr::", response)
+
       if (response) {
         alert("Lead submitted successfully!")
         setFormData({
