@@ -1201,6 +1201,18 @@ function PropertyCard({ property, formatPrice, onPropertyClick }) {
                 {categoryName}
               </span>
             )}
+
+              {/* Sold Status */}
+  <span
+    className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+      property.isSold
+        ? "bg-red-50 text-red-700 border-red-200"
+        : "bg-green-50 text-green-700 border-green-200"
+    }`}
+  >
+    {property.isSold ? "Sold" : "Not Sold"}
+  </span>
+
             {property.bedrooms && (
               <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 border border-blue-200">
                 <Bed className="w-2.5 h-2.5" />

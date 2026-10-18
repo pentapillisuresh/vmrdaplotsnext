@@ -29,7 +29,10 @@ import {
   MessageSquare,
   Send,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  X
+
+
 } from "lucide-react";
 
 import ApiService from "../hooks/ApiService";
@@ -2148,7 +2151,7 @@ console.log("isSoild::",property.isSold)
 
                   {/* SHOW SOLD STATUS */}
 
-                  {propertyIsSoldOut && (
+                  {/* {propertyIsSoldOut && (
                     <DetailCard
                       icon={
                         <CheckCircle
@@ -2158,7 +2161,7 @@ console.log("isSoild::",property.isSold)
                       label="Sale Status"
                       value="Sold Out"
                     />
-                  )}
+                  )} */}
 
                 </div>
 
