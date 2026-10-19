@@ -216,7 +216,9 @@ function PropertyDetailContent({
   // isSold: true
   // =======================================================
 console.log("isSoild::",property.isSold)
-  const propertyIsSoldOut = String(property.isSold);
+ const propertyIsSoldOut =
+  property?.isSold === true ||
+  String(property?.isSold).toLowerCase() === "true";
 
   // =======================================================
   // CREATE SLUG
@@ -1383,27 +1385,42 @@ console.log("isSoild::",property.isSold)
                     SHOWS WHEN isSold === true
                 ================================================= */}
 
-                {(propertyIsSoldOut==="true") && (
-                  <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+              
+{/* PREMIUM RED SOLD OUT STAMP */}
+{propertyIsSoldOut && (
+  <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+    {/* Subtle dark overlay */}
+    <div className="absolute inset-0 bg-black/20" />
 
-                    {/* Slight dark overlay */}
-                    <div className="absolute inset-0 bg-black/20"></div>
+    {/* Elegant angled stamp */}
+    <div className="relative -rotate-6 px-5 sm:px-8">
+      <div className="relative bg-[#A31224]/95 border-2 border-white px-7 py-5 sm:px-12 sm:py-7 shadow-[0_12px_35px_rgba(0,0,0,0.4)]">
 
-                    {/* Stamp */}
-                    <div className="relative transform -rotate-6">
+        {/* Fine inner border */}
+        <div className="absolute inset-[5px] border border-white/50" />
 
-                      <div className="border-[6px] border-red-600 bg-red-600/95 px-8 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-md shadow-2xl">
+        <div className="relative flex flex-col items-center gap-2">
+          <span className="text-[9px] sm:text-xs font-semibold tracking-[0.35em] text-white/90 uppercase">
+            Property Status
+          </span>
 
-                        <div className="text-white text-4xl sm:text-5xl md:text-7xl font-black tracking-[0.12em] uppercase text-center whitespace-nowrap drop-shadow-xl">
-                          SOLD OUT
-                        </div>
+          <div className="h-px w-full bg-white/60" />
 
-                      </div>
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-[0.12em] text-white uppercase leading-none drop-shadow-sm">
+            SOLD OUT
+          </h2>
 
-                    </div>
+          <div className="h-1 w-16 sm:w-24 bg-white" />
 
-                  </div>
-                )}
+          <span className="text-[8px] sm:text-[10px] font-medium tracking-[0.2em] text-white/90 uppercase text-center">
+            Successfully Sold
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
 
                 {/* =================================================
                     FAVORITE BUTTON
