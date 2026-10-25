@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import Providers from "@/providers/Providers";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import CallButton from "@/components/CallButton";
-import IntroScreen from "@/components/IntroScreen";
+// import IntroScreen from "@/components/IntroScreen";
 import "leaflet/dist/leaflet.css";
 import Script from "next/script";
 
@@ -41,7 +41,7 @@ export default function RootLayout({ children }) {
         </Providers>
 
         {/* FULL SCREEN INTRO */}
-        <IntroScreen />
+        {/* <IntroScreen /> */}
 
         {/* Google Analytics */}
         <Script

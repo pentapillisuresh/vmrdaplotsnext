@@ -187,7 +187,7 @@ const Header = () => {
     { path: "/project", label: "Projects", icon: Briefcase },
     { path: "/about", label: "About", icon: Info },
     { path: "/contact", label: "Contact", icon: Phone },
-    { path: "/blog", label: "Blog", icon: Newspaper },
+    // { path: "/blog", label: "Blog", icon: Newspaper },
   ];
 
   const vendorMenuItems = [
@@ -221,26 +221,29 @@ const Header = () => {
             </div>
 
             {/* Middle Section: Desktop Navigation */}
-            <nav className="hidden xl:flex items-center justify-center flex-1 px-4">
-              <div className="flex items-center space-x-1">
-                {navItems.map(({ path, label }) => (
-                  <button
-                    key={path}
-                    onClick={() => handleNavigation(path)}
-                    className={`relative font-semibold font-roboto text-sm transition-all duration-300 px-4 py-2 rounded-full transform hover:scale-105 whitespace-nowrap ${
-                      isActive(path)
-                        ? "text-white bg-orange-500 shadow-md scale-105"
-                        : "text-gray-700 hover:text-orange-500 hover:bg-orange-50"
-                    }`}
-                  >
-                    {label}
-                    {isActive(path) && (
-                      <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-orange-500 rounded-full"></span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </nav>
+         
+{/* Middle Section: Desktop Navigation */}
+<nav className="hidden lg:flex items-center justify-center flex-1 min-w-0 px-2">
+  <div className="flex items-center justify-center gap-1">
+    {navItems.map(({ path, label }) => (
+      <button
+        key={path}
+        onClick={() => handleNavigation(path)}
+        className={`relative font-semibold font-roboto text-sm transition-all duration-300 px-2 xl:px-3 py-2 rounded-full whitespace-nowrap ${
+          isActive(path)
+            ? "text-white bg-orange-500 shadow-md"
+            : "text-gray-700 hover:text-orange-500 hover:bg-orange-50"
+        }`}
+      >
+        {label}
+        {isActive(path) && (
+          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-orange-500 rounded-full" />
+        )}
+      </button>
+    ))}
+  </div>
+</nav>
+
 
             {/* Right Section: Action Buttons - Desktop */}
             <div className="hidden lg:flex items-center space-x-2 flex-shrink-0">

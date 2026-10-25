@@ -10,7 +10,7 @@ const TermsConditions = () => {
         </h1>
 
         <p className="text-sm text-gray-500 mb-8">
-          Last Updated: October 8, 2026
+          Last Updated: October 25, 2026
         </p>
 
         <div className="space-y-10">
@@ -115,10 +115,96 @@ const TermsConditions = () => {
             </p>
           </section>
 
-          {/* 5. PROPERTY INQUIRIES */}
+          {/* 5. PROPERTY LEGAL VERIFICATION AND BUYER DUE DILIGENCE */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              5. Property Inquiries
+              5. Property Legal Verification and Buyer Due Diligence
+            </h2>
+
+            <p className="text-gray-700 leading-8">
+              Before paying an advance, signing an agreement, booking a plot,
+              or purchasing any property listed or discussed through VMRDA
+              Plots, buyers are strongly advised to conduct independent legal,
+              technical, financial, and physical due diligence. Property
+              information provided by us is for general informational
+              purposes and must not be treated as a legal opinion or
+              title-clearance certificate.
+            </p>
+
+            <p className="text-gray-700 leading-8 mt-4">
+              Buyers should consult a qualified property lawyer and verify
+              the relevant records directly with the competent government
+              authorities. Depending on the property and its location,
+              checks may include:
+            </p>
+
+            <ul className="list-disc pl-6 text-gray-700 space-y-2 mt-4">
+              <li>
+                Ownership, title deeds, link documents, and the seller's
+                legal authority to sell the property.
+              </li>
+              <li>
+                Encumbrance Certificate (EC), registered transactions,
+                mortgages, liens, charges, and other recorded interests.
+              </li>
+              <li>
+                Applicable layout approvals, sanctioned plans, and
+                permissions from VMRDA, DTCP, the municipality, or another
+                competent authority, as applicable.
+              </li>
+              <li>
+                Land-use classification, zoning, master-plan restrictions,
+                road-widening proposals, and other development restrictions.
+              </li>
+              <li>
+                Survey numbers, subdivision details, plot boundaries,
+                measurements, access roads, and physical possession.
+              </li>
+              <li>
+                Pending or past litigation, ownership disputes, inheritance
+                claims, acquisition notices, and third-party rights.
+              </li>
+              <li>
+                Applicable land and property taxes, government dues,
+                registration requirements, and other outstanding liabilities.
+              </li>
+              <li>
+                Any other approvals, certificates, records, or checks
+                required for the particular property under applicable law.
+              </li>
+            </ul>
+
+            <p className="text-gray-700 leading-8 mt-4">
+              The documents and checks required may vary according to the
+              property's type, location, history, and applicable laws. The
+              presence of a document or approval should not, by itself, be
+              assumed to establish that the property is free from all legal
+              risks.
+            </p>
+
+            <p className="text-gray-700 leading-8 mt-4">
+              VMRDA Plots does not represent or guarantee that it has
+              independently verified every document, ownership claim,
+              approval, or legal status for every listing. Unless expressly
+              confirmed in a separate written agreement, we do not provide
+              a guarantee of 100% legal verification, clear title, or freedom
+              from disputes, encumbrances, liabilities, or restrictions.
+            </p>
+
+            <p className="text-gray-700 leading-8 mt-4">
+              Buyers are responsible for obtaining independent written legal
+              advice and confirming relevant records with the competent
+              authorities before making any payment or committing to a
+              transaction. Do not rely solely on website content, photographs,
+              brochures, verbal statements, or information supplied by any
+              intermediary.
+            </p>
+          </section>
+
+          {/* 6. PROPERTY INQUIRIES */}
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-900">
+              6. Property Inquiries
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -134,10 +220,10 @@ const TermsConditions = () => {
             </p>
           </section>
 
-          {/* 6. NO GUARANTEE OF AVAILABILITY */}
+          {/* 7. PROPERTY AVAILABILITY */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              6. Property Availability
+              7. Property Availability
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -153,10 +239,10 @@ const TermsConditions = () => {
             </p>
           </section>
 
-          {/* 7. PRICES */}
+          {/* 8. PROPERTY PRICES AND CHARGES */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              7. Property Prices and Charges
+              8. Property Prices and Charges
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -176,10 +262,10 @@ const TermsConditions = () => {
             </p>
           </section>
 
-          {/* 8. TRANSACTIONS */}
+          {/* 9. PROPERTY TRANSACTIONS */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              8. Property Transactions
+              9. Property Transactions
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -196,10 +282,10 @@ const TermsConditions = () => {
             </p>
           </section>
 
-          {/* 9. THIRD PARTY SERVICES */}
+          {/* 10. THIRD-PARTY SERVICES */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              9. Third-Party Services
+              10. Third-Party Services
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -216,10 +302,10 @@ const TermsConditions = () => {
             </p>
           </section>
 
-          {/* 10. INTELLECTUAL PROPERTY */}
+          {/* 11. INTELLECTUAL PROPERTY */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              10. Intellectual Property
+              11. Intellectual Property
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -236,10 +322,10 @@ const TermsConditions = () => {
             </p>
           </section>
 
-          {/* 11. PROHIBITED ACTIVITIES */}
+          {/* 12. PROHIBITED ACTIVITIES */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              11. Prohibited Activities
+              12. Prohibited Activities
             </h2>
 
             <p className="text-gray-700 leading-8 mb-4">
@@ -250,18 +336,22 @@ const TermsConditions = () => {
               <li>Use the platform for illegal activities</li>
               <li>Attempt to access another user's account</li>
               <li>Interfere with website or application security</li>
-              <li>Use automated systems to abuse or overload the platform</li>
-              <li>Copy or scrape property information without authorization</li>
+              <li>
+                Use automated systems to abuse or overload the platform
+              </li>
+              <li>
+                Copy or scrape property information without authorization
+              </li>
               <li>Submit fraudulent inquiries</li>
               <li>Upload malicious or harmful content</li>
               <li>Misrepresent their identity or information</li>
             </ul>
           </section>
 
-          {/* 12. ACCOUNT SUSPENSION */}
+          {/* 13. ACCOUNT SUSPENSION */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              12. Account Suspension or Termination
+              13. Account Suspension or Termination
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -277,10 +367,10 @@ const TermsConditions = () => {
             </p>
           </section>
 
-          {/* 13. DISCLAIMER */}
+          {/* 14. DISCLAIMER */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              13. Disclaimer
+              14. Disclaimer
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -298,12 +388,19 @@ const TermsConditions = () => {
               Property information should be independently verified before
               making any purchase, investment, or other financial decision.
             </p>
+
+            <p className="text-gray-700 leading-8 mt-4">
+              VMRDA Plots does not guarantee 100% legal verification or
+              clear title for any property unless expressly agreed in writing.
+              Buyers must independently verify all relevant documents,
+              approvals, ownership details, and legal status before purchasing.
+            </p>
           </section>
 
-          {/* 14. LIMITATION OF LIABILITY */}
+          {/* 15. LIMITATION OF LIABILITY */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              14. Limitation of Liability
+              15. Limitation of Liability
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -318,12 +415,18 @@ const TermsConditions = () => {
               Users are responsible for independently verifying information
               before entering into any property transaction.
             </p>
+
+            <p className="text-gray-700 leading-8 mt-4">
+              Nothing in these Terms & Conditions excludes or limits any
+              liability that cannot be excluded or limited under applicable
+              law.
+            </p>
           </section>
 
-          {/* 15. USER CONTENT */}
+          {/* 16. USER-SUBMITTED INFORMATION */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              15. User-Submitted Information
+              16. User-Submitted Information
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -334,10 +437,10 @@ const TermsConditions = () => {
             </p>
           </section>
 
-          {/* 16. PRIVACY POLICY */}
+          {/* 17. PRIVACY POLICY */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              16. Privacy Policy
+              17. Privacy Policy
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -352,10 +455,10 @@ const TermsConditions = () => {
             </p>
           </section>
 
-          {/* 17. CHANGES TO TERMS */}
+          {/* 18. CHANGES TO TERMS */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              17. Changes to These Terms
+              18. Changes to These Terms
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -368,14 +471,14 @@ const TermsConditions = () => {
               When changes are made, the "Last Updated" date at the top of
               this page will be updated. Your continued use of the platform
               after changes are posted constitutes acceptance of the updated
-              terms.
+              terms, subject to applicable law.
             </p>
           </section>
 
-          {/* 18. GOVERNING LAW */}
+          {/* 19. GOVERNING LAW */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              18. Governing Law
+              19. Governing Law
             </h2>
 
             <p className="text-gray-700 leading-8">
@@ -386,14 +489,14 @@ const TermsConditions = () => {
             <p className="text-gray-700 leading-8 mt-4">
               Any disputes arising in connection with these terms or the use
               of our services shall be subject to the jurisdiction of the
-              appropriate courts in India.
+              appropriate courts in India, subject to applicable law.
             </p>
           </section>
 
-          {/* 19. CONTACT */}
+          {/* 20. CONTACT */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              19. Contact Us
+              20. Contact Us
             </h2>
 
             <p className="text-gray-700 leading-8">

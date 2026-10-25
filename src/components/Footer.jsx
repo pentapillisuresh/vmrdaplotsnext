@@ -30,7 +30,7 @@ const Footer = () => {
     { name: "About Us", href: "#" },
     { name: "Contact Us", href: "#" },
     // { name: "Careers", href: "#" },
-    { name: "Blog", href: "#" },
+    { name: "Blog", href: "/blog" },
     { name: "NRI Investors", modal: "buy" }, // opens BuyFormModal
     { name: "Development", modal: "development" }, // opens DevelopmentFormModal
   ];
