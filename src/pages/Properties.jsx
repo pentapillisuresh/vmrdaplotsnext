@@ -148,7 +148,7 @@ function PropertiesContent() {
       if (locality) params.append("locality", locality);
       if (clientId) params.append("clientId", clientId);
 
-      if (priceRange !== "all") {
+      if (priceRange && priceRange !== "all") {
         const [min, max] = priceRange.split("-").map(Number);
         if (!isNaN(min)) params.append("minPrice", min);
         if (!isNaN(max)) params.append("maxPrice", max);
@@ -220,7 +220,7 @@ function PropertiesContent() {
       if (locality) params.append("locality", locality);
       if (clientId) params.append("clientId", clientId);
 
-      if (priceRange !== "all") {
+      if (priceRange && priceRange !== "all") {
         const [min, max] = priceRange.split("-").map(Number);
         if (!isNaN(min)) params.append("minPrice", min);
         if (!isNaN(max)) params.append("maxPrice", max);
@@ -671,6 +671,7 @@ const handlePropertyClick = (property) => {
                       locality: "",
                       clientId: "",
                       priceRange: "all",
+                      catType: "",
                     });
                     setActiveFilters({
                       categoryId: "",
@@ -680,6 +681,7 @@ const handlePropertyClick = (property) => {
                       locality: "",
                       clientId: "",
                       priceRange: "all",
+                      catType: "",
                     });
                     setPage(1);
                   }}
@@ -799,455 +801,137 @@ const handlePropertyClick = (property) => {
   );
 }
 
-/* PROPERTY CARD – with Key Features (Plot Area, Per Sq Yard, Facing) and Approved By */
+/* PROPERTY CARD - category-aware, preserves media carousel and click navigation */
+const firstValue = (...values) => values.find(v => v !== undefined && v !== null && v !== "" && v !== "null");
+const asList = (value) => {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (!value) return [];
+  if (typeof value === "string") {
+    try { const parsed = JSON.parse(value); if (Array.isArray(parsed)) return parsed.filter(Boolean); } catch {}
+    return value.split(",").map(v => v.trim()).filter(Boolean);
+  }
+  return [];
+};
+const mediaUrl = (item) => typeof item === "string" ? item : firstValue(item?.url, item?.src, item?.image, item?.video, "");
+const formatCategory = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
 function PropertyCard({ property, formatPrice, onPropertyClick }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef(null);
-
-  // Get category and profile info - Check multiple locations
-  const categoryName = property?.category?.name || '';
-  const profile = property?.profile || {};
-
-  // Check if it's a Plot/Land category
-  const isPlot = categoryName.toLowerCase() === "plot" ||
-    categoryName.toLowerCase() === "land" ||
-    categoryName.toLowerCase() === "commercial land";
-
-  // Try to get values from multiple possible locations
-  const plotArea = profile?.plotArea || property?.plotArea || property?.area || null;
-  const areaUnit = profile?.areaUnit || property?.areaUnit || "sqft";
-  const facing = profile?.facing || property?.facing || null;
-  const approvedBy = property?.approvedBy || profile?.approvedBy || null;
-
-  // Calculate price per sq yard (convert sqft to sq yards)
-  const pricePerSqYard = plotArea && property?.price
-    ? Math.round(parseFloat(property.price) / (parseFloat(plotArea) / 9))
-    : null;
-
-  // Parse photos - handle both array and string
-  let media = [];
-  try {
-    if (Array.isArray(property?.photos)) {
-      media = property.photos;
-    } else if (typeof property?.photos === 'string') {
-      media = JSON.parse(property.photos) || [];
-    } else {
-      media = [];
-    }
-  } catch (e) {
-    media = [];
-  }
-
-  // Parse videos - handle string URL or array
-  let videoUrls = [];
-  try {
-    if (property?.videos) {
-      if (typeof property.videos === 'string') {
-        if (property.videos.startsWith('[')) {
-          videoUrls = JSON.parse(property.videos) || [];
-        } else {
-          videoUrls = [property.videos];
-        }
-      } else if (Array.isArray(property.videos)) {
-        videoUrls = property.videos;
-      }
-    }
-  } catch (e) {
-    videoUrls = [];
-  }
-
-  // Combine media: VIDEOS FIRST, then photos
-  const allMedia = [...videoUrls, ...media];
-  const hasVideo = videoUrls.length > 0;
+  const profile = property?.propertyProfile || property?.profile || {};
+  const categoryName = firstValue(property?.category?.name, property?.categoryName, property?.propertySubtype, "Property");
+  const kind = formatCategory(categoryName);
+  const isPlot = ["plot", "land", "commercialland"].includes(kind);
+  const isFlat = kind.includes("flat") || kind.includes("apartment");
+  const isHouse = kind.includes("villa") || kind.includes("independenthouse") || kind.includes("farmhouse");
+  const isOffice = kind.includes("office");
+  const isShop = kind.includes("shop") || kind.includes("showroom");
+  const isIndustrial = kind.includes("warehouse") || kind.includes("godown") || kind.includes("industrial");
+  const isResidential = isFlat || isHouse;
+  const isCommercial = isOffice || isShop || isIndustrial;
+  const isSold = [true, 1, "true", "1"].includes(property?.isSold);
+  // The API returns property measurements in `profile` (and sometimes `propertyProfile`).
+  // Zero is a placeholder, not a usable area.
+  const positive = (...values) => values.map(Number).find(v => Number.isFinite(v) && v > 0) || null;
+  const areaUnit = String(firstValue(profile.areaUnit, profile.plotAreaUnit, property?.areaUnit, "sqft")).trim();
+  const landArea = positive(profile.landArea, property?.landArea);
+  const plotArea = positive(profile.plotArea, property?.plotArea);
+  const buildingArea = positive(profile.carpetArea, profile.buildArea, profile.builtArea, profile.superBuildArea, property?.area);
+  const facing = firstValue(profile.facing, property?.facing);
+  const address = property?.address || {};
+  const fullAddress = [address.locality, address.city].filter(Boolean).join(", ");
+  const price = Number(property?.price);
+  const isLandCategory = kind.includes("land");
+  const isPlotCategory = kind === "plot" || kind.includes("plot");
+  const isFarmhouse = kind.includes("farmhouse");
+  const selectedArea = isLandCategory ? (landArea || plotArea) :
+    isPlotCategory ? (plotArea || landArea) :
+    isFarmhouse ? (landArea || plotArea || buildingArea) :
+    (buildingArea || landArea || plotArea);
+  const selectedAreaLabel = (isLandCategory || isFarmhouse) && landArea ? "Land Area" :
+    isPlotCategory && plotArea ? "Plot Area" : "Area";
+  const unitKey = areaUnit.toLowerCase().replace(/[^a-z]/g, "");
+  const unitDisplay = unitKey.includes("acre") ? "acre" :
+    unitKey.includes("yard") || unitKey === "sqyd" ? "sq. yd" :
+    unitKey.includes("meter") ? "sq. m" :
+    unitKey.includes("cent") ? "cent" : "sq. ft";
+  // Display per the actual stored unit; never label an acre price as per sq. yard.
+  const perUnit = selectedArea && Number.isFinite(price) && price > 0 ? price / selectedArea : null;
+  const approvedBy = asList(firstValue(property?.approvedBy, profile.approvedBy));
+  const amenities = asList(property?.amenities);
+  const videos = asList(property?.videos).map(mediaUrl).filter(Boolean);
+  const photos = asList(property?.photos).map(mediaUrl).filter(Boolean);
+  const allMedia = [...videos.map(src => ({ src, video: true })), ...photos.map(src => ({ src, video: false }))];
   const totalMedia = allMedia.length;
-
-  // Auto-slide carousel - 3 seconds interval
+  const selectedMedia = allMedia[currentIndex] || null;
+  useEffect(() => { setCurrentIndex(0); }, [property?.id]);
   useEffect(() => {
     if (totalMedia <= 1) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % totalMedia);
-    }, 3000);
-
-    return () => clearInterval(interval);
+    const timer = setInterval(() => setCurrentIndex(i => (i + 1) % totalMedia), 3000);
+    return () => clearInterval(timer);
   }, [totalMedia]);
-
-  // Handle video playback when current index changes
   useEffect(() => {
-    if (videoRef.current) {
-      if (isVideo(currentIndex) && isPlaying) {
-        videoRef.current.muted = true;
-        videoRef.current.play().catch(() => { });
-      } else if (videoRef.current) {
-        videoRef.current.pause();
-      }
-    }
-  }, [currentIndex, isPlaying]);
-
-  // Move to next slide when video ends
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      const handleEnded = () => {
-        if (totalMedia > 1) {
-          setCurrentIndex((prev) => (prev + 1) % totalMedia);
-        }
-      };
-      video.addEventListener('ended', handleEnded);
-      return () => video.removeEventListener('ended', handleEnded);
-    }
-  }, [totalMedia]);
-
-  const nextSlide = (e) => {
-    e.stopPropagation();
-    setCurrentIndex((i) => (i + 1) % totalMedia);
+    if (!videoRef.current) return;
+    videoRef.current.muted = isMuted;
+    if (selectedMedia?.video && isPlaying) videoRef.current.play().catch(() => {});
+    else videoRef.current.pause();
+  }, [currentIndex, isPlaying, isMuted, selectedMedia?.video]);
+  const move = (event, direction) => { event.stopPropagation(); if (totalMedia) setCurrentIndex(i => (i + direction + totalMedia) % totalMedia); };
+  const togglePlay = event => { event.stopPropagation(); setIsPlaying(v => !v); };
+  const toggleMute = event => { event.stopPropagation(); setIsMuted(v => !v); };
+  const features = [];
+  const add = (label, value, Icon = Maximize) => {
+    if (value !== undefined && value !== null && value !== "") features.push({ label, value, Icon });
   };
-
-  const prevSlide = (e) => {
-    e.stopPropagation();
-    setCurrentIndex((i) => (i - 1 + totalMedia) % totalMedia);
-  };
-
-  const isVideo = (index) => {
-    return index < videoUrls.length && hasVideo;
-  };
-
-  const getMediaUrl = (index) => {
-    if (index < videoUrls.length) {
-      return videoUrls[index];
-    } else {
-      const photoIndex = index - videoUrls.length;
-      return media[photoIndex];
-    }
-  };
-
-  // Get address components
-  const address = property.address || {};
-  const city = address.city || '';
-  const locality = address.locality || '';
-  const fullAddress = [locality, city].filter(Boolean).join(', ');
-
-  // Get amenities
-  const amenities = property.amenities || [];
-
-  // Price display
-  const priceDisplay = property.price ? formatPrice(property.price) : 'Contact Us';
-
-  // Toggle play/pause for videos
-  const togglePlay = (e) => {
-    e.stopPropagation();
-    setIsPlaying(!isPlaying);
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.muted = true;
-        videoRef.current.play().catch(() => { });
-      }
-    }
-  };
-
-  // Toggle mute
-  const toggleMute = (e) => {
-    e.stopPropagation();
-    if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted;
-      setIsMuted(videoRef.current.muted);
-    }
-  };
-
+  if (selectedArea) add(selectedAreaLabel, `${selectedArea.toLocaleString("en-IN")} ${areaUnit}`);
+  if (perUnit) add(`Per ${unitDisplay}`, `₹${Math.round(perUnit).toLocaleString("en-IN")}`, IndianRupee);
+  if (facing && String(facing).trim() && String(facing) !== "0") add("Facing", facing, Compass);
   return (
-    <article
-      className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-orange-200 cursor-pointer overflow-hidden"
-      onClick={() => onPropertyClick(property)}
-    >
+    <article className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-orange-200 cursor-pointer overflow-hidden" onClick={() => onPropertyClick(property)}>
       <div className="flex flex-col md:flex-row">
         <div className="relative md:w-[280px] lg:w-[320px] flex-shrink-0 group/image">
           <div className="w-full aspect-[4/3] bg-gray-100 relative overflow-hidden">
-            {totalMedia > 0 ? (
-              <>
-                {isVideo(currentIndex) ? (
-                  <video
-                    ref={videoRef}
-                    src={getMediaUrl(currentIndex)}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    muted={true}
-                    playsInline
-                    loop={false}
-                    autoPlay
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      togglePlay(e);
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={getMediaUrl(currentIndex)}
-                    alt={property.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover/image:scale-110 transition-transform duration-700"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = '/images/logo.jpg';
-                    }}
-                  />
-                )}
-              </>
+            {selectedMedia?.video ? (
+              <video ref={videoRef} key={selectedMedia.src} src={selectedMedia.src} className="absolute inset-0 w-full h-full object-cover" muted={isMuted} playsInline autoPlay={isPlaying} onEnded={() => totalMedia > 1 && setCurrentIndex(i => (i + 1) % totalMedia)} onClick={togglePlay} />
+            ) : selectedMedia ? (
+              <img src={selectedMedia.src} alt={property?.title || categoryName} className="absolute inset-0 w-full h-full object-cover group-hover/image:scale-110 transition-transform duration-700" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = "/images/logo.jpg"; }} />
             ) : (
-              <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                <ImageIcon className="w-12 h-12 text-gray-400" />
-              </div>
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"><ImageIcon className="w-12 h-12 text-gray-400" /></div>
             )}
-
-            {/* Play/Pause Overlay for Videos */}
-            {isVideo(currentIndex) && (
-              <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    togglePlay(e);
-                  }}
-                  className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-all duration-300 group-hover:opacity-100 opacity-0"
-                >
-                  <div className="w-12 h-12 rounded-full bg-white/90 shadow-xl flex items-center justify-center hover:scale-110 transition-transform">
-                    {isPlaying ? (
-                      <Pause className="w-6 h-6 text-gray-800" />
-                    ) : (
-                      <Play className="w-6 h-6 text-gray-800 ml-1" />
-                    )}
-                  </div>
-                </button>
-                {/* Mute/Unmute Button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleMute(e);
-                  }}
-                  className="absolute bottom-12 left-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 transition-all duration-300"
-                >
-                  {isMuted ? (
-                    <Video className="w-3 h-3" />
-                  ) : (
-                    <Video className="w-3 h-3" />
-                  )}
-                </button>
-              </>
-            )}
-
-            {/* Badges */}
             <div className="absolute top-2 left-2 flex flex-wrap gap-1.5">
-              {property.availableStatus && (
-                <span className="w-2 h-2 bg-green-500 rounded-full shadow-lg"></span>
-              )}
-              {approvedBy && (
-                <span className="w-2 h-2 bg-blue-500 rounded-full shadow-lg"></span>
-              )}
+              {property?.availableStatus && <span className="w-2 h-2 bg-green-500 rounded-full shadow-lg" />}
+              {approvedBy.length > 0 && <span className="w-2 h-2 bg-blue-500 rounded-full shadow-lg" />}
             </div>
-
-            {/* Video Badge */}
-            {hasVideo && (
-              <div className="absolute top-2 right-2">
-                <div className="w-6 h-6 bg-gradient-to-r from-red-500 to-red-600 rounded-full shadow-lg flex items-center justify-center">
-                  {isVideo(currentIndex) ? (
-                    isPlaying ? (
-                      <Pause className="w-3 h-3 text-white" />
-                    ) : (
-                      <Play className="w-3 h-3 text-white" />
-                    )
-                  ) : (
-                    <Play className="w-3 h-3 text-white" />
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Media Type Indicator */}
-            <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[8px] px-1.5 py-0.5 rounded-full flex items-center gap-1">
-              {isVideo(currentIndex) ? (
-                <>
-                  <Video className="w-2.5 h-2.5" />
-                  <span>Video</span>
-                </>
-              ) : (
-                <>
-                  <ImageIcon className="w-2.5 h-2.5" />
-                  <span>Photo</span>
-                </>
-              )}
-            </div>
+            {videos.length > 0 && <div className="absolute top-2 right-2 w-6 h-6 bg-red-600 rounded-full shadow-lg flex items-center justify-center"><Video className="w-3 h-3 text-white" /></div>}
+            {selectedMedia?.video && <>
+              <button type="button" onClick={togglePlay} className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity"><span className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">{isPlaying ? <Pause className="w-6 h-6 text-gray-800" /> : <Play className="w-6 h-6 text-gray-800" />}</span></button>
+              <button type="button" onClick={toggleMute} className="absolute bottom-12 left-2 bg-black/60 text-white rounded-full p-1.5 text-xs">{isMuted ? "Unmute" : "Mute"}</button>
+            </>}
+            {selectedMedia && <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">{selectedMedia.video ? <Video className="w-3 h-3" /> : <ImageIcon className="w-3 h-3" />}{selectedMedia.video ? "Video" : "Photo"}</div>}
+            {totalMedia > 1 && <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30"><div className="h-full bg-orange-500 transition-all duration-300" style={{ width: `${((currentIndex + 1) / totalMedia) * 100}%` }} /></div>}
           </div>
-
-          {totalMedia > 1 && (
-            <>
-              <button
-                onClick={prevSlide}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 transition-all duration-300 opacity-0 group-hover/image:opacity-100 z-10"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button
-                onClick={nextSlide}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 transition-all duration-300 opacity-0 group-hover/image:opacity-100 z-10"
-              >
-                <ChevronRight size={16} />
-              </button>
-            </>
-          )}
-
-          {/* Media Counter */}
-          {totalMedia > 1 && (
-            <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
-              <span>{currentIndex + 1}/{totalMedia}</span>
-            </div>
-          )}
-
-          {/* Progress Bar for Carousel */}
-          {totalMedia > 1 && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
-              <div
-                className="h-full bg-orange-500 transition-all duration-300"
-                style={{ width: `${((currentIndex + 1) / totalMedia) * 100}%` }}
-              ></div>
-            </div>
-          )}
+          {totalMedia > 1 && <>
+            <button type="button" onClick={e => move(e, -1)} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 opacity-0 group-hover/image:opacity-100 z-10"><ChevronLeft size={16} /></button>
+            <button type="button" onClick={e => move(e, 1)} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 opacity-0 group-hover/image:opacity-100 z-10"><ChevronRight size={16} /></button>
+            <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">{currentIndex + 1}/{totalMedia}</div>
+          </>}
         </div>
-
-        <div className="flex-1 p-4 lg:p-5">
+        <div className="flex-1 min-w-0 p-4 lg:p-5">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
-            <h2 className="text-lg font-bold text-gray-900 group-hover:text-orange-500 transition-colors duration-300 line-clamp-1">
-              {property.title}
-            </h2>
-            {property.price ? (
-              <div className="text-lg font-bold text-orange-600 whitespace-nowrap">
-                {priceDisplay}
-              </div>
-            ) : null}
+            <h2 className="text-lg font-bold text-gray-900 group-hover:text-orange-500 transition-colors line-clamp-2">{property?.title || categoryName}</h2>
+            {price > 0 && <div className="text-lg font-bold text-orange-600 whitespace-nowrap">{formatPrice(price)}</div>}
           </div>
-
-          <div className="flex items-center text-gray-600 mb-2">
-            <MapPin size={14} className="text-orange-500 mr-1 flex-shrink-0" />
-            <span className="text-xs">{fullAddress || 'Address not available'}</span>
+          <div className="flex items-center text-gray-600 mb-2"><MapPin size={14} className="text-orange-500 mr-1 flex-shrink-0" /><span className="text-xs">{fullAddress || "Address not available"}</span></div>
+          {features.length > 0 && <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">{features.map(({ label, value, Icon }, i) => <div key={`${label}-${i}`} className="bg-orange-50 rounded-lg p-2 border border-orange-100 text-center min-w-0"><div className="flex items-center justify-center gap-1 mb-0.5"><Icon className="w-3 h-3 text-orange-500 flex-shrink-0" /><span className="text-[9px] text-gray-500 uppercase font-semibold">{label}</span></div><p className="text-xs sm:text-sm font-bold text-gray-900 break-words">{value}</p></div>)}</div>}
+          {approvedBy.length > 0 && <div className="mt-3 flex items-start gap-1.5 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100"><CheckCircle className="w-3.5 h-3.5 text-green-600 flex-shrink-0 mt-0.5" /><span className="text-xs text-green-700 break-words"><span className="font-medium">Approved: </span>{approvedBy.join(", ")}</span></div>}
+          {!(price > 0) && <button type="button" className="mt-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-xs px-4 py-1.5 rounded-lg shadow-md" onClick={e => { e.stopPropagation(); alert("Contact us for price!"); }}>Contact Us</button>}
+          <div className="flex flex-wrap items-center gap-1.5 mt-3">
+            <span className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full text-[10px] font-semibold border border-orange-200">{categoryName}</span>
+            {isSold && <span className="bg-red-50 text-red-700 border-red-200 px-2 py-0.5 rounded-full text-[10px] font-semibold border">Sold</span>}
           </div>
-
-          {/* KEY FEATURES - Plot Area, Per Sq Yard, Facing (Only for Plot/Land) */}
-          {isPlot && (
-            <div className="grid grid-cols-3 gap-2 mt-3">
-              {/* Plot Area */}
-              {plotArea && (
-                <div className="bg-orange-50 rounded-lg p-2 border border-orange-100 text-center">
-                  <div className="flex items-center justify-center gap-1 mb-0.5">
-                    <Maximize className="w-3 h-3 text-orange-500" />
-                    <span className="text-[8px] text-gray-500 uppercase font-semibold">Area</span>
-                  </div>
-                  <p className="text-sm font-bold text-gray-900">{plotArea}</p>
-                  <p className="text-[8px] text-gray-500">{areaUnit}</p>
-                </div>
-              )}
-
-              {/* Per Sq Yard */}
-              {pricePerSqYard && (
-                <div className="bg-blue-50 rounded-lg p-2 border border-blue-100 text-center">
-                  <div className="flex items-center justify-center gap-1 mb-0.5">
-                    <IndianRupee className="w-3 h-3 text-blue-500" />
-                    <span className="text-[8px] text-gray-500 uppercase font-semibold">Per Sq.Yd</span>
-                  </div>
-                  <p className="text-sm font-bold text-gray-900">₹{Math.round(
-                    parseFloat(property?.price || 0) / parseFloat(profile?.plotArea)
-                  )}</p>
-                </div>
-              )}
-
-              {/* Facing */}
-              {facing && (
-                <div className="bg-purple-50 rounded-lg p-2 border border-purple-100 text-center">
-                  <div className="flex items-center justify-center gap-1 mb-0.5">
-                    <Compass className="w-3 h-3 text-purple-500" />
-                    <span className="text-[8px] text-gray-500 uppercase font-semibold">Facing</span>
-                  </div>
-                  <p className="text-sm font-bold text-gray-900">{facing}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Approved By - Always show if available */}
-          {approvedBy && (
-            <div className="mt-3 flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
-              <CheckCircle className="w-3.5 h-3.5 text-green-600" />
-              <span className="text-[10px] text-gray-600 font-medium">Approved:</span>
-              <span className="text-xs font-semibold text-green-700">
-                {Array.isArray(approvedBy) ? approvedBy.join(", ") : approvedBy}
-              </span>
-            </div>
-          )}
-
-          {!property.price && (
-            <button
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold text-xs px-4 py-1.5 rounded-lg shadow-md shadow-orange-200 transition-all duration-300 transform hover:scale-105"
-              onClick={(e) => {
-                e.stopPropagation();
-                alert("Contact us for price!");
-              }}
-            >
-              Contact Us
-            </button>
-          )}
-
-          {/* Property Details */}
-          <div className="flex flex-wrap items-center gap-1.5 mt-2">
-            {categoryName && (
-              <span className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full text-[10px] font-semibold border border-orange-200">
-                {categoryName}
-              </span>
-            )}
-
-              {/* Sold Status */}
-  <span
-    className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-      property.isSold
-        ? "bg-red-50 text-red-700 border-red-200"
-        : "bg-green-50 text-green-700 border-green-200"
-    }`}
-  >
-    {property.isSold ? "Sold" : "Not Sold"}
-  </span>
-
-            {property.bedrooms && (
-              <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 border border-blue-200">
-                <Bed className="w-2.5 h-2.5" />
-                {property.bedrooms}
-              </span>
-            )}
-            {property.bathrooms && (
-              <span className="bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 border border-purple-200">
-                <Bath className="w-2.5 h-2.5" />
-                {property.bathrooms}
-              </span>
-            )}
-            {property.area && (
-              <span className="bg-green-50 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 border border-green-200">
-                <Maximize className="w-2.5 h-2.5" />
-                {property.area}
-              </span>
-            )}
-          </div>
-
-          {/* Amenities */}
-          {amenities.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-gray-100">
-              {amenities.slice(0, 4).map((item, idx) => (
-                <span key={idx} className="bg-gray-50 text-gray-600 px-2 py-0.5 rounded-full text-[10px] font-medium border border-gray-200">
-                  {item}
-                </span>
-              ))}
-              {amenities.length > 4 && (
-                <span className="text-gray-400 text-[10px] font-semibold px-1 py-0.5">
-                  +{amenities.length - 4}
-                </span>
-              )}
-            </div>
-          )}
+          {amenities.length > 0 && <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-gray-100">{amenities.slice(0, 4).map((item, idx) => <span key={idx} className="bg-gray-50 text-gray-600 px-2 py-0.5 rounded-full text-[10px] font-medium border border-gray-200">{typeof item === "string" ? item : item?.name || "Amenity"}</span>)}{amenities.length > 4 && <span className="text-gray-400 text-[10px] font-semibold px-1 py-0.5">+{amenities.length - 4}</span>}</div>}
         </div>
       </div>
     </article>

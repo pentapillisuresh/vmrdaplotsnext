@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Home, MapPin, Bath, Bed, Maximize, ChevronLeft, ChevronRight, Filter, Search, X, Compass, ChevronDown, Building2, DollarSign, ArrowUpDown, Tag, CheckCircle, Award, Clock, TrendingUp, Play, Pause, Image as ImageIcon, Video } from "lucide-react";
+import { Home, MapPin, Bath, Bed, Maximize, ChevronLeft, ChevronRight, Filter, Search, X, Compass, ChevronDown, Building2, IndianRupee, ArrowUpDown, Tag, CheckCircle, Award, Clock, TrendingUp, Play, Pause, Image as ImageIcon, Video } from "lucide-react";
 import ApiService from "../hooks/ApiService";
 import { openProperty } from "../hooks/openProperty";
 
@@ -1136,7 +1136,7 @@ function ProjectCard({ property, formatPrice, onProjectClick }) {
               {pricePerSqYard && (
                 <div className="bg-blue-50 rounded-lg p-2 border border-blue-100 text-center">
                   <div className="flex items-center justify-center gap-1 mb-0.5">
-                    <DollarSign className="w-3 h-3 text-blue-500" />
+                    <IndianRupee className="w-3 h-3 text-orange-500" />
                     <span className="text-[8px] text-gray-500 uppercase font-semibold">Per Sq.Yd</span>
                   </div>
                   <p className="text-sm font-bold text-gray-900">₹{Math.round(
