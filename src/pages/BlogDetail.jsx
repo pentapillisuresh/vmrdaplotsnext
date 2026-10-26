@@ -109,6 +109,10 @@ export default function BlogDetail({ id }) {
             throw new Error('Direct fetch failed');
           }
         } catch (directErr) {
+          console.error('Direct blog request failed:', directErr);
+  console.error('Status:', directErr?.response?.status);
+  console.error('Response:', directErr?.response?.data);
+  console.error('Message:', directErr?.message);
           console.warn(
             'Direct fetch failed. Trying fallback list API.',
             directErr?.response?.data || directErr?.message
