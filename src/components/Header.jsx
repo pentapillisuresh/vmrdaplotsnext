@@ -187,7 +187,7 @@ const Header = () => {
     { path: "/project", label: "Projects", icon: Briefcase },
     { path: "/about", label: "About", icon: Info },
     { path: "/contact", label: "Contact", icon: Phone },
-    // { path: "/blog", label: "Blog", icon: Newspaper },
+    { path: "/blog", label: "Blog", icon: Newspaper },
   ];
 
   const vendorMenuItems = [

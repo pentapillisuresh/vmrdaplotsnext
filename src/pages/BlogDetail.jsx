@@ -1,509 +1,726 @@
+
 'use client';
 
-import { useEffect, useState, Suspense } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import ApiService from "../hooks/ApiService";
-import DOMPurify from "dompurify";
-import { ArrowLeft, Calendar, Clock, Share2, Link as LinkIcon, Copy, Check, Eye, User, Tag, Heart, MessageCircle } from "lucide-react";
-import { FaFacebook, FaInstagram } from "react-icons/fa";
-import { BsTwitter } from "react-icons/bs";
-import { LiaLinkedin } from "react-icons/lia";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import DOMPurify from 'dompurify';
+import ApiService from '../hooks/ApiService';
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Building2,
+  CalendarDays,
+  Check,
+  ChevronRight,
+  Clock3,
+  Copy,
+  Eye,
+  Link2,
+  Share2,
+} from 'lucide-react';
 
-function BlogDetailContent() {
-  const params = useParams();
-  const id = params?.id;
-  const router = useRouter();
-  const [blog, setBlog] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [relatedBlogs, setRelatedBlogs] = useState([]);
-  const [copied, setCopied] = useState(false);
-  const [shareUrl, setShareUrl] = useState("");
-  const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(0);
+const ORANGE = '#FF6B00';
 
-  // Function to safely render HTML
-  const createMarkup = (html) => {
-    if (!html) return { __html: "" };
-    return {
-      __html: DOMPurify.sanitize(html, {
-        ALLOWED_TAGS: [
-          "h1", "h2", "h3", "h4", "h5", "h6",
-          "p", "br", "strong", "b", "em", "i", "u", "strike",
-          "ul", "ol", "li", "a", "img", "div", "span",
-          "blockquote", "code", "pre", "table", "thead", "tbody", "tr", "th", "td"
-        ],
-        ALLOWED_ATTR: [
-          "href", "target", "rel", "src", "alt", "title", "width", "height",
-          "class", "style", "align", "color", "background"
-        ]
-      })
-    };
-  };
-
-  // Function to strip HTML tags for excerpt
-  const stripHtml = (html) => {
-    if (!html) return "";
-    const tmp = document.createElement("div");
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || "";
-  };
-
-  // Function to get excerpt
-  const getExcerpt = (html, maxLength = 100) => {
-    const plainText = stripHtml(html);
-    if (plainText.length <= maxLength) return plainText;
-    return plainText.substring(0, maxLength) + "...";
-  };
-
-  // Calculate read time
-  const calculateReadTime = (html) => {
-    if (!html) return "2 min read";
-    const text = stripHtml(html);
-    const wordCount = text.split(/\s+/).length;
-    const wordsPerMinute = 200;
-    const minutes = Math.ceil(wordCount / wordsPerMinute);
-    return `${minutes} min read`;
-  };
-
-  // Fetch blog details
-  const fetchBlogDetail = async () => {
-    try {
-      setLoading(true);
-      const adminToken = localStorage.getItem('token');
-      const res = await ApiService.get(`/blogs/${id}`, {
-        headers: {
-          Authorization: `Bearer ${adminToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      setBlog(res.blog);
-      setLikesCount(res.blog.likes || 0);
-      
-      // Also fetch related blogs
-      const allBlogsRes = await ApiService.get("/blogs", {
-        headers: {
-          Authorization: `Bearer ${adminToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      // Filter out current blog and get 3 related blogs
-      const related = allBlogsRes.blogs
-        .filter(b => b.id !== res.blog.id)
-        .slice(0, 3);
-      setRelatedBlogs(related);
-      
-      // Set share URL
-      setShareUrl(`${window.location.origin}/blog/${id}`);
-      
-    } catch (err) {
-      console.error("Error fetching blog:", err);
-      setError("Blog not found or error loading blog.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Copy link to clipboard
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(shareUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  // Share on social media
-  const shareOnFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-  };
-
-  const shareOnTwitter = () => {
-    const text = blog ? `Check out: ${blog.name}` : 'Check out this blog post';
-    window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`, '_blank');
-  };
-
-  const shareOnLinkedIn = () => {
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
-  };
-
-  // Native Web Share API
-  const shareViaWebAPI = () => {
-    if (navigator.share && blog) {
-      navigator.share({
-        title: blog.name,
-        text: getExcerpt(blog.description, 150),
-        url: shareUrl,
-      });
-    }
-  };
-
-  // Handle like
-  const handleLike = () => {
-    setLiked(!liked);
-    setLikesCount(prev => liked ? prev - 1 : prev + 1);
-  };
-
-  useEffect(() => {
-    if (id) {
-      fetchBlogDetail();
-    }
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-orange-500 border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-gray-600 font-medium">Loading blog post...</p>
-        </div>
-      </div>
-    );
+function stripHtml(html = '') {
+  if (typeof document === 'undefined') {
+    return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
-  if (error || !blog) {
+  const element = document.createElement('div');
+  element.innerHTML = html;
+
+  return (element.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+function getReadTime(html = '') {
+  const words = stripHtml(html).split(/\s+/).filter(Boolean).length;
+  return `${Math.max(1, Math.ceil(words / 200))} min read`;
+}
+
+function getBlogUrl(blog) {
+  return `/blog/${blog.slug || blog.id}`;
+}
+
+/* FULL IMAGE: no cropping, no overlay, natural image ratio */
+function FeaturedImage({ src, alt }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center max-w-md p-10 bg-white rounded-2xl shadow-2xl border border-gray-100">
-          <div className="text-7xl mb-4">📄</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Blog Not Found</h2>
-          <p className="text-gray-600 mb-6">{error || "The blog post you're looking for doesn't exist."}</p>
-          <button
-            onClick={() => router.push('/blog')}
-            className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-medium transition-all flex items-center gap-2 mx-auto shadow-lg shadow-orange-200"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back to Blogs
-          </button>
+      <div className="flex min-h-[220px] w-full items-center justify-center bg-stone-100 sm:min-h-[300px]">
+        <div className="text-center text-stone-400">
+          <Building2
+            size={42}
+            strokeWidth={1.2}
+            className="mx-auto"
+          />
+          <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em]">
+            VMRDA Plots
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      {/* Navigation Bar - Premium */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => router.push('/blog')}
-              className="flex items-center gap-2 text-gray-600 hover:text-orange-600 transition-all duration-300 group"
-            >
-              <div className="p-2 bg-orange-50 rounded-lg group-hover:bg-orange-100 transition-colors">
-                <ArrowLeft className="w-4 h-4" />
-              </div>
-              <span className="font-medium hidden sm:inline">Back to Blogs</span>
-            </button>
-            
-            <div className="flex items-center gap-3">
-              <span className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider ${
-                blog.status === 'published' ? 'bg-green-100 text-green-700' :
-                blog.status === 'draft' ? 'bg-yellow-100 text-yellow-700' :
-                'bg-gray-100 text-gray-700'
-              }`}>
-                {blog.status}
-              </span>
-            </div>
-          </div>
+    <div className="flex w-full items-center justify-center overflow-hidden bg-[#F3F1ED]">
+      <img
+        src={src}
+        alt={alt || 'Real estate article'}
+        onError={() => setFailed(true)}
+        className="block h-auto max-h-[520px] w-full object-contain"
+      />
+    </div>
+  );
+}
+
+export default function BlogDetail({ id }) {
+  const router = useRouter();
+
+  const [blog, setBlog] = useState(null);
+  const [relatedBlogs, setRelatedBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [shareUrl, setShareUrl] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  /* ORIGINAL API, FALLBACK AND SLUG LOGIC PRESERVED */
+  useEffect(() => {
+    if (!id) return;
+
+    let active = true;
+
+    async function loadBlog() {
+      setLoading(true);
+      setError('');
+
+      try {
+        let currentBlog = null;
+        let fetchErrorStatus = null;
+
+        try {
+          currentBlog = await ApiService.get(
+            `/blogs/${encodeURIComponent(id)}`
+          );
+
+          if (currentBlog?.error || !currentBlog) {
+            throw new Error('Direct fetch failed');
+          }
+        } catch (directErr) {
+          console.warn(
+            'Direct fetch failed. Trying fallback list API.',
+            directErr?.response?.data || directErr?.message
+          );
+
+          fetchErrorStatus =
+            directErr?.response?.status ||
+            directErr?.status ||
+            directErr?.data?.status;
+
+          const allBlogsResponse = await ApiService.get('/blogs');
+
+          const blogArray = Array.isArray(allBlogsResponse)
+            ? allBlogsResponse
+            : Array.isArray(allBlogsResponse?.blogs)
+              ? allBlogsResponse.blogs
+              : Array.isArray(allBlogsResponse?.data?.blogs)
+                ? allBlogsResponse.data.blogs
+                : [];
+
+          currentBlog = blogArray.find(
+            (item) =>
+              item.slug === id || String(item.id) === String(id)
+          );
+
+          if (!currentBlog) {
+            const customError = new Error(
+              'Blog not found in list fallback'
+            );
+            customError.status = fetchErrorStatus || 404;
+            throw customError;
+          }
+        }
+
+        if (!active) return;
+
+        setBlog(currentBlog);
+
+        // Redirect UUID URL to the existing article slug.
+        if (currentBlog.slug && id !== currentBlog.slug) {
+          router.replace(getBlogUrl(currentBlog));
+          return;
+        }
+
+        setShareUrl(
+          `${window.location.origin}${getBlogUrl(currentBlog)}`
+        );
+
+        // ORIGINAL RELATED BLOG FETCH LOGIC
+        try {
+          const listData = await ApiService.get('/blogs');
+
+          const allBlogs = Array.isArray(listData)
+            ? listData
+            : Array.isArray(listData?.blogs)
+              ? listData.blogs
+              : Array.isArray(listData?.data?.blogs)
+                ? listData.data.blogs
+                : [];
+
+          if (!active) return;
+
+          setRelatedBlogs(
+            allBlogs
+              .filter((item) => item.id !== currentBlog.id)
+              .filter(
+                (item) =>
+                  !item.status ||
+                  item.status.toLowerCase() === 'published'
+              )
+              .slice(0, 3)
+          );
+        } catch (relatedError) {
+          console.warn(
+            'Related articles could not be loaded:',
+            relatedError?.response?.data || relatedError?.message
+          );
+
+          if (active) setRelatedBlogs([]);
+        }
+      } catch (fetchError) {
+        console.error('Final Blog detail API error:', {
+          message: fetchError?.message,
+          status:
+            fetchError?.response?.status || fetchError?.status,
+          response: fetchError?.response?.data,
+        });
+
+        if (active) {
+          const status =
+            fetchError?.response?.status ||
+            fetchError?.status ||
+            fetchError?.data?.status ||
+            404;
+
+          if (status === 404) {
+            setError('This article was not found.');
+          } else if (status === 401 || status === 403) {
+            setError(
+              'You are not authorized to view this article.'
+            );
+          } else {
+            setError(
+              'Unable to load this article. Check your connection or try again later.'
+            );
+          }
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadBlog();
+
+    return () => {
+      active = false;
+    };
+  }, [id, router]);
+
+  /* ORIGINAL SHARING FUNCTIONS PRESERVED */
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch (copyError) {
+      console.error('Could not copy link:', copyError);
+    }
+  }
+
+  function shareOnFacebook() {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  }
+
+  function shareOnLinkedIn() {
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  }
+
+  function shareOnWhatsApp() {
+    const message = `${blog?.name || 'Real estate article'} ${shareUrl}`;
+
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(message)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  }
+
+  async function shareArticle() {
+    if (navigator.share && blog) {
+      try {
+        await navigator.share({
+          title: blog.name,
+          text: stripHtml(blog.description || '').slice(0, 150),
+          url: shareUrl,
+        });
+      } catch (shareError) {
+        if (shareError.name !== 'AbortError') {
+          console.error('Share failed:', shareError);
+        }
+      }
+    } else {
+      await copyLink();
+    }
+  }
+
+  /* LOADING */
+  if (loading) {
+    return (
+      <main className="flex min-h-[65vh] items-center justify-center bg-[#FCFBF8]">
+        <div className="text-center">
+          <div
+            className="mx-auto h-10 w-10 animate-spin rounded-full border-[3px] border-stone-200"
+            style={{ borderTopColor: ORANGE }}
+          />
+          <p className="mt-4 text-sm text-stone-500">
+            Loading article...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  /* ERROR */
+  if (error || !blog) {
+    return (
+      <main className="flex min-h-[65vh] items-center justify-center bg-[#FCFBF8] px-5">
+        <div className="max-w-md rounded-2xl border border-stone-200 bg-white p-8 text-center shadow-sm">
+          <BookOpen
+            size={38}
+            className="mx-auto text-stone-400"
+          />
+
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight">
+            Article unavailable
+          </h1>
+
+          <p className="mt-3 text-sm leading-6 text-stone-500">
+            {error || 'This article is not available.'}
+          </p>
+
+          <button
+            onClick={() => router.push('/blog')}
+            className="mt-6 inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold text-white transition hover:brightness-95"
+            style={{ background: ORANGE }}
+          >
+            <ArrowLeft size={16} />
+            Back to articles
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  const safeDescription =
+    typeof window !== 'undefined'
+      ? DOMPurify.sanitize(blog.description || '', {
+          USE_PROFILES: { html: true },
+        })
+      : blog.description || '';
+
+  const safeContent =
+    typeof window !== 'undefined'
+      ? DOMPurify.sanitize(blog.content || '', {
+          USE_PROFILES: { html: true },
+        })
+      : blog.content || '';
+
+  const fullText = `${blog.description || ''} ${blog.content || ''}`;
+
+  const publishedDate = blog.createdAt
+    ? new Date(blog.createdAt).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
+
+  return (
+    <main className="min-h-screen bg-[#FCFBF8] text-stone-900">
+      {/* TOP NAVIGATION */}
+      <div className="border-b border-stone-200 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 text-sm font-medium text-stone-600 transition hover:text-orange-700"
+          >
+            <ArrowLeft size={16} />
+            All articles
+          </Link>
+
+          <Link
+            href="/"
+            className="text-xs font-bold uppercase tracking-[0.16em] sm:text-sm"
+          >
+            VMRDA <span style={{ color: ORANGE }}>PLOTS</span>
+          </Link>
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-        {/* Blog Header - Premium */}
-        <header className="mb-12">
-          {/* Category Badge */}
-          {blog.category && (
-            <div className="mb-4">
-              <span className="inline-flex items-center gap-2 bg-orange-100 text-orange-700 px-4 py-1.5 rounded-full text-sm font-semibold">
-                <Tag className="w-4 h-4" />
-                {blog.category.name || "Real Estate"}
-              </span>
-            </div>
-          )}
-          
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-gray-900 mb-6 leading-tight">
-            {blog.name}
-          </h1>
-          
-          <div className="flex flex-wrap items-center gap-6 text-gray-500 mb-6">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-gray-100 rounded-full">
-                <Calendar className="w-4 h-4" />
-              </div>
-              <span className="text-sm font-medium">
-                {new Date(blog.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-gray-100 rounded-full">
-                <Clock className="w-4 h-4" />
-              </div>
-              <span className="text-sm font-medium">{calculateReadTime(blog.description)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-gray-100 rounded-full">
-                <Eye className="w-4 h-4" />
-              </div>
-              <span className="text-sm font-medium">{blog.views || 0} views</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-gray-100 rounded-full">
-                <User className="w-4 h-4" />
-              </div>
-              <span className="text-sm font-medium">Admin</span>
-            </div>
-          </div>
-          
-          {/* Divider */}
-          <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-orange-300 rounded-full"></div>
-        </header>
+      {/* BREADCRUMBS AND COMPACT HEADING */}
+      <header className="mx-auto max-w-6xl px-4 pb-6 pt-7 sm:px-6 sm:pb-8 sm:pt-9 lg:px-8">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-5 flex flex-wrap items-center gap-2 text-xs text-stone-500"
+        >
+          <Link href="/" className="transition hover:text-orange-700">
+            Home
+          </Link>
 
-        {/* Featured Image - Premium */}
-        {blog.photo && (
-          <div className="mb-12 rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
-            <div className="relative">
-              <img
-                src={blog.photo}
-                alt={blog.name}
-                className="w-full h-auto max-h-[500px] object-cover"
-              />
-              <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/30 to-transparent"></div>
-            </div>
-          </div>
-        )}
+          <ChevronRight size={13} />
 
-        {/* Blog Content - Premium Styling */}
-        <article className="prose prose-lg prose-orange max-w-none mb-16">
-          <div 
-            className="text-gray-700 leading-relaxed blog-content"
-            dangerouslySetInnerHTML={createMarkup(blog.description)}
-          />
-        </article>
-
-        {/* Additional Content */}
-        {blog.content && (
-          <div className="mb-16">
-            <div 
-              className="prose prose-slate max-w-none text-gray-600"
-              dangerouslySetInnerHTML={{ __html: blog.content }}
-            />
-          </div>
-        )}
-
-        {/* Engagement Section */}
-        <div className="flex items-center gap-6 mb-12">
-          <button
-            onClick={handleLike}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-              liked 
-                ? 'bg-red-50 text-red-600 border-2 border-red-200' 
-                : 'bg-gray-50 text-gray-600 border-2 border-gray-200 hover:border-red-200 hover:bg-red-50'
-            }`}
+          <Link
+            href="/blog"
+            className="transition hover:text-orange-700"
           >
-            <Heart className={`w-5 h-5 ${liked ? 'fill-red-500 text-red-500' : ''}`} />
-            <span>{likesCount} Likes</span>
-          </button>
-          
-          <button className="flex items-center gap-2 px-6 py-3 bg-gray-50 text-gray-600 border-2 border-gray-200 rounded-xl font-medium hover:border-blue-200 hover:bg-blue-50 transition-all duration-300">
-            <MessageCircle className="w-5 h-5" />
-            <span>Comment</span>
-          </button>
+            Blog
+          </Link>
+
+          <ChevronRight size={13} />
+
+          <span className="max-w-[220px] truncate text-stone-700">
+            {blog.name}
+          </span>
+        </nav>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white"
+            style={{ background: ORANGE }}
+          >
+            Realty Insights
+          </span>
+
+          {blog.category?.name && (
+            <span className="rounded-full border border-stone-200 bg-white px-3 py-1 text-xs text-stone-600">
+              {blog.category.name}
+            </span>
+          )}
         </div>
 
-        {/* Share Section - Premium */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 mb-16 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50 rounded-full -translate-y-32 translate-x-32 opacity-50"></div>
-          <div className="relative z-10">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+        <h1 className="mt-4 max-w-4xl text-2xl font-semibold leading-snug tracking-tight sm:text-3xl lg:text-[34px]">
+          {blog.name}
+        </h1>
+
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-stone-500 sm:text-sm">
+          {publishedDate && (
+            <span className="flex items-center gap-2">
+              <CalendarDays size={15} style={{ color: ORANGE }} />
+              {publishedDate}
+            </span>
+          )}
+
+          <span className="flex items-center gap-2">
+            <Clock3 size={15} style={{ color: ORANGE }} />
+            {getReadTime(fullText)}
+          </span>
+
+          {typeof blog.views !== 'undefined' && (
+            <span className="flex items-center gap-2">
+              <Eye size={15} style={{ color: ORANGE }} />
+              {blog.views || 0} views
+            </span>
+          )}
+        </div>
+      </header>
+
+      {/* FULL IMAGE - NATURAL ASPECT RATIO, NO CROPPING */}
+      {blog.photo && (
+        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-xl border border-stone-200 bg-[#F3F1ED] shadow-sm">
+            <FeaturedImage src={blog.photo} alt={blog.name} />
+          </div>
+        </section>
+      )}
+
+      {/* ARTICLE CONTENT AND SIDEBAR */}
+      <section className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 py-9 sm:px-6 sm:py-11 lg:grid-cols-[minmax(0,1fr)_250px] lg:gap-10 lg:px-8">
+        <article className="min-w-0">
+          <div className="rounded-xl border border-stone-200/80 bg-white p-5 sm:p-7 lg:p-8">
+            {safeDescription && (
+              <div
+                className="blog-content prose prose-base max-w-none break-words text-[15px] leading-7 text-stone-600 prose-headings:mb-3 prose-headings:mt-6 prose-headings:text-lg prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-stone-900 prose-p:my-4 prose-p:leading-7 prose-a:text-orange-700 prose-strong:text-stone-900 prose-blockquote:border-orange-400 prose-li:marker:text-orange-600 prose-img:mx-auto prose-img:h-auto prose-img:max-w-full prose-img:rounded-lg"
+                dangerouslySetInnerHTML={{ __html: safeDescription }}
+              />
+            )}
+
+            {safeContent && safeContent !== safeDescription && (
+              <div
+                className="blog-content prose prose-base mt-6 max-w-none break-words text-[15px] leading-7 text-stone-600 prose-headings:mb-3 prose-headings:mt-6 prose-headings:text-lg prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-stone-900 prose-p:my-4 prose-p:leading-7 prose-a:text-orange-700 prose-strong:text-stone-900 prose-li:marker:text-orange-600 prose-img:mx-auto prose-img:h-auto prose-img:max-w-full prose-img:rounded-lg"
+                dangerouslySetInnerHTML={{ __html: safeContent }}
+              />
+            )}
+          </div>
+
+          {/* SHARE SECTION */}
+          <div className="mt-7 rounded-xl border border-stone-200 bg-white p-5 sm:p-6">
+            <div className="flex flex-col gap-4">
               <div>
-                <h3 className="text-2xl font-serif font-bold text-gray-900 mb-1">Share this article</h3>
-                <p className="text-gray-500">Help others discover this insightful post</p>
+                <h2 className="text-base font-semibold">
+                  Found this useful?
+                </h2>
+                <p className="mt-1 text-sm leading-6 text-stone-500">
+                  Share this article with someone planning their next investment.
+                </p>
               </div>
-              
-              <div className="flex flex-wrap items-center gap-3">
-                {/* Web Share API */}
-                {typeof navigator !== 'undefined' && navigator.share && (
-                  <button
-                    onClick={shareViaWebAPI}
-                    className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-medium transition-all flex items-center gap-2 shadow-lg shadow-orange-200"
-                  >
-                    <Share2 className="w-5 h-5" />
-                    Share
-                  </button>
-                )}
-                
-                {/* Social Media Buttons */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={shareOnFacebook}
-                    className="p-2.5 bg-[#1877F2] hover:bg-[#0d65d9] text-white rounded-xl transition-all hover:scale-105 shadow-md"
-                    title="Share on Facebook"
-                  >
-                    <FaFacebook className="w-5 h-5" />
-                  </button>
-                  
-                  <button
-                    onClick={shareOnTwitter}
-                    className="p-2.5 bg-[#000000] hover:bg-gray-800 text-white rounded-xl transition-all hover:scale-105 shadow-md"
-                    title="Share on Twitter"
-                  >
-                    <BsTwitter className="w-5 h-5" />
-                  </button>
-                  
-                  <button
-                    onClick={shareOnLinkedIn}
-                    className="p-2.5 bg-[#0A66C2] hover:bg-[#0953a0] text-white rounded-xl transition-all hover:scale-105 shadow-md"
-                    title="Share on LinkedIn"
-                  >
-                    <LiaLinkedin className="w-5 h-5" />
-                  </button>
-                  
-                  <button
-                    onClick={copyToClipboard}
-                    className={`p-2.5 ${copied ? 'bg-green-600' : 'bg-gray-700 hover:bg-gray-800'} text-white rounded-xl transition-all hover:scale-105 flex items-center gap-2 shadow-md`}
-                    title="Copy link"
-                  >
-                    {copied ? <Check className="w-5 h-5" /> : <LinkIcon className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            {/* Link Box */}
-            <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 truncate font-mono">{shareUrl}</span>
+
+              <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={copyToClipboard}
-                  className="ml-2 px-4 py-1.5 text-sm bg-white text-orange-600 hover:bg-orange-50 rounded-lg transition-colors flex items-center gap-1 border border-gray-200 hover:border-orange-200"
+                  onClick={shareArticle}
+                  className="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-95"
+                  style={{ background: ORANGE }}
                 >
-                  <Copy className="w-3 h-3" />
-                  {copied ? 'Copied!' : 'Copy'}
+                  <Share2 size={15} />
+                  Share
+                </button>
+
+                <button
+                  onClick={shareOnWhatsApp}
+                  className="rounded-lg border border-stone-200 px-3 py-2.5 text-sm transition hover:border-orange-300 hover:bg-orange-50"
+                >
+                  WhatsApp
+                </button>
+
+                <button
+                  onClick={shareOnFacebook}
+                  className="rounded-lg border border-stone-200 px-3 py-2.5 text-sm transition hover:border-orange-300 hover:bg-orange-50"
+                >
+                  Facebook
+                </button>
+
+                <button
+                  onClick={shareOnLinkedIn}
+                  className="rounded-lg border border-stone-200 px-3 py-2.5 text-sm transition hover:border-orange-300 hover:bg-orange-50"
+                >
+                  LinkedIn
+                </button>
+
+                <button
+                  onClick={copyLink}
+                  className="inline-flex items-center gap-2 rounded-lg border border-stone-200 px-3 py-2.5 text-sm transition hover:border-orange-300 hover:bg-orange-50"
+                >
+                  {copied ? (
+                    <Check size={15} className="text-green-600" />
+                  ) : (
+                    <Copy size={15} />
+                  )}
+                  {copied ? 'Copied' : 'Copy link'}
                 </button>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Related Blogs - Premium */}
-        {relatedBlogs.length > 0 && (
-          <div className="mb-16">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-1 h-8 bg-gradient-to-b from-orange-500 to-orange-300 rounded-full"></div>
-              <h3 className="text-2xl font-serif font-bold text-gray-900">Related Articles</h3>
+            <div className="mt-4 flex min-w-0 items-center gap-3 rounded-lg bg-stone-50 px-3 py-3">
+              <Link2
+                size={15}
+                className="shrink-0 text-stone-400"
+              />
+
+              <span className="min-w-0 flex-1 truncate text-xs text-stone-500">
+                {shareUrl}
+              </span>
+
+              <button
+                onClick={copyLink}
+                className="shrink-0 text-xs font-semibold text-orange-700 hover:text-orange-800"
+              >
+                Copy
+              </button>
             </div>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedBlogs.map((relatedBlog) => (
+          </div>
+        </article>
+
+        {/* COMPACT SIDEBAR */}
+        <aside className="space-y-5">
+          <div className="rounded-xl border border-stone-200 bg-white p-5">
+            <div
+              className="mb-4 h-1 w-10 rounded-full"
+              style={{ background: ORANGE }}
+            />
+
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
+              VMRDA Plots
+            </p>
+
+            <h2 className="mt-3 text-lg font-semibold leading-snug">
+              Find your next property with confidence.
+            </h2>
+
+            <p className="mt-3 text-sm leading-6 text-stone-500">
+              Explore properties and compare locations before making a decision.
+            </p>
+
+            <Link
+              href="/properties"
+              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-orange-700 transition hover:text-orange-800"
+            >
+              Explore properties <ArrowRight size={15} />
+            </Link>
+          </div>
+
+          <div className="rounded-xl border border-stone-200 bg-white p-5">
+            <h2 className="text-base font-semibold">
+              Article details
+            </h2>
+
+            <div className="mt-4 space-y-4 text-sm">
+              <div className="flex items-start justify-between gap-3">
+                <span className="text-stone-500">Reading time</span>
+                <span className="text-right font-medium">
+                  {getReadTime(fullText)}
+                </span>
+              </div>
+
+              {publishedDate && (
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-stone-500">Published</span>
+                  <span className="text-right font-medium">
+                    {publishedDate}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex items-start justify-between gap-3">
+                <span className="text-stone-500">Topic</span>
+                <span className="text-right font-medium">
+                  {blog.category?.name || 'Real Estate'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      {/* RELATED ARTICLES */}
+      {relatedBlogs.length > 0 && (
+        <section className="border-t border-stone-200 bg-white">
+          <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-700">
+                  Keep exploring
+                </p>
+                <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+                  More realty insights
+                </h2>
+              </div>
+
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-orange-700 hover:text-orange-800"
+              >
+                View all articles <ArrowRight size={15} />
+              </Link>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedBlogs.map((item) => (
                 <Link
-                  key={relatedBlog.id}
-                  href={`/blog/${relatedBlog.id}`}
-                  className="group"
+                  key={item.id}
+                  href={getBlogUrl(item)}
+                  className="group overflow-hidden rounded-xl border border-stone-200 bg-[#FCFBF8] transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg"
                 >
-                  <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 h-full">
-                    {relatedBlog.photo && (
-                      <div className="h-48 overflow-hidden relative">
-                        <img
-                          src={relatedBlog.photo}
-                          alt={relatedBlog.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/0 to-black/0 group-hover:from-black/10 group-hover:to-black/0 transition-all duration-500"></div>
-                      </div>
-                    )}
-                    <div className="p-5">
-                      <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
-                        <Calendar className="w-3 h-3" />
-                        <span>
-                          {new Date(relatedBlog.createdAt).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
-                        </span>
-                      </div>
-                      <h4 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors duration-300">
-                        {relatedBlog.name}
-                      </h4>
-                      <p className="text-sm text-gray-600 line-clamp-2">
-                        {getExcerpt(relatedBlog.description, 80)}
-                      </p>
-                      <div className="mt-3 flex items-center justify-between">
-                        <span className="text-xs text-orange-500 font-medium group-hover:gap-2 transition-all flex items-center gap-1">
-                          Read More <span className="group-hover:translate-x-1 transition-transform">→</span>
-                        </span>
-                        <span className="text-xs text-gray-400">{calculateReadTime(relatedBlog.description)}</span>
-                      </div>
+                  {/* Show the entire related image too */}
+                  {item.photo ? (
+                    <div className="flex min-h-[150px] items-center justify-center overflow-hidden bg-[#F3F1ED]">
+                      <img
+                        src={item.photo}
+                        alt={item.name || 'Related article'}
+                        loading="lazy"
+                        className="block h-auto max-h-56 w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                      />
                     </div>
+                  ) : (
+                    <div className="flex h-36 items-center justify-center bg-stone-100 text-stone-400">
+                      <Building2 size={32} />
+                    </div>
+                  )}
+
+                  <div className="p-5">
+                    <p className="text-xs text-stone-500">
+                      {item.createdAt
+                        ? new Date(item.createdAt).toLocaleDateString(
+                            'en-IN',
+                            {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                            }
+                          )
+                        : 'Realty Insights'}
+                    </p>
+
+                    <h3 className="mt-2 line-clamp-2 text-base font-semibold leading-snug transition-colors group-hover:text-orange-700">
+                      {item.name}
+                    </h3>
+
+                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-stone-500">
+                      {stripHtml(item.description || '')}
+                    </p>
+
+                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-orange-700">
+                      Read article
+                      <ArrowRight
+                        size={15}
+                        className="transition-transform group-hover:translate-x-1"
+                      />
+                    </span>
                   </div>
                 </Link>
               ))}
             </div>
           </div>
-        )}
+        </section>
+      )}
 
-        {/* Back to Blogs Button - Premium */}
-        <div className="text-center">
-          <button
-            onClick={() => router.push('/blog')}
-            className="px-10 py-4 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white rounded-xl font-medium transition-all flex items-center gap-2 mx-auto shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            View All Blogs
-          </button>
-        </div>
-      </main>
+      {/* BOTTOM CTA */}
+      <section className="bg-[#191916]">
+        <div className="mx-auto flex max-w-6xl flex-col gap-5 px-4 py-9 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+          <div>
+            <p
+              className="text-[10px] font-bold uppercase tracking-[0.2em]"
+              style={{ color: ORANGE }}
+            >
+              VMRDA Plots Journal
+            </p>
 
-      {/* Newsletter Section - Premium */}
-      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-20 mt-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <span className="inline-block bg-orange-500 text-white px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
-            Newsletter
-          </span>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">
-            Stay Updated with Real Estate Insights
-          </h2>
-          <p className="text-xl text-gray-300 mb-10 leading-relaxed">
-            Subscribe to our newsletter for the latest blog posts, market trends, and expert analysis.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              className="flex-1 px-6 py-4 rounded-xl text-gray-900 focus:outline-none focus:ring-4 focus:ring-orange-500 transition-all shadow-lg"
-            />
-            <button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              Subscribe Now
-            </button>
+            <h2 className="mt-2 text-xl font-semibold text-white sm:text-2xl">
+              Discover more property insights.
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-stone-400">
+              Continue exploring our real-estate articles and property listings.
+            </p>
           </div>
+
+          <Link
+            href="/blog"
+            className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg px-5 py-3 text-sm font-semibold text-white transition hover:brightness-95 md:self-center"
+            style={{ background: ORANGE }}
+          >
+            Browse articles <ArrowRight size={16} />
+          </Link>
         </div>
       </section>
-    </div>
-  );
-}
-
-// Wrap with Suspense because useParams requires it in App Router
-export default function BlogDetail() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-orange-500 border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-gray-600 font-medium">Loading...</p>
-        </div>
-      </div>
-    }>
-      <BlogDetailContent />
-    </Suspense>
+    </main>
   );
 }

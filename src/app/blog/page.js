@@ -1,5 +1,7 @@
-import Blog from "@/pages/Blog";
+
+import Blog from '@/pages/Blog';
 
 export default function Page() {
   return <Blog />;
 }
+  
